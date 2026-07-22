@@ -16,6 +16,33 @@ const PATHS = {
 
 const DAILY_TARGETS = { guide: 20, quiz: 10 };
 
+async function runGit(args: string[]): Promise<{ code: number; out: string; err: string }> {
+  const proc = Bun.spawn(["git", ...args], { cwd: BASE, stdout: "pipe", stderr: "pipe" });
+  const [code, out, err] = await Promise.all([
+    proc.exited,
+    new Response(proc.stdout).text(),
+    new Response(proc.stderr).text(),
+  ]);
+  return { code, out, err };
+}
+
+async function gitSync(): Promise<{ ok: boolean; pushed: boolean; message: string }> {
+  const pull = await runGit(["pull", "--rebase", "--autostash"]);
+  if (pull.code !== 0) return { ok: false, pushed: false, message: `pull failed: ${pull.err.trim()}` };
+
+  const status = await runGit(["status", "--porcelain"]);
+  if (!status.out.trim()) return { ok: true, pushed: false, message: "no local changes" };
+
+  await runGit(["add", "-A"]);
+  const commit = await runGit(["commit", "-m", `sync: ${new Date().toISOString()}`]);
+  if (commit.code !== 0) return { ok: false, pushed: false, message: `commit failed: ${commit.err.trim()}` };
+
+  const push = await runGit(["push"]);
+  if (push.code !== 0) return { ok: false, pushed: false, message: `push failed: ${push.err.trim()}` };
+  return { ok: true, pushed: true, message: "pushed changes" };
+}
+
+
 function todayStr() {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
 }
@@ -455,6 +482,11 @@ const server = serve({
         return new Response(file);
       }
       return new Response("Not found", { status: 404 });
+    }
+
+
+    if (path === "/api/git-sync" && req.method === "POST") {
+      return gitSync().then((result) => Response.json(result));
     }
 
     // API routes
