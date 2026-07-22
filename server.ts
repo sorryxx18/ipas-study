@@ -42,6 +42,15 @@ async function gitSync(): Promise<{ ok: boolean; pushed: boolean; message: strin
   return { ok: true, pushed: true, message: "pushed changes" };
 }
 
+let gitSyncTimer: ReturnType<typeof setTimeout> | null = null;
+function scheduleGitSync() {
+  if (gitSyncTimer) clearTimeout(gitSyncTimer);
+  gitSyncTimer = setTimeout(() => {
+    gitSyncTimer = null;
+    gitSync().catch((e) => console.warn("scheduled git sync failed:", e));
+  }, 5000);
+}
+
 
 function todayStr() {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
@@ -501,6 +510,7 @@ const server = serve({
     if (path === "/api/quiz/answer" && req.method === "POST") {
       return req.json().then((body: any) => {
         const result = recordAnswer(body.id, body.answer);
+        scheduleGitSync();
         return Response.json(result);
       });
     }
@@ -537,17 +547,22 @@ const server = serve({
 
     if (path === "/api/daily/rest" && req.method === "POST") {
       return req.json().then((body: any) => {
-        return Response.json(recordEarlyRest(body.note ?? ""));
+        const result = recordEarlyRest(body.note ?? "");
+        scheduleGitSync();
+        return Response.json(result);
       });
     }
 
     if (path === "/api/daily/bonus" && req.method === "POST") {
-      return Response.json(recordBonusRound());
+      const result = recordBonusRound();
+      scheduleGitSync();
+      return Response.json(result);
     }
 
     if (path === "/api/guide/complete" && req.method === "POST") {
       return req.json().then((body: any) => {
         const result = completeSegment(body.subject, body.id);
+        scheduleGitSync();
         return Response.json({ ...result, daily: getDailyStatus() });
       });
     }
@@ -560,11 +575,15 @@ const server = serve({
     }
 
     if (path === "/api/guide/newround" && req.method === "POST") {
-      return Response.json(startGuideNewRound());
+      const result = startGuideNewRound();
+      scheduleGitSync();
+      return Response.json(result);
     }
 
     if (path === "/api/quiz/newround" && req.method === "POST") {
-      return Response.json(startQuizNewRound());
+      const result = startQuizNewRound();
+      scheduleGitSync();
+      return Response.json(result);
     }
 
     if (path === "/api/guide/segment") {
