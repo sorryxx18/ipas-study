@@ -328,20 +328,30 @@
     return { ok: true };
   }
 
+  function sleep(ms) {
+    return new Promise((resolve) => setTimeout(resolve, ms));
+  }
+
   async function ghPutFile(key, json) {
     const token = getToken();
     if (!token) return { ok: false, reason: 'no-token' };
+    const MAX_ATTEMPTS = 4;
     try {
-      const first = await ghPutFileOnce(key, json);
-      if (first.ok) return first;
-      // 409 (sha conflict) or 422 (missing/invalid sha) — someone else (production,
-      // or a previous failed attempt) moved the file forward. Refetch the current
-      // sha once and retry, instead of requiring a full page reload to recover.
-      if (first.status === 409 || first.status === 422) {
+      let last = await ghPutFileOnce(key, json);
+      let attempt = 1;
+      // 409 (sha conflict) or 422 (missing/invalid sha) means someone else — production
+      // syncing at the same time, or another device — moved the file forward between
+      // our last read and this write. Both production and this demo can be in active
+      // use simultaneously, so refetch-and-retry a few times with a short backoff
+      // instead of giving up after one attempt.
+      while (!last.ok && (last.status === 409 || last.status === 422) && attempt < MAX_ATTEMPTS) {
+        await sleep(300 * attempt + Math.floor(Math.random() * 250));
         const refetch = await ghGetFile(key);
-        if (refetch.ok) return await ghPutFileOnce(key, json);
+        if (!refetch.ok) break;
+        last = await ghPutFileOnce(key, json);
+        attempt += 1;
       }
-      return first;
+      return last;
     } catch (e) {
       return { ok: false, reason: `network error: ${e && e.message ? e.message : e}` };
     }
