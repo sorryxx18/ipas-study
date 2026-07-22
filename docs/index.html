@@ -803,7 +803,8 @@ async function manageSync() {
       alert('設定失敗');
     }
   } else {
-    const choice = prompt('目前已連線同步。輸入 clear 移除、sync 立即同步一次、留空取消：');
+    const failNote = status.lastSyncFailed ? `\n⚠️ 上次自動同步失敗：${status.lastSyncReason}` : '';
+    const choice = prompt(`目前已連線同步。輸入 clear 移除、sync 立即同步一次、留空取消：${failNote}`);
     if (choice === 'clear') {
       await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token: '' }) });
       await updateSyncBadge();
@@ -819,10 +820,17 @@ async function updateSyncBadge() {
   const status = await api('/api/demo/sync-status');
   const badge = document.getElementById('syncBadge');
   if (!badge) return;
-  badge.textContent = status.hasToken
-    ? '🔄 進度已連線同步・點擊管理'
-    : '🧪 靜態展示版・進度不會保存・點擊設定同步';
+  if (!status.hasToken) {
+    badge.textContent = '🧪 靜態展示版・進度不會保存・點擊設定同步';
+  } else if (status.lastSyncFailed) {
+    badge.textContent = '⚠️ 同步失敗・點擊查看';
+    badge.title = status.lastSyncReason || '';
+  } else {
+    badge.textContent = '🔄 進度已連線同步・點擊管理';
+  }
 }
+
+window.__onSyncResult = () => { updateSyncBadge(); };
 
 loadStatus();
 loadDailyStatus();

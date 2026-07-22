@@ -284,33 +284,53 @@
   async function ghGetFile(key) {
     const token = getToken();
     const path = SYNC_FILES[key];
-    const res = await fetch(GH_API_BASE + path, {
-      headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } : { Accept: 'application/vnd.github+json' },
-    });
-    if (res.status === 404) return { ok: true, found: false };
-    if (!res.ok) return { ok: false, reason: `http ${res.status}` };
-    const data = await res.json();
-    ghShas[key] = data.sha;
-    return { ok: true, found: true, json: JSON.parse(b64ToUtf8(data.content)) };
+    try {
+      const res = await fetch(GH_API_BASE + path, {
+        headers: token
+          ? { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' }
+          : { Accept: 'application/vnd.github+json' },
+      });
+      if (res.status === 404) return { ok: true, found: false };
+      if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        return { ok: false, reason: `http ${res.status}: ${body.slice(0, 300)}` };
+      }
+      const data = await res.json();
+      ghShas[key] = data.sha;
+      return { ok: true, found: true, json: JSON.parse(b64ToUtf8(data.content)) };
+    } catch (e) {
+      return { ok: false, reason: `network error: ${e && e.message ? e.message : e}` };
+    }
   }
 
   async function ghPutFile(key, json) {
     const token = getToken();
     if (!token) return { ok: false, reason: 'no-token' };
     const path = SYNC_FILES[key];
-    const res = await fetch(GH_API_BASE + path, {
-      method: 'PUT',
-      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-      body: JSON.stringify({
-        message: `sync ${key}: ${new Date().toISOString()}`,
-        content: utf8ToB64(JSON.stringify(json, null, 2)),
-        sha: ghShas[key] || undefined,
-      }),
-    });
-    if (!res.ok) return { ok: false, reason: `http ${res.status}` };
-    const data = await res.json();
-    ghShas[key] = data.content?.sha ?? ghShas[key];
-    return { ok: true };
+    try {
+      const res = await fetch(GH_API_BASE + path, {
+        method: 'PUT',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/vnd.github+json',
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          message: `sync ${key}: ${new Date().toISOString()}`,
+          content: utf8ToB64(JSON.stringify(json, null, 2)),
+          sha: ghShas[key] || undefined,
+        }),
+      });
+      if (!res.ok) {
+        const body = await res.text().catch(() => '');
+        return { ok: false, reason: `http ${res.status}: ${body.slice(0, 300)}` };
+      }
+      const data = await res.json();
+      ghShas[key] = data.content?.sha ?? ghShas[key];
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, reason: `network error: ${e && e.message ? e.message : e}` };
+    }
   }
 
   async function ghSave() {
@@ -327,10 +347,20 @@
     return { ok: true };
   }
 
+  let lastSyncFailed = false;
+  let lastSyncReason = '';
+
   function scheduleSave() {
     if (!getToken()) return;
     clearTimeout(saveTimer);
-    saveTimer = setTimeout(() => { ghSave(); }, 3000);
+    saveTimer = setTimeout(() => {
+      ghSave().then((result) => {
+        lastSyncFailed = !result.ok;
+        lastSyncReason = result.reason || '';
+        if (!result.ok) console.error('background sync failed:', result.reason);
+        if (window.__onSyncResult) window.__onSyncResult(result);
+      });
+    }, 3000);
   }
 
   async function init() {
@@ -410,7 +440,7 @@
     if (p === '/api/guide/newround' && method === 'POST') return startGuideNewRound();
     if (p === '/api/quiz/newround' && method === 'POST') return startQuizNewRound();
 
-    if (p === '/api/demo/sync-status') return { hasToken: !!getToken() };
+    if (p === '/api/demo/sync-status') return { hasToken: !!getToken(), lastSyncFailed, lastSyncReason };
     if (p === '/api/demo/set-token' && method === 'POST') {
       setToken(body.token || '');
       return { hasToken: !!body.token };
@@ -418,6 +448,8 @@
     if (p === '/api/demo/sync-now' && method === 'POST') {
       clearTimeout(saveTimer);
       const result = await ghSave();
+      lastSyncFailed = !result.ok;
+      lastSyncReason = result.reason || '';
       return result;
     }
 
