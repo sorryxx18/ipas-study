@@ -234,7 +234,7 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 </style>
 </head>
 <body>
-<div style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);">🧪 靜態展示版・進度不會保存・完整版見 study.tfd-train.com</div>
+<button id="syncBadge" onclick="manageSync()" style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);cursor:pointer;">🧪 靜態展示版・進度不會保存・點擊設定同步</button>
 <a href="ai-agent-book.html" style="position:fixed;left:14px;bottom:14px;z-index:200;display:flex;align-items:center;gap:6px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px 7px 11px;font-size:12px;text-decoration:none;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);">🤖 AI Agent 讀書筆記</a>
 
 <div class="header">
@@ -790,8 +790,43 @@ async function startQuizNewRound(nextRound) {
   hero.addEventListener('mouseleave', () => clearTimeout(pressTimer));
 })();
 
+async function manageSync() {
+  const status = await api('/api/demo/sync-status');
+  if (!status.hasToken) {
+    const token = prompt('貼上 GitHub fine-grained token(權限只需勾這個 repo 的 Contents: Read and write)。留空取消。');
+    if (!token) return;
+    const result = await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token }) });
+    if (result.hasToken) {
+      alert('已設定,進度會自動同步到 GitHub。頁面即將重新整理套用之前存的進度。');
+      location.reload();
+    } else {
+      alert('設定失敗');
+    }
+  } else {
+    const choice = prompt('目前已連線同步。輸入 clear 移除、sync 立即同步一次、留空取消：');
+    if (choice === 'clear') {
+      await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token: '' }) });
+      await updateSyncBadge();
+      alert('已移除,進度改回不保存(重新整理會重置)。');
+    } else if (choice === 'sync') {
+      const r = await api('/api/demo/sync-now', { method: 'POST' });
+      alert(r.ok ? '同步成功' : ('同步失敗:' + (r.reason || '未知錯誤')));
+    }
+  }
+}
+
+async function updateSyncBadge() {
+  const status = await api('/api/demo/sync-status');
+  const badge = document.getElementById('syncBadge');
+  if (!badge) return;
+  badge.textContent = status.hasToken
+    ? '🔄 進度已連線同步・點擊管理'
+    : '🧪 靜態展示版・進度不會保存・點擊設定同步';
+}
+
 loadStatus();
 loadDailyStatus();
+updateSyncBadge();
 </script>
 
 <!-- Jump menu bottom sheet -->

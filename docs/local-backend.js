@@ -133,6 +133,7 @@
     const masteredCount = state.progress.completed_correct.length;
     const totalQ = state.questions.questions.length;
 
+    scheduleSave();
     return {
       correct,
       correctAnswer: q.answer,
@@ -173,6 +174,7 @@
     const s3Done = state.guideS3.segments.filter((s) => s.completed).length;
     const allGuideComplete = s1Done >= state.guideS1.total && s3Done >= state.guideS3.total;
 
+    scheduleSave();
     return { ok: true, completedId: id, allGuideComplete, daily: getDailyStatus() };
   }
 
@@ -180,6 +182,7 @@
     for (const seg of state.guideS1.segments) { seg.completed = false; delete seg.completed_date; }
     for (const seg of state.guideS3.segments) { seg.completed = false; delete seg.completed_date; }
     state.guideProgress.round = (state.guideProgress.round ?? 1) + 1;
+    scheduleSave();
     return { ok: true, round: state.guideProgress.round };
   }
 
@@ -191,6 +194,7 @@
     state.progress.current_queue = [...allIds];
     state.progress.current_question = allIds[0] ?? null;
     state.progress.stats.total_answered = 0;
+    scheduleSave();
     return { ok: true, round: state.progress.round };
   }
 
@@ -198,12 +202,14 @@
     const entry = getTodayEntry();
     entry.rested_early = true;
     entry.rest_note = note;
+    scheduleSave();
     return { ok: true, date: todayStr() };
   }
 
   function recordBonusRound() {
     const entry = getTodayEntry();
     entry.bonus_rounds = (entry.bonus_rounds ?? 0) + 1;
+    scheduleSave();
     return { ok: true, bonusRounds: entry.bonus_rounds };
   }
 
@@ -247,9 +253,113 @@
     const allIds = questions.questions.map((q) => q.id);
     state.progress.current_queue = allIds;
     state.progress.current_question = allIds[0] ?? null;
+
+    if (getToken()) {
+      const loaded = await ghLoad();
+      if (loaded.ok && loaded.reason === 'loaded') {
+        const stillQueued = new Set(state.progress.current_queue);
+        state.progress.current_queue = state.progress.current_queue.filter((id) => stillQueued.has(id));
+        if (!state.progress.current_question) state.progress.current_question = state.progress.current_queue[0] ?? null;
+      }
+    }
+  }
+
+
+  // ── GitHub-token based progress sync (option B) ───────────
+  const GH_OWNER = 'sorryxx18';
+  const GH_REPO = 'ipas-study';
+  const GH_PATH = 'docs/demo_progress.json';
+  const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+  const TOKEN_KEY = 'ipas_demo_gh_token';
+  let ghFileSha = null;
+  let saveTimer = null;
+
+  function getToken() {
+    return localStorage.getItem(TOKEN_KEY) || '';
+  }
+
+  function setToken(token) {
+    if (token) localStorage.setItem(TOKEN_KEY, token);
+    else localStorage.removeItem(TOKEN_KEY);
+  }
+
+  function snapshotDynamicState() {
+    return {
+      progress: state.progress,
+      guideProgress: state.guideProgress,
+      dailyLog: state.dailyLog,
+      s1Completed: state.guideS1.segments.filter((s) => s.completed).map((s) => ({ id: s.id, completed_date: s.completed_date })),
+      s3Completed: state.guideS3.segments.filter((s) => s.completed).map((s) => ({ id: s.id, completed_date: s.completed_date })),
+      savedAt: new Date().toISOString(),
+    };
+  }
+
+  function applyDynamicState(snap) {
+    if (!snap) return;
+    state.progress = snap.progress ?? state.progress;
+    state.guideProgress = snap.guideProgress ?? state.guideProgress;
+    state.dailyLog = snap.dailyLog ?? state.dailyLog;
+    for (const seg of state.guideS1.segments) seg.completed = false;
+    for (const seg of state.guideS3.segments) seg.completed = false;
+    for (const c of snap.s1Completed ?? []) {
+      const seg = state.guideS1.segments.find((s) => s.id === c.id);
+      if (seg) { seg.completed = true; seg.completed_date = c.completed_date; }
+    }
+    for (const c of snap.s3Completed ?? []) {
+      const seg = state.guideS3.segments.find((s) => s.id === c.id);
+      if (seg) { seg.completed = true; seg.completed_date = c.completed_date; }
+    }
+  }
+
+  async function ghLoad() {
+    const token = getToken();
+    if (!token) return { ok: false, reason: 'no-token' };
+    try {
+      const res = await fetch(GH_API, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } });
+      if (res.status === 404) return { ok: true, reason: 'not-found' };
+      if (!res.ok) return { ok: false, reason: `http ${res.status}` };
+      const data = await res.json();
+      ghFileSha = data.sha;
+      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
+      applyDynamicState(JSON.parse(decoded));
+      return { ok: true, reason: 'loaded' };
+    } catch (e) {
+      return { ok: false, reason: String(e) };
+    }
+  }
+
+  async function ghSave() {
+    const token = getToken();
+    if (!token) return { ok: false, reason: 'no-token' };
+    try {
+      const snap = snapshotDynamicState();
+      const content = btoa(unescape(encodeURIComponent(JSON.stringify(snap, null, 2))));
+      const res = await fetch(GH_API, {
+        method: 'PUT',
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+        body: JSON.stringify({
+          message: `demo progress sync: ${snap.savedAt}`,
+          content,
+          sha: ghFileSha || undefined,
+        }),
+      });
+      if (!res.ok) return { ok: false, reason: `http ${res.status}` };
+      const data = await res.json();
+      ghFileSha = data.content?.sha ?? ghFileSha;
+      return { ok: true };
+    } catch (e) {
+      return { ok: false, reason: String(e) };
+    }
+  }
+
+  function scheduleSave() {
+    if (!getToken()) return;
+    clearTimeout(saveTimer);
+    saveTimer = setTimeout(() => { ghSave(); }, 3000);
   }
 
   const readyPromise = init();
+
 
   window.__localApi = async function (path, opts) {
     await readyPromise;
@@ -271,6 +381,22 @@
     if (p === '/api/quiz/question') return getQuestionByIndex(parseInt(qs.get('n') || '1', 10));
     if (p === '/api/guide/newround' && method === 'POST') return startGuideNewRound();
     if (p === '/api/quiz/newround' && method === 'POST') return startQuizNewRound();
+
+    if (p === '/api/demo/sync-status') return { hasToken: !!getToken() };
+    if (p === '/api/demo/set-token' && method === 'POST') {
+      setToken(body.token || '');
+      if (body.token) {
+        const result = await ghLoad();
+        return { hasToken: true, loadResult: result };
+      }
+      return { hasToken: false };
+    }
+    if (p === '/api/demo/sync-now' && method === 'POST') {
+      clearTimeout(saveTimer);
+      const result = await ghSave();
+      return result;
+    }
+
     return { error: 'not found (static demo)' };
   };
 })();
