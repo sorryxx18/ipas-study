@@ -44,7 +44,6 @@ html.dark .result-correct { background: rgba(34,197,94,0.15); border-color: rgba
 html.dark .result-wrong { background: rgba(239,68,68,0.15); border-color: rgba(239,68,68,0.3); }
 html.dark .explanation { background: var(--surface); color: var(--muted); }
 html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
-html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 
 /* Header */
 .header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; gap: 8px; }
@@ -210,11 +209,6 @@ html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 .daily-btn:hover { border-color: var(--accent); color: var(--accent); }
 .daily-btn.rest:hover { border-color: var(--yellow); color: var(--yellow); }
 
-/* AI Chat */
-.chat-fab { position: fixed; bottom: 20px; right: 20px; width: 52px; height: 52px; border-radius: 50%; background: var(--accent); border: none; color: white; font-size: 22px; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.4); z-index: 100; display: flex; align-items: center; justify-content: center; transition: transform 0.2s; }
-.chat-fab:active { transform: scale(0.93); }
-.chat-panel { position: fixed; top: 12px; bottom: 84px; right: 12px; left: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 16px; display: none; flex-direction: column; overflow: hidden; z-index: 99; box-shadow: 0 8px 32px rgba(0,0,0,0.5); }
-.chat-panel.open { display: flex; }
 
 /* Jump menu bottom sheet */
 .jump-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; }
@@ -234,19 +228,6 @@ html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 .jump-input { flex: 1; min-width: 80px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--bg); color: var(--text); font-size: 14px; }
 .jump-go { width: 100%; padding: 12px; border: none; border-radius: 12px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
 .round-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 999px; padding: 2px 8px; font-size: 11px; color: var(--yellow); font-weight: 700; margin-left: 6px; }
-.chat-header { padding: 12px 16px; border-bottom: 1px solid var(--border); font-size: 14px; font-weight: 600; color: var(--accent); display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
-.chat-close { background: none; border: none; color: var(--muted); font-size: 18px; cursor: pointer; padding: 0; }
-.chat-messages { flex: 1; min-height: 0; overflow-y: auto; -webkit-overflow-scrolling: touch; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
-.chat-msg { padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.6; max-width: 100%; }
-.chat-msg.user { background: var(--accent); color: white; align-self: flex-end; }
-.chat-msg.ai { background: var(--border); color: var(--text); align-self: flex-start; white-space: pre-wrap; }
-.chat-msg.thinking { color: var(--muted); font-style: italic; }
-.chat-input-row { display: flex; gap: 8px; padding: 10px 12px; border-top: 1px solid var(--border); }
-.chat-input { flex: 1; background: var(--bg); border: 1px solid var(--border); border-radius: 8px; padding: 8px 12px; color: var(--text); font-size: 14px; outline: none; }
-.chat-input:focus { border-color: var(--accent); }
-.chat-send { background: var(--accent); border: none; border-radius: 8px; color: white; padding: 8px 14px; cursor: pointer; font-size: 14px; }
-.chat-quick { display: flex; gap: 6px; padding: 8px 12px 0; flex-wrap: wrap; }
-.chat-quick button { background: #eff6ff; border: 1px solid var(--border); color: var(--text); border-radius: 999px; padding: 6px 10px; font-size: 12px; cursor: pointer; }
 
 @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
 .pop-anim { animation: pop 0.4s ease; }
@@ -363,27 +344,6 @@ html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 <div class="daily-actions-section">
   <button class="daily-btn rest" onclick="recordRest()">😴 提早休息</button>
   <button class="daily-btn" onclick="recordBonus()">⚡ 加碼多一輪</button>
-</div>
-
-<!-- AI Chat -->
-<button class="chat-fab" onclick="toggleChat()" title="問AI">🤖</button>
-<div class="chat-panel" id="chatPanel">
-  <div class="chat-header">
-    <span>🤖 問AI助教</span>
-    <button class="chat-close" onclick="toggleChat()">✕</button>
-  </div>
-  <div class="chat-messages" id="chatMessages">
-    <div class="chat-msg ai">你好！有任何 IPAS 考試、目前題目或指引內容的問題，直接問我。</div>
-  </div>
-  <div class="chat-quick">
-    <button onclick="quickAsk('解釋目前題目，包含考點、正解、錯誤選項與名詞解釋')">解釋目前題目</button>
-    <button onclick="quickAsk('這題容易混淆的地方是什麼？')">易混淆點</button>
-    <button onclick="quickAsk('幫我整理成考前記憶口訣')">記憶口訣</button>
-  </div>
-  <div class="chat-input-row">
-    <input class="chat-input" id="chatInput" placeholder="問問題..." onkeydown="if(event.key==='Enter')sendChat()">
-    <button class="chat-send" onclick="sendChat()">送出</button>
-  </div>
 </div>
 
 <script src="local-backend.js"></script>
@@ -702,52 +662,6 @@ async function bonusThenNext(type, subject) {
 function escHtml(str) {
   if (!str) return '';
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
-function toggleChat() {
-  document.getElementById('chatPanel').classList.toggle('open');
-  if (document.getElementById('chatPanel').classList.contains('open')) {
-    document.getElementById('chatInput').focus();
-  }
-}
-
-async function sendChat() {
-  const input = document.getElementById('chatInput');
-  const q = input.value.trim();
-  if (!q) return;
-  input.value = '';
-  await askChat(q);
-}
-
-function quickAsk(text) {
-  if (!document.getElementById('chatPanel').classList.contains('open')) toggleChat();
-  askChat(text);
-}
-
-async function askChat(q) {
-  const msgs = document.getElementById('chatMessages');
-  msgs.innerHTML += `<div class="chat-msg user">${escHtml(q)}</div>`;
-  const thinkId = 'think_' + Date.now();
-  msgs.innerHTML += `<div class="chat-msg thinking" id="${thinkId}">思考中...</div>`;
-  msgs.scrollTop = msgs.scrollHeight;
-
-  const contextEl = document.querySelector('.segment-content');
-  const quizContext = currentQuestion ? `目前題目：${currentQuestion.question}\n選項：${JSON.stringify(currentQuestion.options)}` : '';
-  const guideContext = contextEl ? contextEl.textContent : '';
-  const context = [quizContext, guideContext].filter(Boolean).join('\n\n');
-
-  try {
-    const res = await api('/api/chat', {
-      method: 'POST',
-      body: JSON.stringify({ question: q, context, currentQuestionId: currentQuestion?.id })
-    });
-    document.getElementById(thinkId)?.remove();
-    msgs.innerHTML += `<div class="chat-msg ai">${escHtml(res.answer || '無回應')}</div>`;
-  } catch (e) {
-    document.getElementById(thinkId)?.remove();
-    msgs.innerHTML += `<div class="chat-msg ai">AI 助教暫時無法回應：${escHtml(e.message || e)}</div>`;
-  }
-  msgs.scrollTop = msgs.scrollHeight;
 }
 
 function toggleTheme() {

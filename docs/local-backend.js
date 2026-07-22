@@ -267,9 +267,6 @@
     if (p === '/api/quiz/answer' && method === 'POST') return recordAnswer(body.id, body.answer);
     if (p === '/api/daily/rest' && method === 'POST') return recordEarlyRest(body.note ?? '');
     if (p === '/api/daily/bonus' && method === 'POST') return recordBonusRound();
-    if (p === '/api/chat' && method === 'POST') {
-      return { answer: '這是純靜態展示版，沒有接後端 AI，無法回答問題。完整互動版（含 AI 問答、跨裝置進度同步）請見 study.tfd-train.com。' };
-    }
     if (p === '/api/guide/segment') return getGuideSegmentById(parseInt(qs.get('subject') || '1', 10), parseInt(qs.get('id') || '0', 10));
     if (p === '/api/quiz/question') return getQuestionByIndex(parseInt(qs.get('n') || '1', 10));
     if (p === '/api/guide/newround' && method === 'POST') return startGuideNewRound();
