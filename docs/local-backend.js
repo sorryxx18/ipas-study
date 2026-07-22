@@ -303,31 +303,45 @@
     }
   }
 
+  async function ghPutFileOnce(key, json) {
+    const token = getToken();
+    const path = SYNC_FILES[key];
+    const res = await fetch(GH_API_BASE + path, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        message: `sync ${key}: ${new Date().toISOString()}`,
+        content: utf8ToB64(JSON.stringify(json, null, 2)),
+        sha: ghShas[key] || undefined,
+      }),
+    });
+    if (!res.ok) {
+      const body = await res.text().catch(() => '');
+      return { ok: false, status: res.status, reason: `http ${res.status}: ${body.slice(0, 300)}` };
+    }
+    const data = await res.json();
+    ghShas[key] = data.content?.sha ?? ghShas[key];
+    return { ok: true };
+  }
+
   async function ghPutFile(key, json) {
     const token = getToken();
     if (!token) return { ok: false, reason: 'no-token' };
-    const path = SYNC_FILES[key];
     try {
-      const res = await fetch(GH_API_BASE + path, {
-        method: 'PUT',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          Accept: 'application/vnd.github+json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: `sync ${key}: ${new Date().toISOString()}`,
-          content: utf8ToB64(JSON.stringify(json, null, 2)),
-          sha: ghShas[key] || undefined,
-        }),
-      });
-      if (!res.ok) {
-        const body = await res.text().catch(() => '');
-        return { ok: false, reason: `http ${res.status}: ${body.slice(0, 300)}` };
+      const first = await ghPutFileOnce(key, json);
+      if (first.ok) return first;
+      // 409 (sha conflict) or 422 (missing/invalid sha) — someone else (production,
+      // or a previous failed attempt) moved the file forward. Refetch the current
+      // sha once and retry, instead of requiring a full page reload to recover.
+      if (first.status === 409 || first.status === 422) {
+        const refetch = await ghGetFile(key);
+        if (refetch.ok) return await ghPutFileOnce(key, json);
       }
-      const data = await res.json();
-      ghShas[key] = data.content?.sha ?? ghShas[key];
-      return { ok: true };
+      return first;
     } catch (e) {
       return { ok: false, reason: `network error: ${e && e.message ? e.message : e}` };
     }
