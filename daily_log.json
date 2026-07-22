@@ -1,0 +1,34 @@
+{
+  "2026-07-10": {
+    "guide_completed": 0,
+    "quiz_answered": 2,
+    "rested_early": true,
+    "bonus_rounds": 0,
+    "rest_note": "提早休息",
+    "rest_time": "2026-07-10T14:39:23.987Z"
+  },
+  "2026-07-11": {
+    "guide_completed": 0,
+    "quiz_answered": 10,
+    "rested_early": false,
+    "bonus_rounds": 0
+  },
+  "2026-07-12": {
+    "guide_completed": 12,
+    "quiz_answered": 11,
+    "rested_early": false,
+    "bonus_rounds": 0
+  },
+  "2026-07-13": {
+    "guide_completed": 7,
+    "quiz_answered": 10,
+    "rested_early": false,
+    "bonus_rounds": 0
+  },
+  "2026-07-14": {
+    "guide_completed": 2,
+    "quiz_answered": 1,
+    "rested_early": false,
+    "bonus_rounds": 0
+  }
+}

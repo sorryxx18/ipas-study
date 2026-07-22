@@ -1,0 +1,58 @@
+{
+  "meta": {
+    "daily_target": 20,
+    "started": "2026-07-06",
+    "daily_schedule": {
+      "morning": "06:30 讀指引 10段",
+      "midday": "12:30 刷題",
+      "evening": "19:00 讀指引 10段"
+    }
+  },
+  "subject3": {
+    "total_estimated_segments": 96,
+    "completed_segments": 96,
+    "current_chapter": "4.2",
+    "current_section": "4.2 非監督式學習（關聯規則 + 異常偵測 完成）",
+    "last_page": 90,
+    "log": [
+      {
+        "date": "2026-07-06",
+        "segments": 10,
+        "covered": "3.1 機率/統計（完整）、3.2 線性代數（完整）、3.3 數值優化開始（OLS+損失函數）"
+      },
+      {
+        "date": "2026-07-07",
+        "segments": 10,
+        "covered": "3.3 可行域、凸性與可導性、ML脈絡應用、損失函數設計與分類、損失函數對學習行為影響、GD/SGD/Mini-batch、進階優化器(Momentum/Adagrad/RMSprop/Adam)、收斂判準、穩定訓練策略"
+      },
+      {
+        "date": "2026-07-07",
+        "segments": 10,
+        "covered": "第四章開章、ML基本結構與特徵空間、任務類型與標籤型態、模型假設空間、損失函數、資料分割與評估準則(Precision/Recall)、監督式學習、非監督式學習(聚類/降維/關聯規則/潛在表示)、強化式學習(MDP/任務類型/訓練流程/應用場景)"
+      },
+      {
+        "date": "2026-07-08",
+        "segments": 10,
+        "covered": "4.2 常見機器學習演算法：線性迴歸(基本+假設限制)、Ridge/Lasso正則化、邏輯迴歸(Sigmoid/Softmax/Cross-Entropy)、決策樹(Gini/Entropy)、Random Forest(Bagging+特徵隨機)、Boosting(AdaBoost/GradientBoosting/XGBoost)、SVM(最大間隔/Kernel Trick)、KNN、Naive Bayes"
+      },
+      {
+        "date": "2026-07-08",
+        "segments": 10,
+        "covered": "4.3 模型評估與選擇：訓練/驗證/測試集分割、K-Fold交叉驗證(Stratified/LOOCV)、過擬合/欠擬合(Bias-Variance)、分類評估指標(Precision/Recall/F1/AUC/ROC/PR曲線)、迴歸評估指標(MAE/MSE/RMSE/R²)、超參數調整(Grid/Random/Bayesian)、模型選擇原則、資料不平衡處理(SMOTE/ClassWeight)、特徵工程(選擇/轉換/創造)、模型部署與監控(Data Drift/A/B Test)"
+      },
+      {
+        "date": "2026-07-09",
+        "segments": 10,
+        "covered": "K-means步驟優缺點、Hierarchical Clustering(凝聚/分裂)、DBSCAN(ε+MinPts)、降維技術:PCA(協方差矩陣+特徵值分解)、t-SNE(KL散度+視覺化限制)、UMAP(模糊拓撲+局部全局結構)、關聯規則學習:Apriori(Support/Confidence/Lift)、FP-Growth(FP樹+兩次掃描)、異常偵測:Isolation Forest(孤立樹+路徑長度)、One-Class SVM(邊界學習)"
+      }
+    ]
+  },
+  "subject1": {
+    "total_estimated_segments": 71,
+    "completed_segments": 9,
+    "current_chapter": "未開始",
+    "last_page": 0,
+    "log": []
+  },
+  "completed_segments": 95
+}

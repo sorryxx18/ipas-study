@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>深入理解 AI Agent — 讀書筆記與 iPAS 對照</title>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#f5f7f8;
+    --bg-raised:#ffffff;
+    --ink:#1b2226;
+    --ink-soft:#4a565c;
+    --muted:#7c8a91;
+    --border:#dde3e5;
+    --accent:#2b6777;
+    --accent-soft:#e4eef0;
+    --accent-2:#b8863e;
+    --accent-2-soft:#f6ecdc;
+    --code-bg:#eef2f3;
+    --shadow: 0 10px 30px -12px rgba(20,30,35,.25);
+  }
+  :root[data-theme="dark"]{
+    --bg:#11161b;
+    --bg-raised:#161d23;
+    --ink:#e6e9ea;
+    --ink-soft:#b7c1c5;
+    --muted:#7e8c92;
+    --border:#28333a;
+    --accent:#6fb8c9;
+    --accent-soft:#1c2f34;
+    --accent-2:#dcab6a;
+    --accent-2-soft:#2c2418;
+    --code-bg:#1a2126;
+    --shadow: 0 10px 30px -12px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#11161b;
+      --bg-raised:#161d23;
+      --ink:#e6e9ea;
+      --ink-soft:#b7c1c5;
+      --muted:#7e8c92;
+      --border:#28333a;
+      --accent:#6fb8c9;
+      --accent-soft:#1c2f34;
+      --accent-2:#dcab6a;
+      --accent-2-soft:#2c2418;
+      --code-bg:#1a2126;
+      --shadow: 0 10px 30px -12px rgba(0,0,0,.5);
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{
+    font-family:"Noto Serif TC","PingFang TC","Georgia",serif;
+  }
+
+  a{color:var(--accent);}
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:64px 24px 160px;
+  }
+
+  header.masthead{
+    margin-bottom:56px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:32px;
+  }
+  .eyebrow{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-size:clamp(1.7rem,4vw,2.35rem);
+    line-height:1.3;
+    margin:0 0 16px;
+    text-wrap:balance;
+    font-weight:700;
+  }
+  .lede{
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    max-width:64ch;
+    margin:0 0 20px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 18px;
+    font-size:.86rem;
+    color:var(--muted);
+  }
+  .meta-row a{color:var(--muted);text-decoration-color:var(--border);}
+  .meta-row a:hover{color:var(--accent);}
+
+  .note-box{
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    margin:28px 0 0;
+  }
+  .note-box b{color:var(--ink);}
+
+  nav.overview{
+    margin:40px 0 0;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+  nav.overview a{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    padding:9px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    color:var(--ink);
+  }
+  nav.overview a:hover{background:var(--accent-soft);}
+  nav.overview .n{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--muted);
+    font-size:.82rem;
+    min-width:2.4em;
+  }
+  nav.overview .t{font-size:.96rem;}
+  nav.overview .rel{
+    margin-left:auto;
+    font-size:.74rem;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  section.chapter{
+    margin-top:88px;
+    padding-top:8px;
+    scroll-margin-top:24px;
+  }
+  section.chapter + section.chapter{
+    border-top:1px solid var(--border);
+  }
+  .ch-num{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--accent);
+    font-size:.86rem;
+    letter-spacing:.08em;
+  }
+  h2.ch-title{
+    font-size:1.5rem;
+    margin:6px 0 6px;
+    text-wrap:balance;
+  }
+  .ch-sub{
+    color:var(--muted);
+    font-size:.92rem;
+    margin:0 0 28px;
+  }
+
+  h3.sec{
+    font-size:1.02rem;
+    margin:34px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+    color:var(--ink);
+  }
+
+  p{margin:0 0 14px;}
+  ul,ol{padding-left:1.3em;margin:0 0 14px;}
+  li{margin-bottom:8px;}
+  li:last-child{margin-bottom:0;}
+
+  dl.concepts{margin:0;}
+  dl.concepts dt{
+    font-weight:600;
+    margin-top:16px;
+  }
+  dl.concepts dt:first-child{margin-top:0;}
+  dl.concepts dd{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:.95rem;
+  }
+  dl.concepts dd .ex{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.88rem;
+  }
+
+  .misread{
+    background:var(--code-bg);
+    border-left:3px solid var(--muted);
+    border-radius:0 8px 8px 0;
+    padding:12px 16px;
+    margin-bottom:12px;
+    font-size:.93rem;
+  }
+  .misread b{display:block;color:var(--ink);margin-bottom:4px;}
+
+  .ipas{
+    background:var(--accent-2-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px 20px;
+    margin-top:8px;
+  }
+  .ipas .ipas-label{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--accent-2);
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .ipas h4{margin:14px 0 4px;font-size:.9rem;}
+  .ipas h4:first-of-type{margin-top:0;}
+  .ipas p{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px;}
+  .relbar{
+    display:inline-flex;
+    gap:3px;
+    margin-left:4px;
+  }
+  .relbar span{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--border);
+  }
+  .relbar span.on{background:var(--accent-2);}
+
+  .src-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:.84rem;
+    margin-top:36px;
+    padding-top:16px;
+    color:var(--muted);
+  }
+
+  footer.colophon{
+    margin-top:100px;
+    padding-top:28px;
+    border-top:1px solid var(--border);
+    color:var(--muted);
+    font-size:.85rem;
+  }
+  footer.colophon a{color:var(--muted);}
+
+  .toc-toggle{
+    position:fixed;
+    left:20px;
+    bottom:20px;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--bg-raised);
+    color:var(--ink);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:10px 16px 10px 14px;
+    font-size:.86rem;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    transition:transform .15s ease;
+  }
+  .toc-toggle:hover{transform:translateY(-2px);}
+  .toc-toggle .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent);
+    flex:none;
+  }
+
+  .toc-panel{
+    position:fixed;
+    left:20px;
+    bottom:76px;
+    z-index:41;
+    width:min(280px, calc(100vw - 40px));
+    max-height:min(60vh, 480px);
+    overflow-y:auto;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:10px;
+    transform:translateY(8px) scale(.98);
+    opacity:0;
+    pointer-events:none;
+    transition:transform .16s ease, opacity .16s ease;
+  }
+  .toc-panel.open{
+    transform:translateY(0) scale(1);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .toc-panel a{
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+    padding:8px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    color:var(--ink);
+    font-size:.88rem;
+  }
+  .toc-panel a:hover{background:var(--accent-soft);}
+  .toc-panel .n{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--muted);
+    font-size:.76rem;
+  }
+  .toc-panel .top-link{
+    border-bottom:1px solid var(--border);
+    margin-bottom:6px;
+    padding-bottom:12px;
+    font-weight:600;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .toc-toggle, .toc-panel{transition:none;}
+  }
+
+  ::selection{background:var(--accent-2-soft);}
+</style>
+
+<div class="wrap" id="top">
+
+  <header class="masthead">
+    <p class="eyebrow">讀書筆記 · Agent = LLM + 上下文 + 工具</p>
+    <h1 class="title serif">深入理解 AI Agent：設計原理與工程實踐</h1>
+    <p class="lede">李博杰著。這裡不是原書全文，是逐章讀完後重新整理的筆記 — 核心概念、常見誤解，以及每章跟 iPAS AI應用規劃師中級考試的關聯程度。想看作者原句，每章末端都有連回原文的連結。</p>
+    <div class="meta-row">
+      <span>10 章</span>
+      <span>·</span>
+      <a href="https://github.com/bojieli/ai-agent-book" target="_blank" rel="noopener">原始 repo ↗</a>
+      <span>·</span>
+      <span>Apache 2.0</span>
+    </div>
+  </header>
+
+  <nav class="overview" aria-label="章節總覽">
+    <a href="#ch1"><span class="n">01</span><span class="t">Agent基礎與核心框架</span><span class="rel">應用規劃 ●●● · ML ●●○</span></a>
+    <a href="#ch2"><span class="n">02</span><span class="t">上下文工程</span><span class="rel">應用規劃 ●●● · ML ●●○</span></a>
+    <a href="#ch3"><span class="n">03</span><span class="t">用戶記憶與知識庫 RAG</span><span class="rel">應用規劃 ●●●● · ML ●●○</span></a>
+    <a href="#ch4"><span class="n">04</span><span class="t">工具設計與 MCP 協議</span><span class="rel">應用規劃 ●●● · ML ●●○</span></a>
+    <a href="#ch5"><span class="n">05</span><span class="t">Coding Agent 與代碼生成</span><span class="rel">應用規劃 ●●●●● · ML ●○○</span></a>
+    <a href="#ch6"><span class="n">06</span><span class="t">Agent 評估與基準測試</span><span class="rel">應用規劃 ●●● · ML ●●●</span></a>
+    <a href="#ch7"><span class="n">07</span><span class="t">模型後訓練 SFT／RL／RLHF</span><span class="rel">應用規劃 ●●○ · ML ●●●●●</span></a>
+    <a href="#ch8"><span class="n">08</span><span class="t">Agent 自我進化與經驗學習</span><span class="rel">應用規劃 ●●●●● · ML ●●○</span></a>
+    <a href="#ch9"><span class="n">09</span><span class="t">多模態與即時互動</span><span class="rel">應用規劃 ●●● · ML ●●○</span></a>
+    <a href="#ch10"><span class="n">10</span><span class="t">多 Agent 協作架構</span><span class="rel">應用規劃 ●●●●● · ML ●○○</span></a>
+  </nav>
+
+  <div class="note-box">
+    <b>關於「與 iPAS 的關聯」標註</b> — 這本書談的是 Agent 工程實作，跟 iPAS 科目三「機器學習技術與應用」的理論考點重疊度其實不高，比較貼近科目一「AI技術應用與規劃」。每章的關聯度是照實標，不會為了湊而硬拗；第7章因為直接談 SFT/RL/RLHF，是唯一跟科目三核心考點深度重疊的一章。
+  </div>
+
+  <section class="chapter" id="ch1">
+    <p class="ch-num">CHAPTER 01</p>
+    <h2 class="ch-title serif">Agent 基礎與核心框架</h2>
+    <p class="ch-sub">Agent = LLM + 上下文 + 工具 —— 這條公式怎麼拆、怎麼用</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>現代 Agent 是大腦(推理決策)、眼睛(感知信息)、手腳(執行操作)的協同系統。進階視角把它寫成 <b>Agent = Model + Harness</b>：Harness 包含上下文與工具兩項核心能力，加上約束、驗證、糾正三項安全保障。這個公式不只解釋現有產品（Cursor、Deep Research、Manus），也是設計新系統的準則。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>ReAct 循環</dt>
+      <dd>模型反覆「思考→行動→觀察」的執行迴圈。<span class="ex">例如：Agent 先查匯率，看到結果後再決定是否需要換算。</span></dd>
+      <dt>提示注入 vs 越獄</dt>
+      <dd>提示注入是第三方資料裡夾帶惡意指令；越獄是使用者自己嘗試繞過限制，兩者攻擊者不同，防護手段也不同。</dd>
+      <dt>三層學習機制</dt>
+      <dd>後訓練（數月，權重永久改變）／上下文學習（單次會話，模式匹配，會話結束即消失）／外部化學習（秒級，存進知識庫或工具代碼，持久且高效）。</dd>
+      <dt>工作流 vs 自主 Agent</dt>
+      <dd>工作流是預先定義好的執行路徑，適合可預測流程；自主 Agent 根據反饋動態決定路徑，適合開放式問題。兩者是不同工具，不是誰更先進。</dd>
+      <dt>護欄與熔斷</dt>
+      <dd>限制 Agent 行為邊界的分層防禦；連續失敗達到門檻就自動停止重試，避免無限循環。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「上下文學習＝真正的學習」</b>其實只是模式匹配，會話一結束就沒了。只有後訓練才會真的改變模型的泛化能力。</div>
+    <div class="misread"><b>「模型越強，Agent 就越好」</b>模型能力提升後，出錯的影響面反而更大，需要更精細的 Harness 防護，不是省事了。</div>
+    <div class="misread"><b>「護欄可以事後補」</b>權限預設關閉這種「故障安全默認值」是架構設計期的決定，上線後才補常常不完整。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>需求分析可以直接套用「感知—決策—執行」框架，判斷一個應用是否真的需要 Agent；工作流 vs 自主 Agent 的選型決策樹能直接用在方案評選；護欄設計則影響上線風險評估。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>後訓練機制背後就是第7章要展開的強化學習；上下文學習牽涉注意力機制與遷移學習，但本章談的是工程決策而非數學原理。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter1.md" target="_blank" rel="noopener">看原文 chapter1.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch2">
+    <p class="ch-num">CHAPTER 02</p>
+    <h2 class="ch-title serif">上下文工程</h2>
+    <p class="ch-sub">Agent 的能力上限，取決於它能看到什麼</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>作者用「新員工」比喻：再聰明的工程師，對產品架構、業務邏輯一無所知也發揮不了價值，Agent 同理。本章圍繞「如何系統性地設計、組織、提供資訊」，從 API 底層的訊息角色，到 KV Cache 的工程約束，到動態資訊注入與壓縮策略。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>KV Cache vs Prompt Cache</dt>
+      <dd>KV Cache 是單次推理內、模型自己緩存已算過的中間結果；Prompt Cache 是跨多次 API 請求、服務端對相同前綴的緩存。常見誤解是把兩者當成同一回事——KV Cache 不能跨會話重用。</dd>
+      <dt>前綴穩定性</dt>
+      <dd>系統提示詞必須字節級不變，緩存才有效。<span class="ex">例如：改一個空格，整段前綴緩存就全失效，成本瞬間上升。</span></dd>
+      <dt>Agent Skills</dt>
+      <dd>按需加載的知識模塊：元數據常駐在上下文裡，完整內容真正用到才讀取，避免把系統提示詞塞爆。</dd>
+      <dt>Agent 狀態欄</dt>
+      <dd>在上下文末尾放結構化的動態資訊（進度、時間、已用次數），讓模型不用自己在一堆歷史紀錄裡數。加了狀態欄後，同一任務的思考 token 可以降低九成以上。</dd>
+      <dt>上下文腐化</dt>
+      <dd>窗口沒滿但關鍵資訊被稀釋，模型找不到重點。跟「窗口爆了」是兩種不同的失效模式。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「系統提示詞固定＝一個項目只能有一個版本」</b>其實可以同時維護多個版本（例如「一般模式」「除錯模式」），只要每個版本內部字節穩定，各自都能命中緩存。</div>
+    <div class="misread"><b>「Few-shot 範例＝模型學會了新東西」</b>權重沒有變，這只是激活模型已有的能力，不是真正的學習，會話結束就消失。</div>
+    <div class="misread"><b>「狀態欄可能出錯，乾脆別用」</b>實驗顯示只要狀態欄錯誤率低於兩成，仍然遠比完全沒有狀態欄好。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>提示工程直接決定功能邊界；KV Cache 與壓縮策略直接影響 API 成本（可以差到 3-5 倍）；狀態欄和錯誤訊息設計影響產品可用性。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>上下文學習關聯遷移學習與注意力機制的檢索特性，但本章重點是工程決策，不需要懂 transformer 數學就能把提示詞設計對。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter2.md" target="_blank" rel="noopener">看原文 chapter2.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch3">
+    <p class="ch-num">CHAPTER 03</p>
+    <h2 class="ch-title serif">用戶記憶與知識庫（RAG）</h2>
+    <p class="ch-sub">跨會話的記憶：個體尺度的用戶記憶＋群體尺度的知識庫</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>雙軌並行：用戶記憶處理「記住這個人」，RAG 處理「記住所有共享知識」。兩者面臨相同挑戰——資訊衝突、知識過期、檢索不準；後半段把 RAG 技術反過來用在用戶記憶上，形成能「主動服務」的雙層記憶架構（例如主動提醒護照快過期）。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>記憶格式光譜</dt>
+      <dd>Simple Notes（原子事實，快但喪失關聯）→ Enhanced Notes（段落敘事，難檢索）→ JSON Cards（結構化但刻板）→ Advanced JSON Cards（含背景/關係/時間戳，支持消歧，維護成本高）。</dd>
+      <dt>混合檢索</dt>
+      <dd>稠密嵌入（語義相近，如「養貓」≈「貓咪飼養」）＋稀疏 BM25（關鍵詞精確匹配，如錯誤代碼 HTTP-403）同時跑，再用倒數排名融合（RRF）合併結果。</dd>
+      <dt>RAPTOR vs GraphRAG</dt>
+      <dd>RAPTOR 是遞迴分層摘要樹，適合「宏觀→微觀」導航；GraphRAG 是實體關係圖，適合多跳推理（例如「我的醫生在哪家醫院」）。沒有絕對優劣，看查詢類型。</dd>
+      <dt>智能體化 RAG</dt>
+      <dd>由 Agent 自己決定何時檢索、檢索什麼、要不要再檢索一次，而非被動的「查詢→檢索→生成」單向管道。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「向量相似度高＝語義相關」</b>相似度只代表方向接近，不保證真的匹配，仍需用 recall/precision 驗證檢索品質。</div>
+    <div class="misread"><b>「檢索到的內容＝模型會正確使用」</b>注意力是軟檢索，即使一百筆案例全在上下文裡，模型統計「幾隻黑貓幾隻白貓」這種任務仍常出錯，最好先預先算好摘要再放進去。</div>
+    <div class="misread"><b>「記憶越多越好」</b>關鍵是質量而非數量，堆原始對話只會讓檢索雜訊變高。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>記憶能力三層次（基礎回憶／多會話檢索／主動服務）可以直接對應商業價值分級；知識治理（過期、隱私、版本控制）是規劃階段必須先想清楚的事。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>嵌入與向量空間、聚類（RAPTOR的分層聚類、GraphRAG的社群發現）、評估指標（recall@k、precision）都有紮實的統計基礎，值得對照科目三的檢索與評估概念看。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter3.md" target="_blank" rel="noopener">看原文 chapter3.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch4">
+    <p class="ch-num">CHAPTER 04</p>
+    <h2 class="ch-title serif">工具設計與 MCP 協議</h2>
+    <p class="ch-sub">Agent 的手腳和感官：怎麼設計、怎麼保證安全</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>核心挑戰有二：工具太多會撐爆上下文窗口（怎麼精準找到需要的那個），以及異步與事件管理（耗時任務、中斷、多來源事件）。五類工具框架用「調用方向」與「作用對象」兩個維度，把工具生態畫成一張地圖：感知、執行、協作、事件觸發、用戶溝通。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>工具粒度權衡</dt>
+      <dd>太細（幾百個相似工具）和太粗都不好。超過一百個工具，即使是最先進的模型選錯的機率也會上升，這時該考慮用 Skills 文檔取代大量專用工具。</dd>
+      <dt>具體例子勝過抽象規範</dt>
+      <dd>工具描述裡加入實際調用範例，準確率能從七成多提升到九成——比寫更詳細的規則說明有效得多。</dd>
+      <dt>MCP 協議三原語</dt>
+      <dd>工具（可執行操作）、資源（只讀數據）、提示模板（可復用提示詞），統一 AI 與工具互操作的開放標準。風險是工具描述可能被投毒或同名遮蔽，防範靠審查描述、鎖版本、最小權限憑證。</dd>
+      <dt>Sidecar vs 提議者-審核者</dt>
+      <dd>Sidecar 跟主模型並行運行，只看結構化的工具調用（不看自由文本），速度快；提議者-審核者是獨立模型做完整思考層面的審批，能理解複雜邏輯但成本較高。兩者是不同機制，不能互相取代。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「更多工具＝更強能力」</b>超過閾值後模型選擇錯誤率反而上升，粒度和組織方式比數量重要。</div>
+    <div class="misread"><b>「Python 虛擬環境／Docker＝沙盒」</b>都不是真正的隔離，只隔離依賴。真正的隔離級別是 OS 級（seccomp）→容器→microVM→虛擬機，逐級遞增。</div>
+    <div class="misread"><b>「異步工具接口就是回傳 Promise」</b>異步語義應該在工具命名層面就講清楚，例如把發起通話拆成「啟動」與「已接通」兩個獨立事件。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>五類工具分類直接對應應用的完整功能鏈路；MCP 接入的風險評估會影響產品的安全策略；異步架構選型（取消式/隊列式/並行式）決定系統的響應延遲設計。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>工具描述品質影響上下文學習的樣本有效性；異步部署與同步訓練的矛盾，本質上是分布偏移（distribution shift）問題的一種體現。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter4.md" target="_blank" rel="noopener">看原文 chapter4.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch5">
+    <p class="ch-num">CHAPTER 05</p>
+    <h2 class="ch-title serif">Coding Agent 與代碼生成</h2>
+    <p class="ch-sub">通用 Agent 的最小架構：Coding Agent ＋ 文件系統</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>本章回答「通用 Agent 的最小架構長什麼樣」——答案是 Coding Agent 加上文件系統作為工作空間。後半段展開代碼作為「元能力」的六個應用方向，邏輯是由內而外：思考→規則→呈現→接口→交互→自舉。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>元能力（Meta-capability）</dt>
+      <dd>創造其他能力的能力，而非執行單一任務。<span class="ex">例如：代碼生成不只是寫程式，還能動態造工具、造 PPT、甚至造新的 Agent。</span></dd>
+      <dt>致命三要素＋1</dt>
+      <dd>訪問私有數據＋暴露於不受信任內容＋具備外部通信能力＋持久記憶的跨會話潛伏。三者疊加時風險最高：惡意指令藏在郵件裡→驅使 Agent 讀密碼管理器→經網絡發出，若還被寫進長期記憶，下次會話會自動觸發。</dd>
+      <dt>提議者-審核者</dt>
+      <dd>Proposer 生成代碼／方案，Reviewer（常是 Vision LLM）檢查渲染或執行結果，給結構化改進建議，反覆迭代到達標。</dd>
+      <dt>Artifact 模式</dt>
+      <dd>Agent 生成 SQL 查詢或前端代碼交給系統執行，自己不去讀取巨量的原始結果，避免把大量數據塞進上下文。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「沙盒隔離＝安全」</b>沙盒只是兜底，真正的安全靠多層防禦：上下文層標記來源、執行層 Sidecar 審查、數據層權限內嵌對象。</div>
+    <div class="misread"><b>「Coding Agent 只用來寫程式」</b>代碼其實是通用的思考與表達工具——符號計算求精確解、把業務規則變成無歧義約束、生成 PPT／視頻本質上都是代碼。</div>
+    <div class="misread"><b>「服務端校驗參數是多餘的謹慎」</b>模型回報的參數只是它的自我陳述，不是事實；真值必須來自資料庫查詢，否則即使提示注入成功，頂多是報錯而不是造成損害。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>沙盒隔離級別與網絡出口控制直接決定基礎設施成本；代碼元能力開啟「用戶需求動態被滿足」而非「固定功能清單」的新產品形態；業務規則代碼化涉及法務合規（退款政策、金融額度不能只寫在提示詞）。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>脚手架（Harness）厚度應隨模型能力調整——弱模型需要厚 Harness，強模型可以薄一點；代碼生成是目前 Agent 評估成熟度最高的場景，因為有自動化驗收標準（測試通過/失敗）。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter5.md" target="_blank" rel="noopener">看原文 chapter5.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch6">
+    <p class="ch-num">CHAPTER 06</p>
+    <h2 class="ch-title serif">Agent 評估與基準測試</h2>
+    <p class="ch-sub">怎麼科學地判斷 Agent 真的變好了</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>評估體系分三層：環境層（在哪裡測）、方法層（怎麼判）、決策應用層（測了要幹嘛）。核心理念是評估的價值不在於給現有系統打分，而在於「新模型發布時，能不能在幾小時內做出可靠的切換決策」。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>Pass@k vs Pass^k</dt>
+      <dd>Pass@k 是 k 次嘗試中至少成功一次的機率（能力上限）；Pass^k 是 k 次全部成功的機率（穩定性）。<span class="ex">例如：單次成功率60%時，Pass@5≈99%，但Pass^5只有約7.8%。</span></dd>
+      <dt>Rubric（評分準則）</dt>
+      <dd>專家定義的多維度評分標準，含「否決項」——例如客服任務裡只要出現幻覺（虛假資訊），不管其他做得多好都直接判零分。</dd>
+      <dt>LLM-as-a-Judge</dt>
+      <dd>用語言模型依 Rubric 自動評判開放式任務。為了防止 Agent 學會欺騙單一評判系統，會用不同模型家族做多源異構評判。</dd>
+      <dt>二項分布標準誤</dt>
+      <dd>刻畫成功率因抽樣隨機而波動的幅度。<span class="ex">例如：100個用例、70%成功率時標準誤約4.6%，95%信賴區間約±9個百分點——分差小於這個帶寬就不該急著切換模型。</span></dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「評估集規模越大越好」</b>質量遠比規模重要，嚴格篩選的500個任務信息量常常超過未篩選的1000個。</div>
+    <div class="misread"><b>「公開基準上贏了就該切換模型」</b>公開基準的任務分布可能跟你實際的工作負載完全不同，必須在自己的評估集上重新驗證。</div>
+    <div class="misread"><b>「成本優化＝選便宜的模型」</b>低成功率的便宜模型因為要一直重試，實際總花費可能反而更高，應該用「每完成一個任務的平均成本」來衡量。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>業務目標（「降低客服響應時間50%」）需要轉化成可量化的評估指標；評估體系的架構選型會直接影響後續 Agent 系統的實作方式；成本分析是規劃階段預算和 ROI 的重要輸入。</p>
+      <h4>機器學習理論（高度相關）</h4>
+      <p>Pass^k 對應策略的變異數（variance）；Rubric 設計本質等同獎勵函數設計；二項分布標準誤、配對分析是紮實的統計檢驗方法；消融實驗則是因果效應估計的一種形式——這些都是能直接對照科目三統計與評估考點的內容。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter6.md" target="_blank" rel="noopener">看原文 chapter6.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch7">
+    <p class="ch-num">CHAPTER 07</p>
+    <h2 class="ch-title serif">模型後訓練：SFT／RL／RLHF</h2>
+    <p class="ch-sub">跟 iPAS 機器學習科目重疊度最高的一章</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>模型能力分三階段形成：預訓練（學語言規律與世界知識）→ SFT 監督微調（教格式與指令遵循）→ RL 強化學習（自我探索、學泛化）。核心洞察：<b>SFT 記住訓練數據裡的答案模式，環境規則一變就失效；RL 學會「怎樣的過程能得到好結果」的通用策略，遇到新情況還能重新算出來。</b></p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>SFT vs RL 的本質差異</dt>
+      <dd>SFT 優化目標是最大化標註答案的機率（極大似然估計），學到的是固定映射；RL 優化期望獎勵，學到的是可遷移的策略。SFT 樣本效率高但分布偏移時會崩潰，RL 樣本效率低但更穩健。</dd>
+      <dt>PPO / GRPO / DPO</dt>
+      <dd>PPO 用價值網絡估計優勢、限制每步更新幅度，穩定但成本高；GRPO 同一問題採樣多條軌跡、組內相對比較，省去價值網絡但信用分配較粗；DPO 把偏好對直接變成分類損失，離線高效但無法探索訓練數據外的新策略。</dd>
+      <dt>KL 散度懲罰</dt>
+      <dd>讓策略不要離參考模型（SFT模型）太遠。真正用意不是「平衡探索」，而是防止模型跑到獎勵模型從沒見過、打分不可信的區域（防止獎勵黑客與分布崩塌）。</dd>
+      <dt>驗證路徑懲罰（RLVP）</dt>
+      <dd>「獎勵結果，懲罰路徑」——對可驗證的違規動作扣分（例如破壞測試文件），但結果獎勵始終是主驅動，懲罰只負責約束過程，不能教會模型什麼都不做。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「後訓練效果主要看算法選擇」</b>工業界經驗恰恰相反：現成算法（PPO/GRPO）會用就好，真正拉開差距的是仿真環境的保真度與訓練數據質量。</div>
+    <div class="misread"><b>「SFT 沒辦法泛化，一定要上 RL」</b>如果 SFT 的訓練分布已經覆蓋部署分布，數據品質好的話 SFT 完全夠用，能省下 RL 通常10-100倍的訓練成本。</div>
+    <div class="misread"><b>「把新知識寫進參數是最好的儲存方式」</b>SFT/RL 很難準確記住大量事實、也無法追溯來源或動態更新，事實知識應該交給 RAG（第3章），後訓練聚焦在「怎麼用知識」。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span></p>
+      <h4>機器學習理論（極高相關 — 本章與科目三核心考點直接對應）</h4>
+      <p>本章實質涵蓋了科目三的多個關鍵理論：極大似然估計（MLE，SFT的優化目標）、偏差-方差權衡（SFT低方差高偏差、RL高方差低偏差）、馬可夫決策過程（MDP：狀態/動作/獎勵/轉移概率）、策略梯度、貝爾曼方程與時序差分學習、在軌（on-policy）與離軌（off-policy）的差異、探索與利用（ε-貪婪／溫度採樣／Thompson採樣）、以及協變量漂移（訓練與部署分布不同時的誤差成長速率）。這些都是能直接拿來對照科目三筆記複習的內容。</p>
+      <h4>應用規劃（中度相關）</h4>
+      <p>決策框架：先問 Harness 工程能不能解決，再問 SFT 夠不夠，才輪到上 RL；事實性知識用 RAG、行為風格用後訓練、即時調整用上下文學習——這條預算分配策略在規劃階段很實用。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter7.md" target="_blank" rel="noopener">看原文 chapter7.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch8">
+    <p class="ch-num">CHAPTER 08</p>
+    <h2 class="ch-title serif">Agent 自我進化與經驗學習</h2>
+    <p class="ch-sub">不改模型參數，怎麼讓 Agent 越用越聰明</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>核心論點：注意力機制擅長「檢索」而不擅長「歸納」——單純把上下文塞長不會讓模型自動學會規律，學習必須被顯式設計出來。三種機制互補：後訓練（改參數）、上下文學習（臨時適應）、外部化學習（沉澱到知識庫與工具庫，本章重點）。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>策略摘要與 Reflexion 反思</dt>
+      <dd>成功的解題過程濃縮成結構化經驗筆記；失敗的任務用自然語言反思原因，存進情景記憶供下次參考。</dd>
+      <dt>工作流錄制</dt>
+      <dd>把重複性操作序列自動轉成參數化腳本，跳過 LLM 每次重新思考。<span class="ex">例如：網頁發郵件的按鈕位置第一次由模型操作記錄下來，之後新任務只需替換參數值即可自動回放。</span></dd>
+      <dt>Skills 結構化</dt>
+      <dd>領域操作知識寫成分層文檔（像崗位手冊），可審查、可迭代、按需加載——跟 RAG 不同：RAG 是與具體用戶無關的批量文檔，Skills 是強調按需加載的結構化能力模塊。</dd>
+      <dt>睡眠整合</dt>
+      <dd>後台定期把零散的新經驗重新組織、去冗餘、跟既有知識融合，檢測衝突並淘汰過時條目。</dd>
+      <dt>工具發現六層遞進</dt>
+      <dd>靜態預定義 → 檢索式預篩選 → 主動工具聲明 → Skills漸進式披露 → 從網路自主發現 → 自主創造新工具。層次越高越靈活，但也越需要安全防護。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「更長的上下文＝自動學習」</b>注意力只會查找不會歸納，把一百份舊對話塞進上下文，模型能記住細節但不會自動統計出規律。</div>
+    <div class="misread"><b>「工作流錄制就是簡單的腳本重放」</b>健壯的工作流錄制需要三層防線：狀態機化(先驗證再動作)、存前驗證(錄制後立即重跑確認成功)、失效檢測回退——少了這些,工具庫會逐漸退化成「表面成功實際失敗」的垃圾程序。</div>
+    <div class="misread"><b>「經驗越多越好」</b>經驗也會過時或被污染，需要淘汰機制與來源追溯，不然信噪比會持續下降。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>技術選型的核心決策：一條新業務規則該用「臨時改提示詞」「沉澱成Skill」還是「RL微調」哪一層解決；知識管理架構（經驗庫、工具庫由誰維護、怎麼審核）；Agent 的生命週期規劃通常是人工編寫→自主發現現成方案→自主創造新工具的漸進過程。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>三種學習範式的本質差異可以理解成「知識承載位置」不同（參數／上下文／外部結構）；系統提示學習的數據效率遠高於後訓練微調，這點對應了樣本效率的理論討論。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter8.md" target="_blank" rel="noopener">看原文 chapter8.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch9">
+    <p class="ch-num">CHAPTER 09</p>
+    <h2 class="ch-title serif">多模態與即時互動</h2>
+    <p class="ch-sub">語音、GUI 操作、機器人：怎麼在毫秒級預算內做複雜決策</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>三個場景（語音、Computer Use、機器人）看似異質，卻共享同一組難題：延遲累積與多模態協調。解法方向一致——從串行流水線逐步走向端到端模型，再走向快慢思考解耦。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>語音架構演進</dt>
+      <dd>VAD+級聯（ASR→LLM→TTS 串聯，延遲0.9-2秒，信息逐層流失）→ 端到端全模態模型（保留韻律情感，但仍需 VAD 判斷輪次）→ 全雙工交互模型（同時聽說，微秒級決策，延遲約200毫秒）。</dd>
+      <dt>快慢思考解耦</dt>
+      <dd>快模型（500毫秒內）維持對話流暢，慢模型（5-10秒）做深度推理，後台異步協調——解決「使用者要毫秒級反應，但複雜問題需要秒級思考」的根本矛盾。</dd>
+      <dt>Set-of-Mark（SoM）</dt>
+      <dd>分割模型在截圖上標記候選區域並編號，模型只需選編號而非預測坐標，把開放坐標問題變成封閉選擇題。</dd>
+      <dt>動作分塊（Action Chunking）</dt>
+      <dd>VLA 模型一次生成未來0.5-1秒的動作序列而非單步，把單次推理延遲攤入整段執行時間，維持動作連貫。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「端到端模型一定比級聯更準確」</b>取決於任務是否依賴副語言線索（情緒、環境聲）——純語義任務有時級聯架構表現更好。</div>
+    <div class="misread"><b>「Computer Use 準確率達人類水平就能投產」</b>準確率夠了，但單個任務的步驟數與耗時仍遠超人類，真正的瓶頸是「做得夠不夠快」而不是「會不會做」。</div>
+    <div class="misread"><b>「Sim-to-Real 的關鍵只是領域隨機化」</b>環境對齊（攝像頭校準，偏移1公分轉錄後可能誤差數十公分）與視覺背景替換同樣關鍵，三者缺一不可。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>語音／GUI／機器人三個場景各自適用不同商業模式；快慢解耦架構意味著推理成本翻倍，需要衡量是否值得換取毫秒級體驗；Computer Use 在消費端常遭遇「生態壁壘」——平台的變現模式跟 Agent 自動化天生衝突，規劃時要評估這種風險。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>VLA 的跨機器人預訓練是多任務學習/遷移學習的實例；領域隨機化本質上是一種正則化手段；動作分塊對應層次強化學習（Hierarchical RL）的設計思路。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter9.md" target="_blank" rel="noopener">看原文 chapter9.md ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch10">
+    <p class="ch-num">CHAPTER 10</p>
+    <h2 class="ch-title serif">多 Agent 協作架構</h2>
+    <p class="ch-sub">群體智能什麼時候真的高於個體</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>核心判準是「新信息框架」——多 Agent 協作是否優於單 Agent，取決於協作過程有沒有產生生成階段不存在的新訊號。讓模型自己審查自己的輸出＝沒有新訊息（無效）；Reviewer 實際執行代碼並展示結果＝新訊息（有效）。架構選擇沿兩個正交維度展開：上下文共享與否、協作拓撲（對等／管理者／去中心化）。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>共享 vs 不共享上下文</dt>
+      <dd>共享讓後續 Agent 完整繼承前序對話歷史，訊息零損耗但上下文會迅速膨脹；不共享讓每個 Agent 維護獨立上下文，透過結構化資料交換，隔離清晰、可並行，但需要設計通訊機制。</dd>
+      <dt>對等 vs 管理者 vs 去中心化</dt>
+      <dd>對等協作適合「生成困難、驗證容易」的任務（如寫代碼+執行測試）；管理者模式適合子任務數多且有依賴的複雜任務；去中心化適合職責平行、關係難以預先規劃的開放環境。</dd>
+      <dt>移交包（Handoff Package）</dt>
+      <dd>Agent 之間交接工作時只傳「任務描述＋確認事實＋產物引用」，而不是完整的思考歷史，避免下游被無關細節淹沒。</dd>
+      <dt>級聯終止</dt>
+      <dd>並行搜索時，任一子 Agent 達標就立即廣播終止信號給其他還在跑的 Agent，避免浪費算力。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「多 Agent 一定優於單 Agent」</b>只有協作真的引入新訊息時才有效；讓多個模型重複討論同一段文字，在等量算力下跟單 Agent 打平。</div>
+    <div class="misread"><b>「Manager 模式應該平均分配算力」</b>規劃者（Manager）才是全系統瓶頸，最強的模型應該分給規劃者而非執行者——執行者再強也救不了錯誤的任務分解。</div>
+    <div class="misread"><b>「並行一定更快」</b>並行帶來額外的通訊與同步成本，只有子任務依賴弱、通訊開銷小於並行收益時才真正加速，否則串行反而更快。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>業務複雜度直接決定架構選擇（對等/管理者/去中心化）；並行決策與資源預算直接影響成本 ROI；系統失敗模式（角色重疊、對齊失敗、驗證缺失、並發衝突、錯誤級聯放大）的辨識能力決定系統能否穩定生產運行。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>本章本質是系統設計工程學而非訓練/最佳化理論，只在信息論（多 Agent 辯論的邊界）與博弈論（Agent 間策略互動）邊緣觸及理論，跟科目三的核心考點關聯不深。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://raw.githubusercontent.com/bojieli/ai-agent-book/main/book/chapter10.md" target="_blank" rel="noopener">看原文 chapter10.md ↗</a></p>
+  </section>
+
+  <footer class="colophon">
+    <p>筆記為原文重新整理與詮釋，非逐字翻譯或摘錄；原書全文與各章 Markdown／PDF 請見 <a href="https://github.com/bojieli/ai-agent-book" target="_blank" rel="noopener">bojieli/ai-agent-book</a>（Apache 2.0）。</p>
+  </footer>
+
+</div>
+
+<button class="toc-toggle" id="tocToggle" aria-expanded="false" aria-controls="tocPanel">
+  <span class="dot"></span> 目錄
+</button>
+<div class="toc-panel" id="tocPanel" role="menu">
+  <a class="top-link" href="#top" data-close>↑ 封面 / 總覽</a>
+  <a href="#ch1" data-close><span class="n">01</span> Agent基礎與核心框架</a>
+  <a href="#ch2" data-close><span class="n">02</span> 上下文工程</a>
+  <a href="#ch3" data-close><span class="n">03</span> 用戶記憶與知識庫RAG</a>
+  <a href="#ch4" data-close><span class="n">04</span> 工具設計與MCP協議</a>
+  <a href="#ch5" data-close><span class="n">05</span> Coding Agent與代碼生成</a>
+  <a href="#ch6" data-close><span class="n">06</span> Agent評估與基準測試</a>
+  <a href="#ch7" data-close><span class="n">07</span> 模型後訓練SFT/RL/RLHF</a>
+  <a href="#ch8" data-close><span class="n">08</span> 自我進化與經驗學習</a>
+  <a href="#ch9" data-close><span class="n">09</span> 多模態與即時互動</a>
+  <a href="#ch10" data-close><span class="n">10</span> 多Agent協作架構</a>
+</div>
+
+<script>
+  var toggle = document.getElementById('tocToggle');
+  var panel = document.getElementById('tocPanel');
+  function closePanel(){
+    panel.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+  }
+  toggle.addEventListener('click', function(){
+    var open = panel.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  panel.querySelectorAll('[data-close]').forEach(function(a){
+    a.addEventListener('click', function(){ closePanel(); });
+  });
+  document.addEventListener('click', function(e){
+    if(!panel.contains(e.target) && !toggle.contains(e.target)){
+      closePanel();
+    }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePanel();
+  });
+</script>
+
+</body>
+</html>

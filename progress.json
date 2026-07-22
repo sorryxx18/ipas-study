@@ -1,0 +1,444 @@
+{
+  "meta": {
+    "started": "2026-07-04",
+    "exam_date": "2026-11-14",
+    "total_questions": 260,
+    "updated": "2026-07-04",
+    "note": "官方考古題優先排序"
+  },
+  "current_queue": [
+    "official_115_1_subject3_46",
+    "official_114_2_subject1_17",
+    "official_114_2_subject1_48",
+    "official_114_2_subject3_25",
+    "official_114_2_subject1_41",
+    "official_115_1_subject3_6",
+    "official_115_1_subject3_14",
+    "S1_28",
+    "official_114_2_subject3_40",
+    "S1_17",
+    "official_115_1_subject3_25",
+    "official_115_1_subject1_3",
+    "official_114_2_subject3_44",
+    "official_114_2_subject3_23",
+    "official_115_1_subject1_25",
+    "official_115_1_subject1_10",
+    "official_115_1_subject3_16",
+    "S3_27",
+    "official_115_1_subject3_34",
+    "official_114_2_subject3_32",
+    "official_114_2_subject1_26",
+    "official_114_2_subject1_43",
+    "official_115_1_subject1_31",
+    "S3_29",
+    "official_114_2_subject1_34",
+    "S3_06",
+    "official_115_1_subject1_46",
+    "official_114_2_subject3_21",
+    "official_115_1_subject3_23",
+    "official_114_2_subject3_1",
+    "S3_10",
+    "official_114_2_subject3_49",
+    "official_115_1_subject1_20",
+    "official_115_1_subject3_50",
+    "official_114_2_subject3_16",
+    "official_115_1_subject3_18",
+    "S1_26",
+    "official_114_2_subject1_9",
+    "official_114_2_subject3_4",
+    "official_115_1_subject3_13",
+    "official_114_2_subject1_47",
+    "official_115_1_subject1_43",
+    "S1_04",
+    "S1_07",
+    "official_114_2_subject3_7",
+    "S1_02",
+    "official_115_1_subject3_26",
+    "S1_29",
+    "official_114_2_subject3_13",
+    "S3_03",
+    "official_114_2_subject3_14",
+    "official_115_1_subject1_37",
+    "official_114_2_subject1_8",
+    "official_114_2_subject3_35",
+    "official_114_2_subject1_40",
+    "S1_11",
+    "S3_14",
+    "official_115_1_subject1_28",
+    "S3_02",
+    "official_114_2_subject3_20",
+    "official_114_2_subject3_30",
+    "S1_03",
+    "official_115_1_subject1_33",
+    "official_115_1_subject1_32",
+    "official_114_2_subject1_36",
+    "S3_24",
+    "official_115_1_subject1_19",
+    "official_115_1_subject3_4",
+    "official_114_2_subject3_39",
+    "S1_10",
+    "official_115_1_subject3_45",
+    "official_115_1_subject3_39",
+    "official_114_2_subject1_24",
+    "S1_13",
+    "official_114_2_subject1_33",
+    "S3_05",
+    "official_115_1_subject1_2",
+    "official_115_1_subject1_17",
+    "official_114_2_subject1_28",
+    "official_115_1_subject3_28",
+    "official_114_2_subject3_24",
+    "official_115_1_subject3_38",
+    "official_114_2_subject1_45",
+    "S1_21",
+    "official_115_1_subject1_29",
+    "S3_16",
+    "S3_30",
+    "official_115_1_subject1_40",
+    "official_115_1_subject1_41",
+    "official_114_2_subject1_20",
+    "S3_08",
+    "official_114_2_subject3_10",
+    "official_114_2_subject1_31",
+    "official_115_1_subject1_8",
+    "official_114_2_subject1_49",
+    "official_115_1_subject3_3",
+    "official_115_1_subject3_42",
+    "official_115_1_subject3_40",
+    "official_115_1_subject1_45",
+    "official_115_1_subject3_31",
+    "official_115_1_subject3_44",
+    "official_115_1_subject3_49",
+    "official_114_2_subject1_30",
+    "S3_09",
+    "official_114_2_subject3_29",
+    "official_115_1_subject1_23",
+    "official_115_1_subject1_14",
+    "official_115_1_subject1_44",
+    "official_114_2_subject1_6",
+    "S1_06",
+    "S1_25",
+    "official_115_1_subject3_8",
+    "official_114_2_subject3_43",
+    "official_115_1_subject1_21",
+    "official_115_1_subject3_48",
+    "S1_24",
+    "official_115_1_subject3_20",
+    "official_114_2_subject1_7",
+    "S1_27",
+    "official_114_2_subject3_5",
+    "official_115_1_subject3_47",
+    "official_115_1_subject1_26",
+    "official_115_1_subject1_50",
+    "S3_11",
+    "official_114_2_subject1_14",
+    "official_115_1_subject3_37",
+    "official_114_2_subject3_22",
+    "official_114_2_subject3_11",
+    "official_115_1_subject3_9",
+    "S1_01",
+    "S3_21",
+    "S3_23",
+    "official_114_2_subject3_26",
+    "official_115_1_subject1_18",
+    "official_114_2_subject3_8",
+    "official_114_2_subject1_29",
+    "official_114_2_subject3_42",
+    "official_115_1_subject1_42",
+    "official_114_2_subject3_3",
+    "official_115_1_subject1_49",
+    "official_115_1_subject3_41",
+    "official_114_2_subject1_44",
+    "official_114_2_subject1_46",
+    "official_115_1_subject3_24",
+    "official_114_2_subject1_16",
+    "official_115_1_subject3_10",
+    "official_114_2_subject3_6",
+    "official_115_1_subject3_29",
+    "official_114_2_subject3_36",
+    "official_114_2_subject1_23",
+    "official_115_1_subject1_22",
+    "official_115_1_subject1_27",
+    "official_115_1_subject3_1",
+    "official_114_2_subject3_47",
+    "official_114_2_subject3_34",
+    "S3_13",
+    "S3_01",
+    "official_115_1_subject1_35",
+    "official_115_1_subject3_21",
+    "official_114_2_subject3_9",
+    "official_114_2_subject1_10",
+    "S1_20",
+    "official_114_2_subject3_48",
+    "official_114_2_subject1_38",
+    "S3_18",
+    "official_115_1_subject3_19",
+    "official_114_2_subject1_35",
+    "official_115_1_subject1_7",
+    "S1_18",
+    "official_114_2_subject3_37",
+    "official_114_2_subject3_28",
+    "S3_20",
+    "official_114_2_subject3_12",
+    "S1_23",
+    "official_114_2_subject1_19",
+    "official_114_2_subject3_38",
+    "official_115_1_subject3_36",
+    "official_115_1_subject1_47",
+    "official_114_2_subject1_39",
+    "official_115_1_subject3_35",
+    "official_115_1_subject3_22",
+    "official_115_1_subject1_38",
+    "official_115_1_subject1_1",
+    "official_114_2_subject3_2",
+    "official_115_1_subject3_12",
+    "official_114_2_subject1_13",
+    "official_115_1_subject3_33",
+    "official_114_2_subject3_46",
+    "S1_22",
+    "S1_05",
+    "official_115_1_subject3_5",
+    "official_115_1_subject1_16",
+    "S3_19",
+    "official_114_2_subject1_3",
+    "official_114_2_subject1_4",
+    "official_114_2_subject1_1",
+    "official_114_2_subject1_2",
+    "official_114_2_subject3_45",
+    "official_114_2_subject3_50",
+    "official_114_2_subject1_22",
+    "official_114_2_subject3_17",
+    "official_114_2_subject1_21",
+    "official_114_2_subject1_25",
+    "official_114_2_subject1_27",
+    "official_115_1_subject1_48",
+    "official_114_2_subject1_32"
+  ],
+  "completed_correct": [
+    "official_114_2_subject1_3",
+    "official_114_2_subject1_4",
+    "official_114_2_subject1_1",
+    "official_114_2_subject1_2",
+    "official_115_1_subject3_15",
+    "official_114_2_subject3_19",
+    "S3_07",
+    "S3_28",
+    "official_115_1_subject3_11",
+    "official_115_1_subject3_27",
+    "S1_16",
+    "S1_14",
+    "official_114_2_subject3_33",
+    "S3_15",
+    "official_115_1_subject1_5",
+    "official_115_1_subject1_9",
+    "official_114_2_subject3_15",
+    "official_115_1_subject3_7",
+    "official_114_2_subject1_5",
+    "official_115_1_subject1_13",
+    "S1_19",
+    "official_115_1_subject3_2",
+    "S3_12",
+    "S1_09",
+    "official_114_2_subject1_18",
+    "official_115_1_subject3_17",
+    "official_115_1_subject1_15",
+    "official_114_2_subject3_18",
+    "S3_04",
+    "official_115_1_subject1_36",
+    "official_114_2_subject1_15",
+    "official_114_2_subject3_31",
+    "S3_17",
+    "S1_12",
+    "official_115_1_subject3_32",
+    "S1_30",
+    "S3_26",
+    "official_114_2_subject1_42",
+    "official_115_1_subject3_30",
+    "official_115_1_subject1_34",
+    "official_114_2_subject1_11",
+    "S1_08",
+    "official_114_2_subject3_41",
+    "official_114_2_subject1_37",
+    "official_115_1_subject1_11",
+    "official_114_2_subject3_27",
+    "official_115_1_subject3_43",
+    "S3_22"
+  ],
+  "wrong_history": {
+    "official_114_2_subject1_1": {
+      "count": 1,
+      "last_wrong": "D",
+      "history": [
+        "D"
+      ]
+    },
+    "official_114_2_subject1_2": {
+      "count": 1,
+      "last_wrong": "D",
+      "history": [
+        "D"
+      ]
+    },
+    "official_114_2_subject1_6": {
+      "count": 1,
+      "last_wrong": "D",
+      "history": [
+        "D"
+      ]
+    },
+    "official_114_2_subject1_50": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_115_1_subject1_30": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_115_1_subject1_12": {
+      "count": 1,
+      "last_wrong": "C",
+      "history": [
+        "C"
+      ]
+    },
+    "official_115_1_subject1_24": {
+      "count": 1,
+      "last_wrong": "B",
+      "history": [
+        "B"
+      ]
+    },
+    "S1_15": {
+      "count": 1,
+      "last_wrong": "C",
+      "history": [
+        "C"
+      ]
+    },
+    "official_115_1_subject3_17": {
+      "count": 2,
+      "last_wrong": "A",
+      "history": [
+        "A",
+        "A"
+      ]
+    },
+    "official_114_2_subject3_15": {
+      "count": 1,
+      "last_wrong": "D",
+      "history": [
+        "D"
+      ]
+    },
+    "official_114_2_subject1_18": {
+      "count": 2,
+      "last_wrong": "C",
+      "history": [
+        "C"
+      ]
+    },
+    "official_114_2_subject3_18": {
+      "count": 2,
+      "last_wrong": "D",
+      "history": [
+        "B",
+        "D"
+      ]
+    },
+    "S3_04": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "S3_26": {
+      "count": 2,
+      "last_wrong": "B",
+      "history": [
+        "B",
+        "B"
+      ]
+    },
+    "S3_17": {
+      "count": 1,
+      "last_wrong": "C",
+      "history": [
+        "C"
+      ]
+    },
+    "official_115_1_subject3_30": {
+      "count": 2,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_114_2_subject1_11": {
+      "count": 1
+    },
+    "official_114_2_subject1_22": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_114_2_subject3_17": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_114_2_subject1_21": {
+      "count": 1,
+      "last_wrong": "C",
+      "history": [
+        "C"
+      ]
+    },
+    "official_114_2_subject1_25": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_114_2_subject1_27": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_115_1_subject1_48": {
+      "count": 1,
+      "last_wrong": "A",
+      "history": [
+        "A"
+      ]
+    },
+    "official_114_2_subject1_32": {
+      "count": 1,
+      "last_wrong": "B",
+      "history": [
+        "B"
+      ]
+    }
+  },
+  "stats": {
+    "total_answered": 77,
+    "total_correct": 48,
+    "total_wrong": 29,
+    "mastered": 24,
+    "wrong_pending": 14
+  },
+  "current_question": "official_115_1_subject3_46"
+}
