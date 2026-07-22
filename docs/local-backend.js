@@ -167,6 +167,11 @@
     seg.completed = true;
     seg.completed_date = todayStr();
 
+    const key = subject === 1 ? 'subject1' : 'subject3';
+    if (state.guideProgress[key]) {
+      state.guideProgress[key].completed_segments = guide.segments.filter((s) => s.completed).length;
+    }
+
     const entry = getTodayEntry();
     entry.guide_completed += 1;
 
@@ -239,39 +244,24 @@
     };
   }
 
-  async function init() {
-    const [questions, guideS1, guideS3] = await Promise.all([
-      fetch('questions.json').then((r) => r.json()),
-      fetch('guide_s1.json').then((r) => r.json()),
-      fetch('guide_s3.json').then((r) => r.json()),
-    ]);
-    state.questions = questions;
-    state.guideS1 = JSON.parse(JSON.stringify(guideS1));
-    state.guideS3 = JSON.parse(JSON.stringify(guideS3));
-    for (const seg of state.guideS1.segments) { seg.completed = false; delete seg.completed_date; }
-    for (const seg of state.guideS3.segments) { seg.completed = false; delete seg.completed_date; }
-    const allIds = questions.questions.map((q) => q.id);
-    state.progress.current_queue = allIds;
-    state.progress.current_question = allIds[0] ?? null;
-
-    if (getToken()) {
-      const loaded = await ghLoad();
-      if (loaded.ok && loaded.reason === 'loaded') {
-        const stillQueued = new Set(state.progress.current_queue);
-        state.progress.current_queue = state.progress.current_queue.filter((id) => stillQueued.has(id));
-        if (!state.progress.current_question) state.progress.current_question = state.progress.current_queue[0] ?? null;
-      }
-    }
-  }
-
-
-  // ── GitHub-token based progress sync (option B) ───────────
+  // ── GitHub-token based progress sync (option B, shared with production) ──
   const GH_OWNER = 'sorryxx18';
   const GH_REPO = 'ipas-study';
-  const GH_PATH = 'docs/demo_progress.json';
-  const GH_API = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${GH_PATH}`;
+  const GH_API_BASE = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/`;
   const TOKEN_KEY = 'ipas_demo_gh_token';
-  let ghFileSha = null;
+
+  // These are the SAME root-level files the production server.ts reads/writes,
+  // so progress made here and progress made via study.tfd-train.com converge
+  // through the same GitHub repo (each side syncs when triggered, not live).
+  const SYNC_FILES = {
+    progress: 'progress.json',
+    guideProgress: 'guide_progress.json',
+    guideS1: 'guide_s1.json',
+    guideS3: 'guide_s3.json',
+    dailyLog: 'daily_log.json',
+  };
+
+  const ghShas = {};
   let saveTimer = null;
 
   function getToken() {
@@ -283,79 +273,117 @@
     else localStorage.removeItem(TOKEN_KEY);
   }
 
-  function snapshotDynamicState() {
-    return {
-      progress: state.progress,
-      guideProgress: state.guideProgress,
-      dailyLog: state.dailyLog,
-      s1Completed: state.guideS1.segments.filter((s) => s.completed).map((s) => ({ id: s.id, completed_date: s.completed_date })),
-      s3Completed: state.guideS3.segments.filter((s) => s.completed).map((s) => ({ id: s.id, completed_date: s.completed_date })),
-      savedAt: new Date().toISOString(),
-    };
+  function b64ToUtf8(b64) {
+    return decodeURIComponent(escape(atob(b64.replace(/\n/g, ''))));
   }
 
-  function applyDynamicState(snap) {
-    if (!snap) return;
-    state.progress = snap.progress ?? state.progress;
-    state.guideProgress = snap.guideProgress ?? state.guideProgress;
-    state.dailyLog = snap.dailyLog ?? state.dailyLog;
-    for (const seg of state.guideS1.segments) seg.completed = false;
-    for (const seg of state.guideS3.segments) seg.completed = false;
-    for (const c of snap.s1Completed ?? []) {
-      const seg = state.guideS1.segments.find((s) => s.id === c.id);
-      if (seg) { seg.completed = true; seg.completed_date = c.completed_date; }
-    }
-    for (const c of snap.s3Completed ?? []) {
-      const seg = state.guideS3.segments.find((s) => s.id === c.id);
-      if (seg) { seg.completed = true; seg.completed_date = c.completed_date; }
-    }
+  function utf8ToB64(str) {
+    return btoa(unescape(encodeURIComponent(str)));
   }
 
-  async function ghLoad() {
+  async function ghGetFile(key) {
+    const token = getToken();
+    const path = SYNC_FILES[key];
+    const res = await fetch(GH_API_BASE + path, {
+      headers: token ? { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } : { Accept: 'application/vnd.github+json' },
+    });
+    if (res.status === 404) return { ok: true, found: false };
+    if (!res.ok) return { ok: false, reason: `http ${res.status}` };
+    const data = await res.json();
+    ghShas[key] = data.sha;
+    return { ok: true, found: true, json: JSON.parse(b64ToUtf8(data.content)) };
+  }
+
+  async function ghPutFile(key, json) {
     const token = getToken();
     if (!token) return { ok: false, reason: 'no-token' };
-    try {
-      const res = await fetch(GH_API, { headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' } });
-      if (res.status === 404) return { ok: true, reason: 'not-found' };
-      if (!res.ok) return { ok: false, reason: `http ${res.status}` };
-      const data = await res.json();
-      ghFileSha = data.sha;
-      const decoded = decodeURIComponent(escape(atob(data.content.replace(/\n/g, ''))));
-      applyDynamicState(JSON.parse(decoded));
-      return { ok: true, reason: 'loaded' };
-    } catch (e) {
-      return { ok: false, reason: String(e) };
-    }
+    const path = SYNC_FILES[key];
+    const res = await fetch(GH_API_BASE + path, {
+      method: 'PUT',
+      headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+      body: JSON.stringify({
+        message: `sync ${key}: ${new Date().toISOString()}`,
+        content: utf8ToB64(JSON.stringify(json, null, 2)),
+        sha: ghShas[key] || undefined,
+      }),
+    });
+    if (!res.ok) return { ok: false, reason: `http ${res.status}` };
+    const data = await res.json();
+    ghShas[key] = data.content?.sha ?? ghShas[key];
+    return { ok: true };
   }
 
   async function ghSave() {
-    const token = getToken();
-    if (!token) return { ok: false, reason: 'no-token' };
-    try {
-      const snap = snapshotDynamicState();
-      const content = btoa(unescape(encodeURIComponent(JSON.stringify(snap, null, 2))));
-      const res = await fetch(GH_API, {
-        method: 'PUT',
-        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
-        body: JSON.stringify({
-          message: `demo progress sync: ${snap.savedAt}`,
-          content,
-          sha: ghFileSha || undefined,
-        }),
-      });
-      if (!res.ok) return { ok: false, reason: `http ${res.status}` };
-      const data = await res.json();
-      ghFileSha = data.content?.sha ?? ghFileSha;
-      return { ok: true };
-    } catch (e) {
-      return { ok: false, reason: String(e) };
-    }
+    if (!getToken()) return { ok: false, reason: 'no-token' };
+    const results = await Promise.all([
+      ghPutFile('progress', state.progress),
+      ghPutFile('guideProgress', state.guideProgress),
+      ghPutFile('guideS1', state.guideS1),
+      ghPutFile('guideS3', state.guideS3),
+      ghPutFile('dailyLog', state.dailyLog),
+    ]);
+    const failed = results.filter((r) => !r.ok);
+    if (failed.length) return { ok: false, reason: failed.map((f) => f.reason).join('; ') };
+    return { ok: true };
   }
 
   function scheduleSave() {
     if (!getToken()) return;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => { ghSave(); }, 3000);
+  }
+
+  async function init() {
+    const questions = await fetch('questions.json').then((r) => r.json());
+    state.questions = questions;
+    const allIds = questions.questions.map((q) => q.id);
+
+    const token = getToken();
+    let guideS1 = null;
+    let guideS3 = null;
+    let loadedFromGh = false;
+
+    if (token) {
+      const [pRes, gpRes, s1Res, s3Res, dlRes] = await Promise.all([
+        ghGetFile('progress'),
+        ghGetFile('guideProgress'),
+        ghGetFile('guideS1'),
+        ghGetFile('guideS3'),
+        ghGetFile('dailyLog'),
+      ]);
+      if (pRes.ok && pRes.found) state.progress = pRes.json;
+      if (gpRes.ok && gpRes.found) state.guideProgress = gpRes.json;
+      if (dlRes.ok && dlRes.found) state.dailyLog = dlRes.json;
+      if (s1Res.ok && s1Res.found) { guideS1 = s1Res.json; loadedFromGh = true; }
+      if (s3Res.ok && s3Res.found) { guideS3 = s3Res.json; loadedFromGh = true; }
+    }
+
+    if (!guideS1 || !guideS3) {
+      const [bundledS1, bundledS3] = await Promise.all([
+        fetch('guide_s1.json').then((r) => r.json()),
+        fetch('guide_s3.json').then((r) => r.json()),
+      ]);
+      if (!guideS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
+      if (!guideS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
+    }
+    state.guideS1 = guideS1;
+    state.guideS3 = guideS3;
+
+    if (!token || !loadedFromGh) {
+      // No shared progress found (or no token) — demo starts from a clean slate,
+      // matching the previous no-persistence behavior.
+      for (const seg of state.guideS1.segments) { if (!token) { seg.completed = false; delete seg.completed_date; } }
+      for (const seg of state.guideS3.segments) { if (!token) { seg.completed = false; delete seg.completed_date; } }
+    }
+
+    if (!token) {
+      state.progress.current_queue = allIds;
+      state.progress.current_question = allIds[0] ?? null;
+    } else {
+      const stillQueued = new Set(allIds);
+      state.progress.current_queue = (state.progress.current_queue ?? allIds).filter((id) => stillQueued.has(id));
+      if (!state.progress.current_question) state.progress.current_question = state.progress.current_queue[0] ?? allIds[0] ?? null;
+    }
   }
 
   const readyPromise = init();
@@ -385,11 +413,7 @@
     if (p === '/api/demo/sync-status') return { hasToken: !!getToken() };
     if (p === '/api/demo/set-token' && method === 'POST') {
       setToken(body.token || '');
-      if (body.token) {
-        const result = await ghLoad();
-        return { hasToken: true, loadResult: result };
-      }
-      return { hasToken: false };
+      return { hasToken: !!body.token };
     }
     if (p === '/api/demo/sync-now' && method === 'POST') {
       clearTimeout(saveTimer);
