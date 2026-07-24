@@ -51,6 +51,15 @@ function scheduleGitSync() {
   }, 5000);
 }
 
+let lastPullAttempt = 0;
+const PULL_THROTTLE_MS = 15000;
+function maybeBackgroundPull() {
+  const now = Date.now();
+  if (now - lastPullAttempt < PULL_THROTTLE_MS) return;
+  lastPullAttempt = now;
+  runGit(["pull", "--rebase", "--autostash"]).catch((e) => console.warn("background pull failed:", e));
+}
+
 
 function todayStr() {
   return new Date().toLocaleDateString("en-CA", { timeZone: "Asia/Taipei" });
@@ -464,6 +473,7 @@ const server = serve({
   fetch(req) {
     const url = new URL(req.url);
     const path = url.pathname;
+    maybeBackgroundPull();
 
     // CORS
     const headers = new Headers({
@@ -480,6 +490,12 @@ const server = serve({
     // Serve AI Agent book notes subpage
     if (path === "/ai-agent-book" || path === "/ai-agent-book.html") {
       const html = readFileSync(join(BASE, "webapp", "ai-agent-book.html"), "utf-8");
+      return new Response(html, { headers: new Headers({ "Content-Type": "text/html; charset=utf-8" }) });
+    }
+
+    // Serve dive-into-llms notes subpage
+    if (path === "/dive-into-llms" || path === "/dive-into-llms.html") {
+      const html = readFileSync(join(BASE, "webapp", "dive-into-llms.html"), "utf-8");
       return new Response(html, { headers: new Headers({ "Content-Type": "text/html; charset=utf-8" }) });
     }
 

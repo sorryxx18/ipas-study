@@ -253,7 +253,19 @@ html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 </style>
 </head>
 <body>
-<a href="/ai-agent-book" style="position:fixed;left:14px;bottom:14px;z-index:200;display:flex;align-items:center;gap:6px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px 7px 11px;font-size:12px;text-decoration:none;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);">🤖 AI Agent 讀書筆記</a>
+<div style="position:fixed;left:14px;bottom:14px;z-index:200;">
+  <button id="sideStoryToggle" onclick="var p=document.getElementById('sideStoryPanel');var open=p.style.display==='block';p.style.display=open?'none':'block';event.stopPropagation();" style="display:flex;align-items:center;gap:6px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px 7px 11px;font-size:12px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);">📚 番外篇</button>
+  <div id="sideStoryPanel" style="display:none;position:absolute;bottom:44px;left:0;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px -12px rgba(0,0,0,.35);padding:6px;">
+    <a href="/ai-agent-book" style="display:block;padding:9px 11px;border-radius:8px;text-decoration:none;color:var(--text);font-size:12.5px;white-space:nowrap;">🤖 AI Agent 讀書筆記</a>
+    <a href="/dive-into-llms" style="display:block;padding:9px 11px;border-radius:8px;text-decoration:none;color:var(--text);font-size:12.5px;white-space:nowrap;">📖 動手學大模型</a>
+  </div>
+</div>
+<script>
+  document.addEventListener('click', function(){
+    var p = document.getElementById('sideStoryPanel');
+    if(p) p.style.display = 'none';
+  });
+</script>
 
 <div class="header">
   <h1>📚 IPAS 備考系統</h1>

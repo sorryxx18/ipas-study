@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>動手學大模型 — 讀書筆記與 iPAS 對照</title>
+</head>
+<body>
+<style>
+  :root{
+    --bg:#f5f7f8;
+    --bg-raised:#ffffff;
+    --ink:#1b2226;
+    --ink-soft:#4a565c;
+    --muted:#7c8a91;
+    --border:#dde3e5;
+    --accent:#2b6777;
+    --accent-soft:#e4eef0;
+    --accent-2:#b8863e;
+    --accent-2-soft:#f6ecdc;
+    --code-bg:#eef2f3;
+    --shadow: 0 10px 30px -12px rgba(20,30,35,.25);
+  }
+  :root[data-theme="dark"]{
+    --bg:#11161b;
+    --bg-raised:#161d23;
+    --ink:#e6e9ea;
+    --ink-soft:#b7c1c5;
+    --muted:#7e8c92;
+    --border:#28333a;
+    --accent:#6fb8c9;
+    --accent-soft:#1c2f34;
+    --accent-2:#dcab6a;
+    --accent-2-soft:#2c2418;
+    --code-bg:#1a2126;
+    --shadow: 0 10px 30px -12px rgba(0,0,0,.5);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#11161b;
+      --bg-raised:#161d23;
+      --ink:#e6e9ea;
+      --ink-soft:#b7c1c5;
+      --muted:#7e8c92;
+      --border:#28333a;
+      --accent:#6fb8c9;
+      --accent-soft:#1c2f34;
+      --accent-2:#dcab6a;
+      --accent-2-soft:#2c2418;
+      --code-bg:#1a2126;
+      --shadow: 0 10px 30px -12px rgba(0,0,0,.5);
+    }
+  }
+
+  *{box-sizing:border-box;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;
+    background:var(--bg);
+    color:var(--ink);
+    font-family:"PingFang TC","Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  .serif{
+    font-family:"Noto Serif TC","PingFang TC","Georgia",serif;
+  }
+
+  a{color:var(--accent);}
+
+  .wrap{
+    max-width:760px;
+    margin:0 auto;
+    padding:64px 24px 160px;
+  }
+
+  header.masthead{
+    margin-bottom:56px;
+    border-bottom:1px solid var(--border);
+    padding-bottom:32px;
+  }
+  .eyebrow{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.78rem;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    margin:0 0 14px;
+  }
+  h1.title{
+    font-size:clamp(1.7rem,4vw,2.35rem);
+    line-height:1.3;
+    margin:0 0 16px;
+    text-wrap:balance;
+    font-weight:700;
+  }
+  .lede{
+    color:var(--ink-soft);
+    font-size:1.02rem;
+    max-width:64ch;
+    margin:0 0 20px;
+  }
+  .meta-row{
+    display:flex;
+    flex-wrap:wrap;
+    gap:10px 18px;
+    font-size:.86rem;
+    color:var(--muted);
+  }
+  .meta-row a{color:var(--muted);text-decoration-color:var(--border);}
+  .meta-row a:hover{color:var(--accent);}
+
+  .note-box{
+    background:var(--accent-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:16px 18px;
+    font-size:.92rem;
+    color:var(--ink-soft);
+    margin:28px 0 0;
+  }
+  .note-box b{color:var(--ink);}
+
+  nav.overview{
+    margin:40px 0 0;
+    display:grid;
+    grid-template-columns:1fr;
+    gap:6px;
+  }
+  nav.overview a{
+    display:flex;
+    align-items:baseline;
+    gap:12px;
+    padding:9px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    color:var(--ink);
+  }
+  nav.overview a:hover{background:var(--accent-soft);}
+  nav.overview .n{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--muted);
+    font-size:.82rem;
+    min-width:2.4em;
+  }
+  nav.overview .t{font-size:.96rem;}
+  nav.overview .rel{
+    margin-left:auto;
+    font-size:.74rem;
+    color:var(--muted);
+    white-space:nowrap;
+  }
+
+  section.chapter{
+    margin-top:88px;
+    padding-top:8px;
+    scroll-margin-top:24px;
+  }
+  section.chapter + section.chapter{
+    border-top:1px solid var(--border);
+  }
+  .ch-num{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--accent);
+    font-size:.86rem;
+    letter-spacing:.08em;
+  }
+  h2.ch-title{
+    font-size:1.5rem;
+    margin:6px 0 6px;
+    text-wrap:balance;
+  }
+  .ch-sub{
+    color:var(--muted);
+    font-size:.92rem;
+    margin:0 0 28px;
+  }
+
+  h3.sec{
+    font-size:1.02rem;
+    margin:34px 0 14px;
+    padding-bottom:8px;
+    border-bottom:1px solid var(--border);
+    color:var(--ink);
+  }
+
+  p{margin:0 0 14px;}
+  ul,ol{padding-left:1.3em;margin:0 0 14px;}
+  li{margin-bottom:8px;}
+  li:last-child{margin-bottom:0;}
+
+  dl.concepts{margin:0;}
+  dl.concepts dt{
+    font-weight:600;
+    margin-top:16px;
+  }
+  dl.concepts dt:first-child{margin-top:0;}
+  dl.concepts dd{
+    margin:4px 0 0;
+    color:var(--ink-soft);
+    font-size:.95rem;
+  }
+  dl.concepts dd .ex{
+    display:block;
+    margin-top:3px;
+    color:var(--muted);
+    font-size:.88rem;
+  }
+
+  .misread{
+    background:var(--code-bg);
+    border-left:3px solid var(--muted);
+    border-radius:0 8px 8px 0;
+    padding:12px 16px;
+    margin-bottom:12px;
+    font-size:.93rem;
+  }
+  .misread b{display:block;color:var(--ink);margin-bottom:4px;}
+
+  .ipas{
+    background:var(--accent-2-soft);
+    border:1px solid var(--border);
+    border-radius:10px;
+    padding:18px 20px;
+    margin-top:8px;
+  }
+  .ipas .ipas-label{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    font-size:.74rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--accent-2);
+    margin:0 0 10px;
+    display:flex;
+    align-items:center;
+    gap:8px;
+  }
+  .ipas h4{margin:14px 0 4px;font-size:.9rem;}
+  .ipas h4:first-of-type{margin-top:0;}
+  .ipas p{font-size:.92rem;color:var(--ink-soft);margin-bottom:8px;}
+  .relbar{
+    display:inline-flex;
+    gap:3px;
+    margin-left:4px;
+  }
+  .relbar span{
+    width:7px;height:7px;border-radius:50%;
+    background:var(--border);
+  }
+  .relbar span.on{background:var(--accent-2);}
+
+  .src-link{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+    font-size:.84rem;
+    margin-top:36px;
+    padding-top:16px;
+    color:var(--muted);
+  }
+
+  footer.colophon{
+    margin-top:100px;
+    padding-top:28px;
+    border-top:1px solid var(--border);
+    color:var(--muted);
+    font-size:.85rem;
+  }
+  footer.colophon a{color:var(--muted);}
+
+  .toc-toggle{
+    position:fixed;
+    left:20px;
+    bottom:20px;
+    z-index:40;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    background:var(--bg-raised);
+    color:var(--ink);
+    border:1px solid var(--border);
+    border-radius:999px;
+    padding:10px 16px 10px 14px;
+    font-size:.86rem;
+    cursor:pointer;
+    box-shadow:var(--shadow);
+    transition:transform .15s ease;
+  }
+  .toc-toggle:hover{transform:translateY(-2px);}
+  .toc-toggle .dot{
+    width:8px;height:8px;border-radius:50%;
+    background:var(--accent);
+    flex:none;
+  }
+
+  .toc-panel{
+    position:fixed;
+    left:20px;
+    bottom:76px;
+    z-index:41;
+    width:min(280px, calc(100vw - 40px));
+    max-height:min(60vh, 480px);
+    overflow-y:auto;
+    background:var(--bg-raised);
+    border:1px solid var(--border);
+    border-radius:14px;
+    box-shadow:var(--shadow);
+    padding:10px;
+    transform:translateY(8px) scale(.98);
+    opacity:0;
+    pointer-events:none;
+    transition:transform .16s ease, opacity .16s ease;
+  }
+  .toc-panel.open{
+    transform:translateY(0) scale(1);
+    opacity:1;
+    pointer-events:auto;
+  }
+  .toc-panel a{
+    display:flex;
+    gap:10px;
+    align-items:baseline;
+    padding:8px 10px;
+    border-radius:8px;
+    text-decoration:none;
+    color:var(--ink);
+    font-size:.88rem;
+  }
+  .toc-panel a:hover{background:var(--accent-soft);}
+  .toc-panel .n{
+    font-family:ui-monospace,"SF Mono",Menlo,monospace;
+    color:var(--muted);
+    font-size:.76rem;
+  }
+  .toc-panel .top-link{
+    border-bottom:1px solid var(--border);
+    margin-bottom:6px;
+    padding-bottom:12px;
+    font-weight:600;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .toc-toggle, .toc-panel{transition:none;}
+  }
+
+  ::selection{background:var(--accent-2-soft);}
+</style>
+
+<div class="wrap" id="top">
+
+  <header class="masthead">
+    <p class="eyebrow">讀書筆記 · 動手做比看懂更重要</p>
+    <h1 class="title serif">動手學大模型：系列編程實踐教程</h1>
+    <p class="lede">上海交通大學公益教程，由《自然語言處理前沿技術》《人工智慧安全技術》課程講義擴展而成。11 章都是可以實際跑的實作教程（微調、Prompt、越獄、RLHF……），不是純理論書。這裡整理每章的核心概念、容易搞混的地方，以及跟 iPAS AI應用規劃師中級考試的關聯程度。</p>
+    <div class="meta-row">
+      <span>11 章</span>
+      <span>·</span>
+      <a href="https://github.com/Lordog/dive-into-llms" target="_blank" rel="noopener">原始 repo ↗</a>
+      <span>·</span>
+      <span>上海交大公益專案</span>
+    </div>
+  </header>
+
+  <nav class="overview" aria-label="章節總覽">
+    <a href="#ch1"><span class="n">01</span><span class="t">微調與部署</span><span class="rel">應用規劃 ●●● · ML ●●○</span></a>
+    <a href="#ch2"><span class="n">02</span><span class="t">提示學習與思維鏈</span><span class="rel">應用規劃 ●●●● · ML ●●○</span></a>
+    <a href="#ch3"><span class="n">03</span><span class="t">知識編輯</span><span class="rel">應用規劃 ●●○ · ML ●●●</span></a>
+    <a href="#ch4"><span class="n">04</span><span class="t">數學推理（蒸餾）</span><span class="rel">應用規劃 ●●○ · ML ●●●●</span></a>
+    <a href="#ch5"><span class="n">05</span><span class="t">模型浮水印</span><span class="rel">應用規劃 ●●○ · ML ●○○</span></a>
+    <a href="#ch6"><span class="n">06</span><span class="t">越獄攻擊</span><span class="rel">應用規劃 ●●●● · ML ●○○</span></a>
+    <a href="#ch7"><span class="n">07</span><span class="t">大模型隱寫</span><span class="rel">應用規劃 ●○○ · ML ●○○</span></a>
+    <a href="#ch8"><span class="n">08</span><span class="t">多模態模型</span><span class="rel">應用規劃 ●●●● · ML ●●○</span></a>
+    <a href="#ch9"><span class="n">09</span><span class="t">GUI 智能體</span><span class="rel">應用規劃 ●●●●● · ML ●●○</span></a>
+    <a href="#ch10"><span class="n">10</span><span class="t">智能體安全</span><span class="rel">應用規劃 ●●●●● · ML ●○○</span></a>
+    <a href="#ch11"><span class="n">11</span><span class="t">RLHF 安全對齊</span><span class="rel">應用規劃 ●●○ · ML ●●●●●</span></a>
+  </nav>
+
+  <div class="note-box">
+    <b>關於「與 iPAS 的關聯」標註</b> — 這套教程偏動手實作，很多章節（微調、水印、隱寫）核心是「跟著跑一遍代碼」，跟科目三的理論考點重疊度因章而異。第4章（數學推理蒸餾）和第11章（RLHF）直接對應科目三的訓練理論核心考點；第9、10章（GUI智能體、智能體安全）則更貼近科目一的應用規劃與風險評估。標註照實給，不為了湊分數硬拗。
+  </div>
+
+  <section class="chapter" id="ch1">
+    <p class="ch-num">CHAPTER 01</p>
+    <h2 class="ch-title serif">微調與部署</h2>
+    <p class="ch-sub">用 Transformers 微調預訓練模型，再一鍵部署成 Gradio Demo</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 Hugging Face Transformers 工具包，把一個通用的預訓練模型（如 BERT）微調成能做特定任務（示範用假新聞/文本分類）的模型，再透過 Gradio Spaces 把訓練好的模型包裝成可分享的線上 Demo。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>預訓練—微調範式</dt>
+      <dd>大規模無監督預訓練學到通用語言表示，小規模有監督微調把它適配到具體下游任務，比從頭訓練省下大量算力與資料。</dd>
+      <dt>解耦版 vs 集成版工程</dt>
+      <dd>解耦版把資料/模型/訓練邏輯拆成三個檔案，適合理解原理；集成版（run_classification.py）代碼較複雜但直接超參數調用，適合快速產出。</dd>
+      <dt>Gradio Spaces 部署</dt>
+      <dd>把訓練好的模型包一層 app.py＋requirements.txt 就能一鍵上線成可分享的 Demo，不需要自建伺服器。</dd>
+      <dt>模型選型</dt>
+      <dd>不同預訓練模型（BERT/T5/ELECTRA/Llama2）適配不同任務類型（分類 vs 生成 vs 判別式預訓練），選型要對照任務性質。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「微調＝從頭訓練」</b>微調只是在已有權重基礎上做小幅梯度更新，繼承了預訓練學到的語言知識，需要的資料量遠低於從頭訓練。</div>
+    <div class="misread"><b>「參數全部更新才叫微調」</b>全參微調只是其中一種做法，LoRA 等輕量化微調只調極小部分參數（教程練習裡就提到對 Llama2 做 LoRA），大幅降低顯存需求。</div>
+    <div class="misread"><b>「本地能跑＝能部署」</b>訓練環境和部署環境的依賴版本、顯存需求都不同，教程特別把 requirements.txt 版本號寫死，避免部署時環境不一致導致失敗。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>模型選型評估（用哪個預訓練模型、要不要微調）、部署方案選擇（Demo/API/邊緣裝置）都是規劃階段的實際決策。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>微調背後是遷移學習理論，預訓練目標函數本質是極大似然估計，可對照科目三的模型訓練章節。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter1" target="_blank" rel="noopener">看原始教程 chapter1 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch2">
+    <p class="ch-num">CHAPTER 02</p>
+    <h2 class="ch-title serif">提示學習與思維鏈</h2>
+    <p class="ch-sub">零樣本、少樣本、思維鏈（CoT）——怎麼問，決定模型答得好不好</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>透過 API（通義千問／OpenAI 等）呼叫大模型，練習零樣本與少樣本提示工程，並學習思維鏈（CoT）推理——把複雜的多步驟問題拆解成一系列中間步驟，模擬人類逐步思考的過程。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>零樣本 vs 少樣本提示</dt>
+      <dd>零樣本只給指令；少樣本額外提供幾個範例（上下文學習）激活模型已有能力，通常能提升準確率。</dd>
+      <dt>CoT vs PoT</dt>
+      <dd>自然語言思維鏈（CoT）讓模型用文字逐步推理；程式思維鏈（PoT）讓模型直接生成可執行代碼求解，能減少數值計算上的錯誤。</dd>
+      <dt>自洽性（Self-consistency）</dt>
+      <dd>把 temperature 設大於 0，同樣輸入多次採樣出多條不同的推理路徑，最後取多數投票的答案，比單次貪心解碼更穩定。</dd>
+      <dt>範例正確性的影響</dt>
+      <dd>把少樣本範例裡的答案故意改錯，模型推理表現會發生系統性變化——說明 CoT 不是單純「背答案」，範例的結構與格式本身也在起作用。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「參數沒變＝模型沒學到東西」</b>少樣本提示確實不改權重，但會在推理當下臨時「激活」模型已有能力，這是上下文學習，不是把知識永久記住。</div>
+    <div class="misread"><b>「CoT 一定比直接問答準」</b>CoT 在多步驟推理任務上效果明顯，但簡單任務上反而可能引入不必要的複雜度和 token 成本。</div>
+    <div class="misread"><b>「temperature 越高越好」</b>自洽性方法需要 temperature&gt;0 才能得到多樣化的推理路徑，但溫度太高會讓單條路徑本身的品質下降，真正提升準確率的是多數投票，不是溫度本身。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（高度相關）</h4>
+      <p>Prompt 設計、API 選型（通義／OpenAI／文心）、成本與延遲權衡，都是規劃階段的實務工作。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>CoT／自洽性背後關聯模型的推理與採樣策略，可對照科目三的搜尋與推理相關章節。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter2" target="_blank" rel="noopener">看原始教程 chapter2 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch3">
+    <p class="ch-num">CHAPTER 03</p>
+    <h2 class="ch-title serif">知識編輯</h2>
+    <p class="ch-sub">不重新訓練整個模型，精準修改它記住的某一條事實</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 EasyEdit 工具包（ROME、MEMIT 等方法），在不重新訓練整個模型的前提下，精準修改模型對某條具體事實的記憶（教程範例：把「梅西踢足球」改成「梅西打籃球」），並驗證編輯有沒有波及不相關的知識。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>Editor / Method / Evaluate 三層框架</dt>
+      <dd>Editor 描述場景（待編輯模型＋知識＋超參數），Method 是具體編輯演算法（ROME／MEND／MEMIT），Evaluate 從四個維度衡量編輯效果。</dd>
+      <dt>四大評估指標</dt>
+      <dd>可靠性（編輯是否成功）、通用性（換個問法是否也生效）、局部性（不相關知識有沒有被誤改）、可移植性（能否泛化到推理鏈下游）。</dd>
+      <dt>ROME 單點編輯 vs MEMIT 批量編輯</dt>
+      <dd>ROME 適合少量、精確的單條編輯；需要同時編輯大量事實（batch edit）時，MEMIT 是更合適的方法。</dd>
+      <dt>局部性測試</dt>
+      <dd>用不相關的問題（如「Larry Bird 打什麼球」）檢查編輯後模型有沒有被誤傷，是知識編輯最重要的安全指標之一。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「知識編輯＝微調」</b>微調是用梯度下降在一批資料上整體調整參數，可能有大範圍副作用；知識編輯是定位到模型內部具體存放知識的位置（例如某層 MLP）做「手術式」修改，目標是把對其他知識的影響降到最低。</div>
+    <div class="misread"><b>「編輯成功＝模型行為完全改變」</b>編輯只保證在測試的問法／情境下生效，不代表所有下游任務和更長推理鏈都會一致反映新知識，這正是「可移植性」要單獨評估的原因。</div>
+    <div class="misread"><b>「改的知識越多越好控制品質」</b>batch edit 時不同編輯之間可能互相干擾，需要用 ZsRE／Counterfact 這類 benchmark 系統性驗證，不能只憑感覺判斷編輯是否成功。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span></span></p>
+      <h4>應用規劃（中度相關）</h4>
+      <p>知識編輯是「低成本糾錯」的產品化選項之一（相對於重訓或 RAG），規劃階段可作為知識更新方案的其中一種評估。</p>
+      <h4>機器學習理論（高度相關）</h4>
+      <p>涉及模型內部知識定位（類似探針分析）、多維度評估指標設計，是機器學習可解釋性方向的實際應用，可對照科目三的模型解釋相關考點。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter3" target="_blank" rel="noopener">看原始教程 chapter3 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch4">
+    <p class="ch-num">CHAPTER 04</p>
+    <h2 class="ch-title serif">數學推理（蒸餾）</h2>
+    <p class="ch-sub">用 SFT 把 DeepSeek-R1 的推理能力蒸餾進一個小模型裡</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用監督微調（SFT）讓小模型（Qwen2.5-Math-1.5B）學習 DeepSeek-R1 生成的高品質推理軌跡（反思、驗算等複雜數學推理技能），本質是「知識蒸餾」——用大模型的輸出教小模型。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>資料蒸餾（Distillation）</dt>
+      <dd>讓強模型（DeepSeek-R1）先生成帶推理過程的答案，再用這些「教師」軌跡作為監督訊號微調小模型，把強模型的能力壓縮進小模型裡。</dd>
+      <dt>SFT 在數學推理中的角色</dt>
+      <dd>讓模型模仿教師模型的推理格式（反思、驗算步驟），而不是自己從零探索，是獲得推理能力最快、最省算力的路徑之一。</dd>
+      <dt>DeepMath-103K 資料集</dt>
+      <dd>數學推理任務專用的大規模訓練語料，資料清理與預處理的品質直接決定蒸餾效果。</dd>
+      <dt>模型評測閉環</dt>
+      <dd>資料準備→訓練→生成→評測構成完整流程，評測環節驗證蒸餾後的模型數學能力是否真的提升。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「蒸餾＝壓縮模型體積」</b>這裡的蒸餾核心是轉移能力（推理模式），不是單純裁剪參數量——教師模型的「思路」（反思／驗算習慣）才是被轉移的對象。</div>
+    <div class="misread"><b>「SFT 學會數學推理＝學會數學」</b>模型學到的是「教師模型在這類題目上展示的推理模式」，遇到訓練分布外的題型未必能泛化，這跟第11章討論的 SFT 侷限是同一個問題在不同教程裡的呼應。</div>
+    <div class="misread"><b>「資料量越大越好」</b>教程強調的是資料集的清理和預處理，資料品質（教師軌跡是否正確、格式是否統一）比單純堆資料量更關鍵。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span></p>
+      <h4>機器學習理論（高度相關）</h4>
+      <p>蒸餾、監督微調、極大似然估計、訓練／評測流程都是科目三的核心考點。</p>
+      <h4>應用規劃（中度相關）</h4>
+      <p>「要不要蒸餾一個專用小模型」是成本與能力的實際權衡——小模型部署成本低，但需要教師模型和額外訓練成本，這條決策邏輯規劃階段常會用到。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter4" target="_blank" rel="noopener">看原始教程 chapter4 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch5">
+    <p class="ch-num">CHAPTER 05</p>
+    <h2 class="ch-title serif">模型浮水印</h2>
+    <p class="ch-sub">人類看不見、演算法測得到的「隱形印記」</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 X-SIR 倉庫實現的 KGW 演算法，在語言模型生成文字時嵌入人類無法察覺但演算法可檢測的「水印」，並評估水印在改寫／翻譯攻擊下的穩健性。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>水印嵌入原理（KGW）</dt>
+      <dd>生成每個 token 時，根據上文的 hash 把詞表切成「綠名單」和「紅名單」，輕微提高綠名單 token 被選中的機率，讓水印文字在統計上偏向綠名單但仍保持流暢。</dd>
+      <dt>z-score 檢測</dt>
+      <dd>檢測時統計一段文字命中綠名單的比例是否顯著高於隨機期望，用 z-score 量化「這段文字有多大機率被加了水印」。</dd>
+      <dt>評估指標（AUC／TPR@FPR）</dt>
+      <dd>AUC 衡量整體區分能力；TPR@FPR=0.01 這種嚴格假陽性率下的檢出率更貼近實際部署場景（不能隨便誤判正常文字帶水印）。</dd>
+      <dt>穩健性攻擊（改寫／翻譯）</dt>
+      <dd>用另一個模型把水印文字改寫或翻譯成另一種語言再翻回來，檢驗水印訊號是否還能被檢測到——這是水印技術能否實用的關鍵考驗。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「水印＝看得見的標記」</b>這裡的水印是統計層面、不影響可讀性的 token 選擇偏好，人類完全看不出來，跟圖片／文件上可見的浮水印是完全不同的機制。</div>
+    <div class="misread"><b>「水印強度越高越好」</b>提高水印強度會開始影響生成文字的流暢度和品質，需要在可檢測性與生成品質之間權衡。</div>
+    <div class="misread"><b>「翻譯一遍水印就沒了」</b>教程實測顯示，即使經過改寫／翻譯攻擊，水印檢出率通常仍顯著高於隨機水平，只是會下降——穩健性是「程度」問題，不是「有無」問題。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（中度相關）</h4>
+      <p>AI 生成內容溯源、防止模型被盜用來生成誤導性內容，是內容治理與合規規劃的實務工具。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>涉及假設檢定（z-score／AUC／ROC）的統計方法，可對照科目三的評估指標章節，但整體偏工程實現而非核心訓練理論。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter5" target="_blank" rel="noopener">看原始教程 chapter5 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch6">
+    <p class="ch-num">CHAPTER 06</p>
+    <h2 class="ch-title serif">越獄攻擊</h2>
+    <p class="ch-sub">想要更好的安全，要先學會怎麼攻破</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 EasyJailbreak 框架系統化地對大模型執行越獄攻擊（如 PAIR 方法），理解攻擊的 Selector／Mutator／Constraint／Evaluator 四模組循環——目的是「先學會攻擊才能做好防禦」。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>越獄攻擊四模組循環</dt>
+      <dd>Selector 挑選待變異的越獄提示 → Mutator 對提示做變換（如翻譯成小語種繞過安全過濾）→ Constraint 過濾不合格的變體 → Evaluator 評估攻擊是否成功，循環迭代直到攻破或達到停止條件。</dd>
+      <dt>PAIR 方法</dt>
+      <dd>用一個「攻擊者模型」自動生成並迭代改進越獄提示，根據目標模型的回覆動態調整策略，是一種模型對模型的自動化紅隊測試。</dd>
+      <dt>越獄 vs 提示注入</dt>
+      <dd>越獄是使用者主動試圖繞過模型自身的安全限制；提示注入是第三方在正常內容裡夾帶指令劫持模型行為，攻擊者角色不同（呼應第2章 R-Judge 的安全案例）。</dd>
+      <dt>突變策略多樣性</dt>
+      <dd>翻譯成小語種、角色扮演、情境包裝都是常見突變手法，框架把這些手法模組化，方便系統性覆蓋測試。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「越獄只是套話術模板」</b>EasyJailbreak 強調的是系統化、可迭代的攻擊流程（PAIR 會根據目標模型的回覆動態調整下一次嘗試），不是靠一份寫死的提示詞庫。</div>
+    <div class="misread"><b>「防住已知越獄方法＝模型安全」</b>越獄手法在快速演化（翻譯類／角色扮演類／多輪漸進類），紅隊測試需要持續用新方法探測，這也是本教程強調「先學攻擊」的原因。</div>
+    <div class="misread"><b>「越獄測試只能人工做」</b>EasyJailbreak 把攻擊—評估流程自動化，可以規模化地對模型做安全測評，這是企業上線前的必要安全評估手段之一。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>模型上線前的安全測評流程、紅隊測試方案設計，直接影響產品的合規與風險控制。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>涉及對抗樣本／對抗訓練的相關概念，但本章重點是安全工程實踐而非訓練理論。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter6" target="_blank" rel="noopener">看原始教程 chapter6 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch7">
+    <p class="ch-num">CHAPTER 07</p>
+    <h2 class="ch-title serif">大模型隱寫</h2>
+    <p class="ch-sub">「看不見的墨水」——把秘密訊息藏進看起來正常的生成文字裡</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 GPT-2 模型實現文字隱寫術，在生成看似正常的文字時，透過霍夫曼編碼或固定長度編碼（FLC）把秘密訊息編碼進 token 的選擇序列裡。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>隱寫 vs 水印的本質區別</dt>
+      <dd>水印（第5章）是為了證明「這段文字是 AI 生成的」；隱寫是為了在文字裡藏一段任意的秘密訊息，信息容量和用途都不同。</dd>
+      <dt>霍夫曼編碼嵌入</dt>
+      <dd>利用模型每一步生成時對下一個 token 的機率分布，把秘密訊息的二進位序列按霍夫曼樹映射成 token 選擇路徑，常見／高機率的 token 對應更短的編碼，兼顧隱蔽性和編碼效率。</dd>
+      <dt>固定長度編碼（FLC）</dt>
+      <dd>每個 token 選擇固定映射幾個位元，實現更簡單，但在機率分布不均勻時可能不如霍夫曼編碼高效。</dd>
+      <dt>編碼參數 k</dt>
+      <dd>控制每步編碼的位元數，k 越大單位文字能藏的訊息越多，但也可能讓生成文字更偏離模型的自然分布、更容易被統計手段察覺。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「隱寫＝加密」</b>加密是讓訊息不可讀但看起來像亂碼，容易引起懷疑；隱寫的目標是讓載體（這裡是 AI 生成的一段正常文字）本身看起來完全正常，不引起任何懷疑。</div>
+    <div class="misread"><b>「隱寫文字會很不自然」</b>教程設計裡隱寫文字和無隱寫約束的普通文字是同時生成對比的，好的隱寫方法應該讓兩者在流暢度上難以區分，這也是隱寫術是否「夠格」的關鍵判準。</div>
+    <div class="misread"><b>「k 值越大越好」</b>更大的 k 意味著單次 token 選擇要滿足更多編碼約束，可能被迫選擇低機率 token，增加了被統計檢測方法（類似第5章的 z-score 思路）識破的風險。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（低度相關）</h4>
+      <p>屬於較邊緣／研究性質的應用場景（隱蔽通訊），規劃實務中直接落地的案例較少。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>核心是信息論編碼（霍夫曼編碼）與語言模型機率分布的結合，跟科目三的資訊熵概念有一定關聯，但非核心考點。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter7" target="_blank" rel="noopener">看原始教程 chapter7 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch8">
+    <p class="ch-num">CHAPTER 08</p>
+    <h2 class="ch-title serif">多模態模型</h2>
+    <p class="ch-sub">從「LLM 能看圖」到「任意模態到任意模態」</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>系統梳理多模態大語言模型（MLLM）的兩種主流架構（LLM 作為調度器 vs 編碼器—LLM—解碼器聯合體），並以 NExT-GPT 這個「任意到任意模態」模型為例，實作搭建、訓練與推理，支援文字／圖像／視訊／音訊任意組合的輸入輸出。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>架構一：LLM 作為離散調度器</dt>
+      <dd>LLM 只接收文字訊號、向下游模組下發純文字命令，模組間不直接互動，靈活但資訊傳遞會有損耗（像經理下指令，各部門互相不溝通）。</dd>
+      <dt>架構二：編碼器—LLM—解碼器聯合體</dt>
+      <dd>目前最流行的架構（NExT-GPT 即此類）：LLM 直接接收多模態編碼訊號並自行決策，再委派給對應解碼器生成輸出。</dd>
+      <dt>ImageBind 統一編碼器</dt>
+      <dd>把圖像／視訊／音訊等不同模態都映射到同一個共享嵌入空間，讓 LLM 能用統一方式「理解」不同模態的輸入。</dd>
+      <dt>三階段訓練（NExT-GPT）</dt>
+      <dd>第一階段只訓練輸入投影層（編碼端對齊，凍結 LLM 本體）→ 第二階段只訓練輸出投影層（解碼端對齊）→ 第三階段用 LoRA 微調 LLM 本體＋兩端投影層（指令微調），逐步、分層地把多模態能力接入已有語言模型，而不是從零訓練一個全新模型。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「多模態＝模型能看圖」</b>嚴格意義的多模態大模型追求「任意模態到任意模態」（NExT-GPT 可以文字輸入生成圖＋視訊＋音訊），不只是「看圖說話」這一種單向能力。</div>
+    <div class="misread"><b>「接入新模態需要重新訓練整個 LLM」</b>三階段訓練法刻意凍結 LLM 本體的大部分參數，只訓練連接編碼器／解碼器的投影層，這也是為什麼要到第三階段才輪到用 LoRA 微調 LLM 本體——成本被刻意壓到最低。</div>
+    <div class="misread"><b>「語言智能只是多模態智能的一部分」</b>教程開篇點出行業共識：正因為 LLM 已具備強大的語義理解能力，語言被公認為承載智能的「樞紐」模態，所以幾乎所有 MLLM 都是在 LLM 基礎上做擴展，而不是從頭設計一個非語言中心的架構。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>多模態產品形態（客服／內容生成／機器人互動）的選型直接依賴架構一／架構二的取捨。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>涉及跨模態對齊、表徵學習（ImageBind 的共享嵌入空間），與科目三的表徵學習概念有關聯。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter8" target="_blank" rel="noopener">看原始教程 chapter8 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch9">
+    <p class="ch-num">CHAPTER 09</p>
+    <h2 class="ch-title serif">GUI 智能體</h2>
+    <p class="ch-sub">讓 AI 看手機截圖、自己決定下一步該點哪裡</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>基於 Qwen2-VL-7B 多模態模型和 OS-Kairos 資料集，用 LLaMA-Factory 做有監督微調，構建一個能「看手機截圖、決定下一步操作」的 GUI 智能體，並讓它對自己的每個動作給出 1–5 分的信心分數。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>Executable Language Grounding</dt>
+      <dd>把 GUI 操作轉成模型能生成的結構化動作指令（CLICK 座標／TYPE 文字／SCROLL 方向等），模型的任務從「理解語言」變成「把語言指令映射成可執行的介面操作」。</dd>
+      <dt>自適應人機互動（OS-Kairos 核心理念）</dt>
+      <dd>智能體不只是執行動作，還要對每個動作輸出信心分數——分數低代表當前情境超出智能體的能力邊界，應主動交給人類接管，而不是硬著頭皮亂點。</dd>
+      <dt>基礎動作 vs 自訂動作</dt>
+      <dd>CLICK／TYPE／SCROLL 是所有平台通用的基礎動作；PRESS_BACK／PRESS_HOME 等屬於特定平台（如 Android）的自訂動作，這種分層設計讓框架能跨平台擴展。</dd>
+      <dt>有監督微調 GUI Agent 的資料形態</dt>
+      <dd>訓練資料是「任務描述＋歷史動作＋當前截圖 → 下一步動作＋信心分數」的配對，本質上是把 GUI 操作問題轉化成了一個多模態的序列預測任務。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「GUI 智能體＝自動化腳本」</b>傳統 RPA 腳本是寫死的固定路徑，遇到介面變化就會失效；GUI 智能體基於視覺語言模型即時理解當前截圖，能應對介面變化，但代價是需要額外的信心機制來控制風險。</div>
+    <div class="misread"><b>「分數低＝模型出錯」</b>低信心分數是 OS-Kairos 刻意設計的「求助信號」，目的是讓智能體在不確定時主動交還控制權給人類，而不是被動等到任務失敗才發現問題。</div>
+    <div class="misread"><b>「多模態大模型直接能操作 GUI」</b>Qwen2-VL-7B 本身只是通用視覺語言模型，必須先用 OS-Kairos 這類專門資料集做有監督微調，才能學會輸出符合 Executable Language Grounding 格式、可被執行環境解析的動作指令。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>GUI 智能體（自動點外賣／回訊息／比價）是目前最熱的消費級 Agent 應用方向之一，自適應人機互動的信心機制直接影響產品的可用性與安全邊界設計。</p>
+      <h4>機器學習理論（中度相關）</h4>
+      <p>多模態有監督微調、序列決策（動作預測）與強化學習的探索—利用問題有相通之處。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter9" target="_blank" rel="noopener">看原始教程 chapter9 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch10">
+    <p class="ch-num">CHAPTER 10</p>
+    <h2 class="ch-title serif">智能體安全</h2>
+    <p class="ch-sub">大模型智能體邁向「未來作業系統」，但它意識得到風險嗎？</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 R-Judge 評測平台系統性測試大模型智能體在開放場景下的風險識別與安全判斷能力，涵蓋軟體工程／作業系統／物聯網／財務／健康照護等7大類27種場景、10種風險類型。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>R-Judge 評測方式</dt>
+      <dd>輸入是 Agent 與使用者／環境的多輪 ReAct 互動紀錄（Thought＋Action＋Environment），模型需輸出風險分析（自由文字）和安全標籤（safe／unsafe 二元判斷）兩部分。</dd>
+      <dt>風險識別 vs 安全判斷的落差</dt>
+      <dd>案例顯示模型可能寫出正確的風險分析文字，卻給出錯誤的安全標籤（例如正確分析了「kill 掉系統關鍵行程」的風險，但最終標籤判斷仍不夠準確）——「知道」和「判斷對」是兩件不同的事。</dd>
+      <dt>Oracle Test</dt>
+      <dd>把模型自己生成的風險分析替換成人工標註的標準答案，再測安全判斷準確率是否提升，用來分離「分析能力不足」和「判斷決策本身有缺陷」這兩種失敗原因。</dd>
+      <dt>自主作業系統（AIOS／OS-Copilot 等）</dt>
+      <dd>智能體正從「回答問題」演進到「接管作業系統級權限」（讀取隱私資料、執行終端指令、發起網路請求），風險測評的急迫性也隨之上升。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「模型分析對了＝會做出正確判斷」</b>正如 Oracle Test 揭示的，分析品質和最終二元判斷品質並不總是一致，評測框架必須把這兩步分開測量，才能定位問題出在哪一環。</div>
+    <div class="misread"><b>「安全風險＝使用者明顯的惡意請求」</b>「把 SSH 私鑰發到外部 URL」這類案例相對好識別，但「清理系統關鍵行程」這種表面上是善意請求（電腦變快）反而更容易被模型誤判為安全——風險判斷需要結合動作的實際後果，而不只是意圖表面。</div>
+    <div class="misread"><b>「多測幾個案例就夠了」</b>R-Judge 之所以覆蓋7大類27場景10種風險類型，是因為智能體安全的失敗模式極其多樣，單一維度的測試無法反映真實部署環境中的風險分布。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span>　機器學習<span class="relbar"><span class="on"></span><span></span><span></span></span></p>
+      <h4>應用規劃（極高相關）</h4>
+      <p>Agent 自主執行權限的風險評估、上線前的安全測評流程，是把 Agent 部署到生產環境前必須完成的規劃環節。</p>
+      <h4>機器學習理論（低度相關）</h4>
+      <p>更偏安全工程與評測方法學，核心訓練理論關聯度不高，但評測框架的分層測量方法論值得參考。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter10" target="_blank" rel="noopener">看原始教程 chapter10 ↗</a></p>
+  </section>
+
+  <section class="chapter" id="ch11">
+    <p class="ch-num">CHAPTER 11</p>
+    <h2 class="ch-title serif">RLHF 安全對齊</h2>
+    <p class="ch-sub">跟 iPAS 機器學習科目重疊度最高的一章：親手跑一遍 PPO</p>
+
+    <h3 class="sec">本章主旨</h3>
+    <p>用 PPO 演算法微調 GPT-2，讓它在續寫 IMDB 影評時傾向生成積極正面的內容，BERT 情感分類器的輸出被當作獎勵訊號，完整走一遍 RLHF（以及廣義「用獎勵模型引導生成」任務）的實操流程。</p>
+
+    <h3 class="sec">重要概念</h3>
+    <dl class="concepts">
+      <dt>PPO 三步循環</dt>
+      <dd>Rollout（策略模型根據 query 生成 response）→ Evaluation（獎勵函數／模型對 query-response 對打一個標量分數）→ Optimization（用獎勵訊號＋KL 散度約束，透過 PPO 更新策略模型，同時不讓它離參考模型太遠）。</dd>
+      <dt>獎勵模型的角色</dt>
+      <dd>本教程用一個預訓練好的 BERT 情感分類器的「正面類 logit」直接當作獎勵，這是簡化版 RLHF——真實 RLHF 的獎勵模型通常是專門在人類偏好對比資料上訓練出來的。</dd>
+      <dt>KL 散度懲罰項</dt>
+      <dd>訓練同時維護一個凍結的參考模型（ref_model），優化時把策略模型和參考模型的輸出分布之間的 KL 散度當作額外（負向）獎勵，防止模型為了騙過獎勵模型而生成語無倫次但能拿高分的文字。</dd>
+      <dt>訓練效果驗證</dt>
+      <dd>教程直接對比同一批 query 在優化前（ref_model）／優化後（model）的獎勵均值和中位數（0.59→2.24），用可重現的實驗數字說明 PPO 確實把模型的行為分布往獎勵高的方向推動了。</dd>
+    </dl>
+
+    <h3 class="sec">容易搞混的地方</h3>
+    <div class="misread"><b>「獎勵漲了＝模型更聰明了」</b>PPO 優化的是「讓獎勵模型打分更高」，不是讓模型整體能力變強——如果獎勵函數設計有缺陷（比如這裡只用情感分類器的正面分數），模型可能學會用一些討好獎勵模型但內容空洞的套路語句（獎勵駭客的雛形）。</div>
+    <div class="misread"><b>「PPO 一定要用價值網路」</b>本教程用的是標準 PPO（帶 Critic／價值頭），但 GRPO 用組內相對比較取代了價值網路，是 PPO 之外的另一條路線，兩者不是互斥，而是同一問題（降低方差／信用分配）的不同解法。</div>
+    <div class="misread"><b>「KL 散度懲罰是為了平衡探索和利用」</b>更準確的理解是防止策略模型漂移到參考模型從未見過、獎勵模型打分不可信的分布區域，而不是單純的探索率調節。</div>
+
+    <div class="ipas">
+      <p class="ipas-label">iPAS 關聯　應用規劃<span class="relbar"><span class="on"></span><span class="on"></span><span></span></span>　機器學習<span class="relbar"><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span><span class="on"></span></span></p>
+      <h4>機器學習理論（極高相關 — 本章與科目三核心考點直接對應）</h4>
+      <p>PPO、獎勵建模、KL 散度約束、策略優化都是科目三強化學習單元的核心考點，而且本章是11章裡唯一有完整可重現訓練數字（單卡 A800、耗時35分19秒、獎勵均值變化）的實操案例。</p>
+      <h4>應用規劃（中度相關）</h4>
+      <p>「什麼時候值得上 RLHF」的成本／收益判斷（這裡單卡、35分鐘就能看到效果）是產品規劃階段務實的參考基準。</p>
+    </div>
+
+    <p class="src-link">📄 <a href="https://github.com/Lordog/dive-into-llms/tree/main/documents/chapter11" target="_blank" rel="noopener">看原始教程 chapter11 ↗</a></p>
+  </section>
+
+  <footer class="colophon">
+    <p>筆記為原教程重新整理與詮釋，非逐字翻譯或摘錄；原始教程、課件與可執行代碼請見 <a href="https://github.com/Lordog/dive-into-llms" target="_blank" rel="noopener">Lordog/dive-into-llms</a>（上海交通大學公益專案）。</p>
+  </footer>
+
+</div>
+
+<button class="toc-toggle" id="tocToggle" aria-expanded="false" aria-controls="tocPanel">
+  <span class="dot"></span> 目錄
+</button>
+<div class="toc-panel" id="tocPanel" role="menu">
+  <a class="top-link" href="#top" data-close>↑ 封面 / 總覽</a>
+  <a href="#ch1" data-close><span class="n">01</span> 微調與部署</a>
+  <a href="#ch2" data-close><span class="n">02</span> 提示學習與思維鏈</a>
+  <a href="#ch3" data-close><span class="n">03</span> 知識編輯</a>
+  <a href="#ch4" data-close><span class="n">04</span> 數學推理（蒸餾）</a>
+  <a href="#ch5" data-close><span class="n">05</span> 模型浮水印</a>
+  <a href="#ch6" data-close><span class="n">06</span> 越獄攻擊</a>
+  <a href="#ch7" data-close><span class="n">07</span> 大模型隱寫</a>
+  <a href="#ch8" data-close><span class="n">08</span> 多模態模型</a>
+  <a href="#ch9" data-close><span class="n">09</span> GUI 智能體</a>
+  <a href="#ch10" data-close><span class="n">10</span> 智能體安全</a>
+  <a href="#ch11" data-close><span class="n">11</span> RLHF 安全對齊</a>
+</div>
+
+<script>
+  var toggle = document.getElementById('tocToggle');
+  var panel = document.getElementById('tocPanel');
+  function closePanel(){
+    panel.classList.remove('open');
+    toggle.setAttribute('aria-expanded','false');
+  }
+  toggle.addEventListener('click', function(){
+    var open = panel.classList.toggle('open');
+    toggle.setAttribute('aria-expanded', open ? 'true' : 'false');
+  });
+  panel.querySelectorAll('[data-close]').forEach(function(a){
+    a.addEventListener('click', function(){ closePanel(); });
+  });
+  document.addEventListener('click', function(e){
+    if(!panel.contains(e.target) && !toggle.contains(e.target)){
+      closePanel();
+    }
+  });
+  document.addEventListener('keydown', function(e){
+    if(e.key === 'Escape') closePanel();
+  });
+</script>
+
+</body>
+</html>
