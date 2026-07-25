@@ -235,20 +235,6 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 </head>
 <body>
 <button id="syncBadge" onclick="manageSync()" style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);cursor:pointer;">🧪 靜態展示版・進度不會保存・點擊設定同步</button>
-<div style="position:fixed;left:14px;bottom:14px;z-index:200;">
-  <button id="sideStoryToggle" onclick="var p=document.getElementById('sideStoryPanel');var open=p.style.display==='block';p.style.display=open?'none':'block';event.stopPropagation();" style="display:flex;align-items:center;gap:6px;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px 7px 11px;font-size:12px;cursor:pointer;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);">📚 番外篇</button>
-  <div id="sideStoryPanel" style="display:none;position:absolute;bottom:44px;left:0;min-width:180px;background:var(--surface);border:1px solid var(--border);border-radius:12px;box-shadow:0 10px 30px -12px rgba(0,0,0,.35);padding:6px;">
-    <a href="ai-agent-book.html" style="display:block;padding:9px 11px;border-radius:8px;text-decoration:none;color:var(--text);font-size:12.5px;white-space:nowrap;">🤖 AI Agent 讀書筆記</a>
-    <a href="dive-into-llms.html" style="display:block;padding:9px 11px;border-radius:8px;text-decoration:none;color:var(--text);font-size:12.5px;white-space:nowrap;">📖 動手學大模型</a>
-  </div>
-</div>
-<script>
-  document.addEventListener('click', function(){
-    var p = document.getElementById('sideStoryPanel');
-    if(p) p.style.display = 'none';
-  });
-</script>
-
 <div class="header">
   <h1>📚 IPAS 備考系統</h1>
   <div class="header-right">
@@ -311,6 +297,24 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
     </div>
   </div>
 
+  <div class="action-card" id="bonusCard">
+    <div class="action-card-header" onclick="toggleBonus()">
+      <span class="action-icon">📚</span>
+      <div class="action-text">
+        <div class="action-title">番外篇</div>
+        <div class="action-desc" id="bonusCardDesc">動手學大模型 · AI Agent筆記 · 21章</div>
+      </div>
+      <span class="action-arrow">▼</span>
+    </div>
+    <div class="expand-panel" id="bonusExpand">
+      <div class="subject-toggle">
+        <button class="subject-btn active" id="bonusLlmsBtn" onclick="switchBonusBook('llms')">動手學大模型</button>
+        <button class="subject-btn" id="bonusAgentBtn" onclick="switchBonusBook('agent')">AI Agent 筆記</button>
+      </div>
+      <div id="bonusContent"><div class="loading">載入中...</div></div>
+    </div>
+  </div>
+
 </div>
 
 <!-- Overall progress (expanded by default) -->
@@ -368,6 +372,9 @@ let currentGuideRound = 1;
 let currentQuizRound = 1;
 let guideLoaded = false;
 let quizLoaded = false;
+let bonusData = { llms: null, agent: null };
+let currentBonusBook = 'llms';
+let bonusLoaded = false;
 
 async function api(path, opts = {}) {
   try {
@@ -476,6 +483,72 @@ function toggleQuiz() {
     quizLoaded = true;
     loadQuiz();
   }
+}
+
+function toggleBonus() {
+  const card = document.getElementById('bonusCard');
+  const panel = document.getElementById('bonusExpand');
+  const isOpen = card.classList.contains('expanded');
+  card.classList.toggle('expanded', !isOpen);
+  panel.classList.toggle('open', !isOpen);
+  if (!isOpen && !bonusLoaded) {
+    bonusLoaded = true;
+    loadBonusBook('llms');
+  }
+}
+
+async function loadBonusBook(book) {
+  currentBonusBook = book;
+  document.getElementById('bonusLlmsBtn').classList.toggle('active', book === 'llms');
+  document.getElementById('bonusAgentBtn').classList.toggle('active', book === 'agent');
+  if (!bonusData[book]) {
+    document.getElementById('bonusContent').innerHTML = '<div class="loading">載入中...</div>';
+    try {
+      const res = await fetch(book === 'llms' ? 'bonus_llms.json' : 'bonus_agent.json');
+      bonusData[book] = await res.json();
+    } catch (e) {
+      document.getElementById('bonusContent').innerHTML = '<div class="no-more">載入失敗，稍後再試</div>';
+      return;
+    }
+  }
+  renderBonusList(book);
+}
+
+function switchBonusBook(book) {
+  loadBonusBook(book);
+}
+
+function renderBonusList(book) {
+  const data = bonusData[book];
+  if (!data) return;
+  const listHtml = data.segments.map(seg => `
+    <div class="segment-card" style="cursor:pointer" onclick="openBonusChapter('${book}', ${seg.id})">
+      <div class="segment-header">
+        <span class="segment-num">第 ${seg.id} 章</span>
+      </div>
+      <div class="segment-title" style="margin-bottom:0">${escHtml(seg.title)}</div>
+    </div>`).join('');
+  document.getElementById('bonusContent').innerHTML = listHtml;
+  scrollToCard('bonusCard');
+}
+
+function openBonusChapter(book, id) {
+  const data = bonusData[book];
+  if (!data) return;
+  const seg = data.segments.find(s => s.id === id);
+  if (!seg) return;
+  document.getElementById('bonusContent').innerHTML = `
+    <button class="btn btn-secondary" onclick="renderBonusList('${book}')">← 返回目錄</button>
+    <div class="segment-card" style="margin-top:12px">
+      <div class="segment-header">
+        <span class="segment-num">第 ${seg.id} 章</span>
+      </div>
+      <div class="segment-title">${escHtml(seg.title)}</div>
+      <div class="segment-content">${escHtml(seg.content)}</div>
+    </div>
+    <a href="${data.page}#${seg.anchor}" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--muted)">看原文完整頁 ↗</a>
+  `;
+  scrollToCard('bonusCard');
 }
 
 function toggleStats() {

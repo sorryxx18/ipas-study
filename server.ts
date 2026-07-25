@@ -509,6 +509,15 @@ const server = serve({
       return new Response("Not found", { status: 404 });
     }
 
+    // Serve bonus reading data (static reference JSON, no sync/API needed)
+    if (path === "/bonus_llms.json" || path === "/bonus_agent.json") {
+      const filePath = join(BASE, "webapp", path);
+      if (existsSync(filePath)) {
+        return new Response(Bun.file(filePath), { headers: new Headers({ "Content-Type": "application/json; charset=utf-8" }) });
+      }
+      return new Response("Not found", { status: 404 });
+    }
+
 
     if (path === "/api/git-sync" && req.method === "POST") {
       return gitSync().then((result) => Response.json(result));
