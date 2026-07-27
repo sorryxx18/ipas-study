@@ -2697,7 +2697,7 @@
     {
       "id": "official_115_1_subject3_42",
       "source": "official_115_1_subject3",
-      "question": "觀察程式中行",
+      "question": "下圖為使用 ResNet 進行遷移學習（Transfer Learning）的 Python 程式片段（第 42~43 題共用）：\n\nimport torch\nimport torch.nn as nn\nimport torchvision\n\nmodel = torchvision.models.resnet50(pretrained=True)\nfor param in model.parameters():\n    param.requires_grad = False  # 行(A)\n\nmodel.fc = nn.Linear(2048, 2)\noptimizer = torch.optim.Adam(model.fc.parameters(), lr=1e-4)\n\n觀察程式中行(A)將所有既有權重的梯度計算關閉，這在遷移學習中屬於哪一種標準策略？",
       "options": {
         "A": "全面微調（Full Fine-Tuning）",
         "B": "零樣本學習（Zero-shot Learning）",
@@ -2705,7 +2705,7 @@
         "D": "知識蒸餾（Knowledge Distillation）"
       },
       "answer": "C",
-      "explanation": "【考點】\n特徵萃取（Feature Extraction）與微調方式辨識。題目文字目前缺少完整程式碼，但官方答案為 C，表示該程式行應是在凍結或使用預訓練模型抽取特徵，而非更新整個模型。\n\n【正解】\nC。特徵萃取（Feature Extraction）。\n\n【為什麼】\n特徵萃取通常使用已訓練好的模型作為固定特徵產生器，只取其輸出 embedding 或中間層表示，再接下游分類器或簡單模型。若程式碼中出現凍結參數、model.eval()、no_grad()、只取 features、不更新 backbone 等線索，就屬於 feature extraction。它和 full fine-tuning 不同，後者會更新整個預訓練模型權重。\n\n【錯誤選項解析】\nA：錯。全面微調會更新整個模型或大部分權重，和固定特徵抽取不同。\nB：錯。零樣本學習是不用任務標訓練直接泛化，非此題官方答案。\nC：對。用預訓練模型抽取表示供後續任務使用，就是特徵萃取。\nD：錯。知識蒸餾是學生模型學習教師模型輸出，不是單純取特徵。\n\n【名詞解釋】\n- Feature Extraction：使用模型抽取特徵表示。\n- Backbone：預訓練主幹模型。\n- Full Fine-Tuning：更新整個模型權重。\n- Zero-shot Learning：未見任務或類別上的直接泛化。\n- Knowledge Distillation：教師模型指導學生模型訓練。\n\n【記憶】\n特徵萃取口訣：**「大模型當特徵機，後面再接小模型」**。\n\n補充：目前 JSON 題幹缺少完整程式碼，因此解析依官方答案補足；若之後補回圖或程式碼，可再校準細節。",
+      "explanation": "【考點】\n特徵萃取（Feature Extraction）與微調方式辨識。程式先用 torchvision.models.resnet50(pretrained=True) 載入預訓練權重，行(A) param.requires_grad = False 把所有既有參數的梯度計算關閉（凍結整個 backbone），接著只把 model.fc 換成新的 nn.Linear(2048, 2)，optimizer 也只傳入 model.fc.parameters()——代表只有新加的輸出層會被訓練。\n\n【正解】\nC。特徵萃取（Feature Extraction）。\n\n【為什麼】\n特徵萃取是把預訓練模型當成固定的特徵產生器：凍結 backbone 全部權重（requires_grad=False），只取其輸出（或中間層）表示，再接一個新的、可訓練的小分類頭（這裡是 model.fc）。本題程式碼完全符合這個模式：backbone 凍結、只訓練新的 Linear 層，因此屬於特徵萃取，不是更新整個模型的 Full Fine-Tuning。\n\n【錯誤選項解析】\nA：全面微調（Full Fine-Tuning）— 錯。全面微調會讓 backbone 的 requires_grad 保持 True（或只解凍後段），整個或大部分預訓練權重都會被更新；本題明確把所有參數凍結，不符合。\nB：零樣本學習（Zero-shot Learning）— 錯。零樣本學習是完全不用任務標註資料、靠模型既有知識直接泛化到新類別，本題明確有 optimizer 在訓練 model.fc，是有監督訓練，不是零樣本。\nC：特徵萃取（Feature Extraction）— 對。凍結全部既有權重、只訓練新加的輸出層，是特徵萃取的標準寫法。\nD：知識蒸餾（Knowledge Distillation）— 錯。知識蒸餾需要一個教師模型（teacher）與學生模型（student），用教師的輸出（如 soft label）指導學生訓練；本題只有一個 ResNet50 模型改輸出層，沒有教師/學生架構。\n\n【名詞解釋】\n- Feature Extraction：凍結預訓練模型權重，只用其輸出當特徵，再接新的可訓練分類器。\n- Full Fine-Tuning：解凍並更新預訓練模型的全部（或大部分）權重。\n- requires_grad：PyTorch 張量是否參與梯度計算/反向傳播的屬性，設 False 即凍結。\n- Zero-shot Learning：不用任務標註資料，直接泛化到新類別/任務。\n- Knowledge Distillation：學生模型模仿教師模型輸出進行訓練。\n\n【記憶】\n看到「凍結全部權重＋只訓練新加的分類頭」就是特徵萃取；口訣：**「backbone 凍住不動，只教新長出來的那一層」**。",
       "topic": "大型語言模型微調與參數效率",
       "image": "images/exam_pages/q46_42_fig.png"
     },
@@ -2757,7 +2757,7 @@
     {
       "id": "official_115_1_subject3_46",
       "source": "official_115_1_subject3",
-      "question": "參考下圖資料處理，下列哪一項描述組合正確？",
+      "question": "參考下圖資料處理程式碼：\n\nx_train, x_test = x_train / 255.0, x_test / 255.0\ny_train = tf.keras.utils.to_categorical(y_train, 10)\ny_test = tf.keras.utils.to_categorical(y_test, 10)\n\n描述 A：x_train, x_test 將影像範圍壓縮到 0~31 範圍\n描述 B：可以增加模型的泛化能力\n描述 C：x_train, x_test 資料轉換結果相當於 z-score 標準化\n描述 D：資料轉換目的是避免梯度爆炸或梯度消失\n描述 E：y_train 將 label 轉換為獨熱編碼（One-hot Encoding）\n描述 F：y_train 適合輸出層使用 softmax 函數\n\n下列哪一項描述組合正確？",
       "options": {
         "A": "描述 A、描述 C、描述 F",
         "B": "描述 B、描述 D、描述 E、描述 F",
@@ -2765,14 +2765,14 @@
         "D": "描述 A、描述 B、描述 D、描述 E、描述 F"
       },
       "answer": "B",
-      "explanation": "【考點】\n資料處理流程判讀題。此題原始題幹依賴附圖中的描述 A–F，但目前題庫 JSON 只保留選項組合，未保留附圖/描述內容；因此解析先依官方答案 B 補成判讀策略，並提醒實際作答需回看附圖。\n\n【正解】\nB。描述 B、描述 D、描述 E、描述 F。\n\n【為什麼】\n這類題通常要求根據資料處理圖，判斷哪些描述符合流程，例如資料切分、標準化、訓練集/測試集使用、模型評估或交叉驗證等。官方答案為 B，代表圖中的 B、D、E、F 為正確描述；A、C 至少各有一處與圖示流程不符。由於目前題庫缺少附圖與描述 A–F 的原文，無法精確說明每個描述錯在哪裡，後續若能補回附圖文字，應再做完整解析校準。\n\n【錯誤選項解析】\nA：錯。此組合包含描述 A、C，而官方答案未包含 A、C，表示至少其中一項與圖中資料處理流程不符。\nB：對。官方答案組合為 B、D、E、F，代表這四項符合附圖資料處理流程。\nC：錯。此組合包含 C，且缺少 D；和官方答案不一致。\nD：錯。此組合包含 A，且比官方答案多出不正確描述；不可因選項較完整就選。\n\n【名詞解釋】\n- 資料處理流程：從原始資料到模型訓練/評估前的清理、轉換、切分與標準化步驟。\n- Train/Test Split：將資料分成訓練集與測試集，以評估泛化能力。\n- Standardization：將特徵轉換為平均值 0、標準差 1 的尺度。\n- Data Leakage：測試資料資訊不當流入訓練過程，造成評估過度樂觀。\n- Cross Validation：用多次資料切分評估模型穩定性。\n\n【記憶】\n圖表組合題口訣：**「先看流程箭頭，再比描述是否偷換資料集」**。此題目前 JSON 缺附圖，已先保留官方答案 B；若之後補回 A–F 原文，要再精修。",
+      "explanation": "【考點】\n影像像素正規化（除以 255 壓到 0~1）與 to_categorical 獨熱編碼的效果判讀，需分辨這不是 z-score 標準化，也要正確算出壓縮後的數值範圍。\n\n【正解】\nB。描述 B、描述 D、描述 E、描述 F。\n\n【為什麼】\nx_train / 255.0 是 Min-Max 正規化，把原本 0~255 的像素值壓縮到 0~1 之間（不是 0~31），統一輸入尺度可以讓梯度式最佳化更穩定（避免梯度爆炸或消失），也有助於模型訓練更平滑、提升泛化能力。to_categorical(y_train, 10) 則是把整數類別標籤轉成 10 維獨熱編碼，這種標籤格式搭配輸出層 softmax + categorical_crossentropy 是多類別單標籤分類的標準組合。因此 B、D、E、F 皆正確，官方答案為 B。\n\n【錯誤選項解析】\n描述 A：錯。/255.0 是把 0~255 壓縮到 0~1，不是 0~31，數值範圍算錯，不列入正確組合。\n描述 B：對。輸入尺度一致有助訓練穩定與模型泛化，屬於合理描述。\n描述 C：錯。z-score 標準化是 (x−平均值)/標準差，會讓資料平均值變 0、標準差變 1；本題只是單純除以固定常數 255，是 Min-Max 縮放到 [0,1]，不是 z-score。\n描述 D：對。輸入數值尺度過大容易在深層網路造成梯度爆炸或消失，正規化到 0~1 能緩解這個問題。\n描述 E：對。to_categorical(y_train, 10) 就是把整數標籤轉成 10 類獨熱編碼。\n描述 F：對。獨熱編碼的多類別單標籤分類，輸出層慣用 softmax 搭配 categorical_crossentropy。\n\n【名詞解釋】\n- Min-Max Scaling：把資料線性縮放到指定範圍（此處 0~1），此處用 /255.0 對影像像素值做正規化。\n- Z-score Standardization：(x−mean)/std，轉成平均值 0、標準差 1，跟單純除以常數不同。\n- One-hot Encoding：把類別標籤轉成只有一個位置為 1、其餘為 0 的向量表示。\n- Gradient Exploding/Vanishing：梯度在反向傳播中變得過大或過小，影響訓練穩定性。\n- Softmax：把多類別 logits 轉成加總為 1 的機率分布，常搭配獨熱標籤與 categorical_crossentropy。\n\n【記憶】\n口訣：**「除 255 是壓到 0~1 不是 0~31，除以常數不是 z-score；獨熱標籤配 softmax」**。",
       "topic": "核心考點辨識與選項排除",
       "image": "images/exam_pages/q46_46_fig.png"
     },
     {
       "id": "official_115_1_subject3_47",
       "source": "official_115_1_subject3",
-      "question": "參考下圖建立模型結果，下列哪一項描述組合正確？",
+      "question": "參考下圖 CNN 模型建立程式碼（區塊 2~4，區塊 1 為輸入層與第一組 Conv2D，圖中省略）：\n\n區塊 2：\nlayers.Conv2D(64, (3,3), activation='relu', padding='same'),\nlayers.BatchNormalization(),\nlayers.MaxPooling2D((2,2)),\nlayers.Dropout(0.25),\n\n區塊 3：\nlayers.Conv2D(128, (3,3), activation='relu', padding='same'),\nlayers.BatchNormalization(),\nlayers.Conv2D(128, (3,3), activation='relu', padding='same'),\nlayers.BatchNormalization(),\nlayers.MaxPooling2D((2,2)),\nlayers.Dropout(0.25),\n\n區塊 4：\nlayers.Flatten(),\nlayers.Dense(256, activation='relu'),\nlayers.BatchNormalization(),\nlayers.Dropout(0.5),\nlayers.Dense(10, activation='softmax')\n\n描述 A：區塊 1 layers.Input(shape=(32,32,3)) 主要目的是進行資料標準化\n描述 B：區塊 1 layers.Conv2D(32, kernel_size=(3,3), padding=\"same\", activation=\"relu\") 考慮輸入為 (32,32,3)，則輸出 shape 為 (32,32,3)\n描述 C：區塊 1 layers.BatchNormalization() 放在 Conv2D 之後可以減少梯度消失或爆炸\n描述 D：區塊 2 layers.Dropout(0.25) 可以隨機將 25% 神經元輸出設定為 1\n描述 E：區塊 3 layers.Dropout(0.25) 可以減少過度擬合（Overfitting）\n描述 F：區塊 4 Flatten 層的作用是將 3D 特徵圖展開為平成 1D 向量\n\n下列哪一項描述組合正確？",
       "options": {
         "A": "描述 A、描述 C",
         "B": "描述 C、描述 E、描述 F",
@@ -2780,7 +2780,7 @@
         "D": "描述 D、描述 E、描述 F"
       },
       "answer": "B",
-      "explanation": "【考點】\nCNN 模型建立結果判讀。此題依賴附圖與描述 A–F，但目前 JSON 未保留附圖與描述內容；依官方答案 B，可知正確描述組合為 C、E、F。\n\n【正解】\nB。描述 C、描述 E、描述 F。\n\n【為什麼】\n因題目缺少附圖與 A–F 原文，目前無法逐句校準每個描述。但可先根據官方答案建立刷題可用解析：遇到這類「參考模型建立結果」題，通常要檢查 model summary 中各層輸出 shape、參數量、activation、卷積/池化/flatten/dense 的連接順序，以及最後輸出是否符合分類任務。之後若補回附圖與描述 A–F，需重新核對 C/E/F 各自對應內容。\n\n【錯誤選項解析】\nA：錯。官方答案不是 A、C，因此描述 A 至少不屬於完整正確組合。\nB：對。官方答案指定描述 C、E、F。\nC：錯。包含描述 A/D，與官方答案不符。\nD：錯。包含描述 D 且缺少 C，與官方答案不符。\n\n【名詞解釋】\n- Model Summary：模型摘要，顯示層、輸出形狀與參數量。\n- CNN：卷積神經網路。\n- Flatten：將特徵圖展平成向量。\n- Dense：全連接層。\n- Output Shape：每層輸出的張量形狀。\n\n【記憶】\n缺圖題先記：**官方答案 B = C、E、F；補回附圖後要再校準每個描述**。\n\n補充：目前 JSON 缺附圖與描述 A–F，這題只能先以官方答案維持刷題可用；若補回圖，應重新核對每個描述。\n此解析已保留缺圖警示，避免把無法驗證的 A–F 描述硬編成不存在的內容。\n若考試畫面可見模型摘要，應逐項檢查輸出維度與參數量是否符合卷積、池化與全連接層規則。",
+      "explanation": "【考點】\nCNN 各層作用判讀：Input 層不做標準化、Conv2D 輸出 channel 數等於 filters 數、BatchNormalization 穩定訓練、Dropout 是把神經元輸出歸零而非設成 1、Flatten 把特徵圖展平成向量。\n\n【正解】\nB。描述 C、描述 E、描述 F。\n\n【為什麼】\n區塊 1 的 BatchNormalization() 接在 Conv2D 之後，是常見穩定訓練、緩解梯度消失/爆炸的作法（C 對）；區塊 3 的 Dropout(0.25) 目的是隨機丟棄部分神經元輸出以降低過擬合（E 對）；區塊 4 的 Flatten() 是把卷積輸出的 3D 特徵圖（高×寬×channel）展平成 1D 向量，銜接後面的 Dense 層（F 對）。因此正確組合是 C、E、F，對應官方答案 B。\n\n【錯誤選項解析】\n描述 A：錯。layers.Input(shape=(32,32,3)) 只是定義輸入張量的形狀，本身不做任何數值轉換，更不是資料標準化；標準化是另外用 /255.0 或 BatchNormalization 等步驟處理的。\n描述 B：錯。Conv2D(32, kernel_size=(3,3), padding=\"same\", ...) 的輸出 channel 數等於 filters 數（32），padding=\"same\" 只保持空間尺寸(高、寬)不變，所以輸入 (32,32,3) 的輸出應為 (32,32,32)，不是 (32,32,3)。\n描述 C：對。BatchNormalization 標準化每個 mini-batch 的分布，有助於穩定梯度、減少梯度消失/爆炸。\n描述 D：錯。Dropout(0.25) 是以 25% 機率把神經元「輸出設為 0」（丟棄），不是設定為 1；這是常見混淆點。\n描述 E：對。Dropout 迫使模型不過度依賴特定神經元組合，是常見降低過擬合的正則化技術。\n描述 F：對。Flatten 把多維（3D）特徵圖展平成一維向量，是接 Dense 層前的標準步驟。\n\n【名詞解釋】\n- Input Layer：定義模型輸入張量形狀，不做數值轉換。\n- Conv2D filters：卷積層輸出的 channel 數，等於設定的 filters 數量。\n- padding=\"same\"：讓卷積輸出的空間尺寸（高、寬）與輸入相同。\n- BatchNormalization：對 mini-batch 的分布做正規化，穩定訓練、緩解梯度問題。\n- Dropout：訓練時隨機將部分神經元輸出設為 0，用於降低過擬合。\n- Flatten：把多維特徵圖展平成一維向量。\n\n【記憶】\n口訣：**「Input 只定形狀不標準化；Conv2D 輸出看 filters 數；Dropout 是歸零不是設 1；Flatten 展平接 Dense」**。",
       "topic": "核心考點辨識與選項排除",
       "image": "images/exam_pages/q46_47_fig.png"
     },
