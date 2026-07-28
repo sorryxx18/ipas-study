@@ -21,7 +21,8 @@
   --orange: #c2410c;
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
-body { background: var(--bg); color: var(--text); font-family: "LXGW WenKai TC", "PingFang TC", "Microsoft JhengHei", sans-serif; min-height: 100vh; }
+body { background: var(--bg); color: var(--text); font-family: "LXGW WenKai TC", "PingFang TC", "Microsoft JhengHei", sans-serif; min-height: 100vh; max-width: 600px; margin: 0 auto; }
+@media (min-width: 640px) { body { border-left: 1px solid var(--border); border-right: 1px solid var(--border); } }
 
 /* Dark theme override */
 html.dark {
