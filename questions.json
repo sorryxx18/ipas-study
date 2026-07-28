@@ -1390,7 +1390,7 @@
     {
       "id": "official_114_2_subject3_49",
       "source": "official_114_2_subject3",
-      "question": "參考下圖執行結果，下列何者正確？",
+      "question": "參考下圖執行結果：\n\nmodel = Sequential()\nmodel.add(Input(shape=(X_train.shape[1],)))\nmodel.add(Dense(10, activation=\"relu\"))\nmodel.add(Dense(10, activation=\"relu\"))\nmodel.add(Dense(1, activation=\"sigmoid\"))\nmodel.summary()\nmodel.compile(loss=\"binary_crossentropy\", optimizer=\"adam\", metrics=[\"accuracy\"])\n\nModel: \"sequential\"\nLayer (type)      Output Shape    Param #\ndense (Dense)      (None, 10)     空格1\ndense_1 (Dense)    (None, 10)     空格2\ndense_2 (Dense)    (None, 1)      11\n\n下列何者正確？",
       "options": {
         "A": "activation=\"relu\"其數學式為",
         "B": "空格 1 值為 110，空格 2 值為 100；",
@@ -1398,7 +1398,7 @@
         "D": "activation=\"sigmoid\"一般用於多類別分類預測模型"
       },
       "answer": "C",
-      "explanation": "【考點】\n依附圖執行結果判斷空格值與神經網路輸出設定。此題目前 JSON 只保留「參考下圖」與選項，沒有附圖程式碼，因此解析先依官方答案 C 補成判讀策略，之後若補回附圖應再精修。\n\n【正解】\nC。空格 1 值為 100，空格 2 值為 110。\n\n【為什麼】\n題目要求根據附圖執行結果判斷正確敘述，官方答案為 C，表示附圖中兩個空格的輸出順序應分別對應 100 與 110。這類題通常考程式輸出、資料形狀、模型層輸出或參數設定，必須以實際執行結果為準；不能只因選項出現 relu、sigmoid 等熟悉名詞就選。\n\n【錯誤選項解析】\nA：錯。選項只寫 activation=\"relu\" 其數學式為，內容不完整，且不是附圖空格值的正確判斷。\nB：錯。把空格 1 與空格 2 的順序顛倒，與官方答案不符。\nC：對。依目前題庫答案，空格 1=100、空格 2=110。\nD：錯。sigmoid 通常用於二元分類或多標籤輸出；多類別單選分類更常用 softmax。\n\n【名詞解釋】\n- ReLU：常用激活函數，f(x)=max(0,x)。\n- Sigmoid：將輸出壓到 0 到 1，常用於二元分類機率。\n- Softmax：將多類別輸出轉成機率分布，常用於多類別分類。\n- 執行結果判讀：依程式實際輸出判斷選項正誤。\n- JSON 缺附圖：目前題庫缺少原始圖，後續若補圖需重新校準解析。\n\n【記憶】\n附圖題口訣：**「有圖看圖，沒圖先保留官方答案並標註需校準」**。此題先記 C：空格 1 是 100，空格 2 是 110。\n\n補充：此題目前應避免過度推論附圖細節；重點是保留官方答案並提醒資料來源需補齊。",
+      "explanation": "【考點】\nDense 層參數量計算（權重 + bias）、ReLU 與 Sigmoid 的正確數學式、sigmoid 適用的分類情境。\n\n【正解】\nC。空格 1 值為 100，空格 2 值為 110。\n\n【為什麼】\nDense 層參數量 = (輸入維度 × 神經元數) + 神經元數（bias）。\n先驗證第三層 dense_2：輸入是前一層的 10 個神經元，輸出 1 個神經元，參數量 = 10×1 + 1 = 11，跟圖中給的答案「11」一致，可反推公式沒錯。\ndense_1（第二層）：輸入是第一層的 10 個神經元，輸出 10 個神經元，參數量 = 10×10 + 10 = 110 → 空格2 = 110。\ndense（第一層）：輸入是 X_train.shape[1]（本題資料集為 9 個特徵），輸出 10 個神經元，參數量 = 9×10 + 10 = 100 → 空格1 = 100。\n所以空格1＝100、空格2＝110，對應選項 C。\n\n【錯誤選項解析】\nA：錯。圖中給的公式 f(x) = 1/(1+e^-x) 其實是 Sigmoid 的數學式，不是 ReLU 的；ReLU 的正確數學式是 f(x) = max(0, x)。選項刻意把兩者答錯配對，是常見混淆陷阱。\nB：錯。把空格1、空格2的數值順序顛倒了（正確是空格1=100、空格2=110，不是110、100）。\nC：對。依 Dense 層參數量公式推算，空格1=100、空格2=110。\nD：錯。sigmoid 把輸出壓縮到 0~1 之間，是二元分類（Binary Classification）常用的輸出層 activation，本題最後一層正是 Dense(1, activation=\"sigmoid\") 搭配 loss=\"binary_crossentropy\"，正是二元分類的標準寫法；多類別分類（Multi-class Classification）輸出層通常用 softmax，不是 sigmoid。\n\n【名詞解釋】\n- Dense 層參數量：(輸入維度 × 神經元數) + 神經元數（每個神經元一個 bias）。\n- ReLU：f(x) = max(0, x)，把負值歸零、正值原樣輸出的激活函數。\n- Sigmoid：f(x) = 1/(1+e^-x)，把輸出壓縮到 0~1 之間，常用於二元分類機率輸出。\n- Binary Crossentropy：搭配 sigmoid 單一輸出神經元使用的二元分類損失函數。\n- Softmax：把多類別 logits 轉成加總為 1 的機率分布，是多類別分類輸出層的常見選擇。\n\n【記憶】\n口訣：**「Dense 參數＝輸入×神經元＋神經元；sigmoid 配 binary，softmax 配多類別；ReLU 是 max(0,x) 不是那條 S 曲線」**。",
       "topic": "核心考點辨識與選項排除",
       "image": "images/exam_pages/q46_114s3_49_fig.png"
     },
