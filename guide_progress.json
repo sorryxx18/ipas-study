@@ -49,11 +49,11 @@
   },
   "subject1": {
     "total_estimated_segments": 71,
-    "completed_segments": 71,
-    "current_chapter": "科目1 完成",
-    "last_page": 0,
+    "completed_segments": 17,
+    "current_chapter": "科目1 閱讀中",
+    "last_page": 17,
     "log": [],
-    "current_section": "科目1 1–71 段已完成白話精修"
+    "current_section": "讀到第17段，下一段：第18段 Prompt Engineering 提示工程（內容白話精修已全部完成，閱讀進度另計）"
   },
-  "completed_segments": 167
+  "completed_segments": 113
 }

@@ -589,7 +589,7 @@ async function loadGuide() {
   document.getElementById('guideContent').innerHTML = `
     <div class="segment-card">
       <div class="segment-header">
-        <span class="segment-num">【${seg.id}/${seg.total}】 第 ${seg.round} 輪</span>
+        <span class="segment-num">【${seg.id}/${seg.total}】 第 ${currentGuideRound} 輪</span>
         <span class="segment-round">科目${currentSubject}</span>
       </div>
       <div class="segment-title">${escHtml(seg.title)}</div>
