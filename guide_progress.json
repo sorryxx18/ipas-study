@@ -11,8 +11,8 @@
   "subject3": {
     "total_estimated_segments": 96,
     "completed_segments": 96,
-    "current_chapter": "4.2",
-    "current_section": "4.2 非監督式學習（關聯規則 + 異常偵測 完成）",
+    "current_chapter": "科目3 完成",
+    "current_section": "科目3 1–96 段已完成白話精修",
     "last_page": 90,
     "log": [
       {
@@ -49,10 +49,11 @@
   },
   "subject1": {
     "total_estimated_segments": 71,
-    "completed_segments": 17,
-    "current_chapter": "未開始",
+    "completed_segments": 71,
+    "current_chapter": "科目1 完成",
     "last_page": 0,
-    "log": []
+    "log": [],
+    "current_section": "科目1 1–71 段已完成白話精修"
   },
-  "completed_segments": 95
+  "completed_segments": 167
 }
