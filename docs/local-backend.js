@@ -53,6 +53,22 @@
     return Math.ceil((exam.getTime() - today.getTime()) / 86400000);
   }
 
+  function calcStreak() {
+    const today = new Date();
+    const todayKey = today.toISOString().slice(0, 10);
+    const isActive = (e) => e && ((e.guide_completed ?? 0) > 0 || (e.quiz_answered ?? 0) > 0 || e.rested_early);
+    const todayActive = isActive(state.dailyLog[todayKey]);
+    let streak = 0;
+    for (let i = todayActive ? 0 : 1; i < 365; i++) {
+      const d = new Date();
+      d.setDate(d.getDate() - i);
+      const key = d.toISOString().slice(0, 10);
+      if (isActive(state.dailyLog[key])) streak += 1;
+      else break;
+    }
+    return streak;
+  }
+
   function getStatus() {
     const s3Done = state.guideS3.segments.filter((s) => s.completed).length;
     const s1Done = state.guideS1.segments.filter((s) => s.completed).length;
@@ -63,11 +79,11 @@
     const mastered = completedCorrect.size;
     return {
       daysLeft: examDaysLeft(),
-      streak: 0,
+      streak: calcStreak(),
       guide: {
         s3: { done: s3Done, total: state.guideS3.total ?? 95 },
         s1: { done: s1Done, total: state.guideS1.total ?? 70 },
-        round: state.guideProgress.round,
+        round: state.guideProgress.round ?? 1,
       },
       quiz: {
         answered: state.progress.stats.total_answered,
@@ -75,7 +91,7 @@
         mastered,
         total: totalQuestions,
         wrongPending,
-        round: state.progress.round,
+        round: state.progress.round ?? 1,
       },
     };
   }
@@ -387,6 +403,16 @@
     }, 3000);
   }
 
+  async function fetchJSONOrNull(path) {
+    try {
+      const res = await fetch(path);
+      if (!res.ok) return null;
+      return await res.json();
+    } catch {
+      return null;
+    }
+  }
+
   async function init() {
     const questions = await fetch('questions.json').then((r) => r.json());
     state.questions = questions;
@@ -395,7 +421,6 @@
     const token = getToken();
     let guideS1 = null;
     let guideS3 = null;
-    let loadedFromGh = false;
 
     if (token) {
       const [pRes, gpRes, s1Res, s3Res, dlRes] = await Promise.all([
@@ -408,35 +433,32 @@
       if (pRes.ok && pRes.found) state.progress = pRes.json;
       if (gpRes.ok && gpRes.found) state.guideProgress = gpRes.json;
       if (dlRes.ok && dlRes.found) state.dailyLog = dlRes.json;
-      if (s1Res.ok && s1Res.found) { guideS1 = s1Res.json; loadedFromGh = true; }
-      if (s3Res.ok && s3Res.found) { guideS3 = s3Res.json; loadedFromGh = true; }
+      if (s1Res.ok && s1Res.found) guideS1 = s1Res.json;
+      if (s3Res.ok && s3Res.found) guideS3 = s3Res.json;
     }
 
-    if (!guideS1 || !guideS3) {
-      const [bundledS1, bundledS3] = await Promise.all([
-        fetch('guide_s1.json').then((r) => r.json()),
-        fetch('guide_s3.json').then((r) => r.json()),
-      ]);
-      if (!guideS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
-      if (!guideS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
-    }
+    const [bundledS1, bundledS3, bundledProgress, bundledGuideProgress, bundledDailyLog] = await Promise.all([
+      fetchJSONOrNull('guide_s1.json'),
+      fetchJSONOrNull('guide_s3.json'),
+      fetchJSONOrNull('progress.json'),
+      fetchJSONOrNull('guide_progress.json'),
+      fetchJSONOrNull('daily_log.json'),
+    ]);
+
+    if (!guideS1 && bundledS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
+    if (!guideS3 && bundledS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
+    if (!token && bundledProgress) state.progress = JSON.parse(JSON.stringify(bundledProgress));
+    if (!token && bundledGuideProgress) state.guideProgress = JSON.parse(JSON.stringify(bundledGuideProgress));
+    if (!token && bundledDailyLog) state.dailyLog = JSON.parse(JSON.stringify(bundledDailyLog));
+
     state.guideS1 = guideS1;
     state.guideS3 = guideS3;
 
-    if (!token || !loadedFromGh) {
-      // No shared progress found (or no token) — demo starts from a clean slate,
-      // matching the previous no-persistence behavior.
-      for (const seg of state.guideS1.segments) { if (!token) { seg.completed = false; delete seg.completed_date; } }
-      for (const seg of state.guideS3.segments) { if (!token) { seg.completed = false; delete seg.completed_date; } }
-    }
-
-    if (!token) {
-      state.progress.current_queue = allIds;
-      state.progress.current_question = allIds[0] ?? null;
-    } else {
-      const stillQueued = new Set(allIds);
-      state.progress.current_queue = (state.progress.current_queue ?? allIds).filter((id) => stillQueued.has(id));
-      if (!state.progress.current_question) state.progress.current_question = state.progress.current_queue[0] ?? allIds[0] ?? null;
+    const stillQueued = new Set(allIds);
+    state.progress.current_queue = (state.progress.current_queue?.length ? state.progress.current_queue : allIds)
+      .filter((id) => stillQueued.has(id));
+    if (!state.progress.current_question || !stillQueued.has(state.progress.current_question)) {
+      state.progress.current_question = state.progress.current_queue[0] ?? allIds[0] ?? null;
     }
   }
 
