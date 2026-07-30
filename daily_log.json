@@ -60,5 +60,11 @@
     "quiz_answered": 0,
     "rested_early": false,
     "bonus_rounds": 0
+  },
+  "2026-07-30": {
+    "guide_completed": 0,
+    "quiz_answered": 1,
+    "rested_early": false,
+    "bonus_rounds": 0
   }
 }
