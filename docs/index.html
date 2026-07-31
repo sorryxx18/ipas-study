@@ -960,9 +960,13 @@ async function updateSyncBadge() {
 
 window.__onSyncResult = () => { updateSyncBadge(); };
 
-loadStatus();
-loadDailyStatus();
-updateSyncBadge();
+async function initApp() {
+  await loadStatus();
+  await loadDailyStatus();
+  await updateSyncBadge();
+}
+
+initApp();
 </script>
 
 <!-- Jump menu bottom sheet -->
