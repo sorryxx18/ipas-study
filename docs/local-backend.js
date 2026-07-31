@@ -437,19 +437,27 @@
       if (s3Res.ok && s3Res.found) guideS3 = s3Res.json;
     }
 
-    const [bundledS1, bundledS3, bundledProgress, bundledGuideProgress, bundledDailyLog] = await Promise.all([
+    const [bundledS1, bundledS3] = await Promise.all([
       fetchJSONOrNull('guide_s1.json'),
       fetchJSONOrNull('guide_s3.json'),
-      fetchJSONOrNull('progress.json'),
-      fetchJSONOrNull('guide_progress.json'),
-      fetchJSONOrNull('daily_log.json'),
     ]);
 
     if (!guideS1 && bundledS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
     if (!guideS3 && bundledS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
-    if (!token && bundledProgress) state.progress = JSON.parse(JSON.stringify(bundledProgress));
-    if (!token && bundledGuideProgress) state.guideProgress = JSON.parse(JSON.stringify(bundledGuideProgress));
-    if (!token && bundledDailyLog) state.dailyLog = JSON.parse(JSON.stringify(bundledDailyLog));
+
+    if (!token) {
+      // Public display mode: keep guide content, but do not expose or imply
+      // the owner's personal reading/quiz progress.
+      for (const seg of guideS1?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
+      for (const seg of guideS3?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
+      state.progress.current_queue = allIds;
+      state.progress.current_question = allIds[0] ?? null;
+      state.progress.completed_correct = [];
+      state.progress.wrong_history = {};
+      state.progress.stats = { total_answered: 0, total_correct: 0, total_wrong: 0 };
+      state.guideProgress = { round: 1 };
+      state.dailyLog = {};
+    }
 
     state.guideS1 = guideS1;
     state.guideS3 = guideS3;

@@ -379,6 +379,7 @@ let quizLoaded = false;
 let bonusData = { llms: null, agent: null };
 let currentBonusBook = 'llms';
 let bonusLoaded = false;
+let publicDisplayMode = true;
 
 async function api(path, opts = {}) {
   try {
@@ -389,10 +390,35 @@ async function api(path, opts = {}) {
 }
 
 async function loadStatus() {
+  const sync = await api('/api/demo/sync-status');
+  publicDisplayMode = !sync.hasToken;
   const s = await api('/api/status');
   if (s.error) return;
 
   document.getElementById('daysLeft').textContent = s.daysLeft;
+
+  if (publicDisplayMode) {
+    document.getElementById('s3Progress').textContent = '白話指引';
+    document.getElementById('s1Progress').textContent = '白話指引';
+    document.getElementById('quizAccuracy').textContent = '展示';
+    document.getElementById('quizCount').textContent = '公開版不含個人進度';
+    document.getElementById('wrongCount').textContent = '0';
+    document.getElementById('s3Pct').textContent = '—';
+    document.getElementById('s1Pct').textContent = '—';
+    document.getElementById('quizPct').textContent = '—';
+    document.getElementById('s3Bar').style.width = '0%';
+    document.getElementById('s1Bar').style.width = '0%';
+    document.getElementById('quizBar').style.width = '0%';
+    document.getElementById('guideCardDesc').innerHTML = '公開展示：科目1 / 科目3 白話指引參考';
+    document.getElementById('guideCardBar').style.width = '0%';
+    document.getElementById('quizCardDesc').innerHTML = '公開展示：題庫可參考，個人進度需設定 token';
+    document.getElementById('quizCardBar').style.width = '0%';
+    document.getElementById('heroStreakWrap').innerHTML = '';
+    currentGuideRound = 1;
+    currentQuizRound = 1;
+    return;
+  }
+
   document.getElementById('s3Progress').textContent = `${s.guide.s3.done}/${s.guide.s3.total}`;
   document.getElementById('s1Progress').textContent = `${s.guide.s1.done}/${s.guide.s1.total}`;
 
@@ -429,6 +455,18 @@ async function loadStatus() {
 }
 
 async function loadDailyStatus() {
+  if (publicDisplayMode) {
+    document.getElementById('heroGuideChip').textContent = '公開展示';
+    document.getElementById('heroQuizChip').textContent = '不含個人進度';
+    document.getElementById('heroGuideChip').classList.remove('done');
+    document.getElementById('heroQuizChip').classList.remove('done');
+    document.getElementById('heroNumber').textContent = '📖';
+    document.getElementById('heroNumber').className = 'hero-number in-progress';
+    document.getElementById('heroUnit').textContent = '白話指引參考';
+    document.getElementById('heroCelebrate').textContent = '設定同步 token 後才載入個人進度';
+    return;
+  }
+
   const d = await api('/api/daily/status');
   if (d.error) return;
 
@@ -595,7 +633,8 @@ async function loadGuide() {
       <div class="segment-title">${escHtml(seg.title)}</div>
       ${contentHtml}
     </div>
-    ${seg.hasContent ? `<button class="btn btn-primary" onclick="completeSegment(${seg.subject}, ${seg.id})">✅ 讀完，下一段</button>` : ''}
+    ${seg.hasContent && !publicDisplayMode ? `<button class="btn btn-primary" onclick="completeSegment(${seg.subject}, ${seg.id})">✅ 讀完，下一段</button>` : ''}
+    ${seg.hasContent && publicDisplayMode ? `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">公開展示模式不記錄閱讀進度；設定同步 token 後可啟用個人進度。</div>` : ''}
     <button class="btn btn-secondary" style="margin-top:8px" onclick="loadGuide()">🔄 重新載入</button>
   `;
   scrollToCard('guideCard');
