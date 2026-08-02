@@ -1,5 +1,6 @@
 (function () {
   const DAILY_TARGETS = { guide: 20, quiz: 10 };
+  const BONUS_BOOKS = { llms: "bonus_llms.json", agent: "bonus_agent.json" };
   const state = {
     questions: null,
     guideS1: null,
@@ -14,6 +15,8 @@
     },
     guideProgress: { round: 1 },
     dailyLog: {},
+    bonusProgress: { round: 1, completed: { llms: [], agent: [] }, current: { llms: 1, agent: 1 }, updated: null },
+    bonusData: { llms: null, agent: null },
   };
 
   function todayStr() {
@@ -56,7 +59,7 @@
   function calcStreak() {
     const today = new Date();
     const todayKey = today.toISOString().slice(0, 10);
-    const isActive = (e) => e && ((e.guide_completed ?? 0) > 0 || (e.quiz_answered ?? 0) > 0 || e.rested_early);
+    const isActive = (e) => e && ((e.guide_completed ?? 0) > 0 || (e.quiz_answered ?? 0) > 0 || (e.bonus_chapters_completed ?? 0) > 0 || e.rested_early);
     const todayActive = isActive(state.dailyLog[todayKey]);
     let streak = 0;
     for (let i = todayActive ? 0 : 1; i < 365; i++) {
@@ -77,6 +80,7 @@
     const wrongPending = Object.keys(wrongHistory).filter((id) => !completedCorrect.has(id)).length;
     const totalQuestions = state.questions.questions.length;
     const mastered = completedCorrect.size;
+    const bonus = getBonusStatus();
     return {
       daysLeft: examDaysLeft(),
       streak: calcStreak(),
@@ -93,6 +97,7 @@
         wrongPending,
         round: state.progress.round ?? 1,
       },
+      bonus,
     };
   }
 
@@ -234,6 +239,36 @@
     return { ok: true, bonusRounds: entry.bonus_rounds };
   }
 
+  function getBonusStatus() {
+    const books = Object.keys(BONUS_BOOKS).map((book) => {
+      const data = state.bonusData[book];
+      const total = data?.segments?.length ?? 0;
+      const completed = Array.from(new Set(state.bonusProgress.completed?.[book] ?? []));
+      const next = data?.segments?.find((seg) => !completed.includes(seg.id)) ?? null;
+      return { book, title: data?.title ?? book, total, done: completed.length, completed, next: next ? { id: next.id, title: next.title } : null };
+    });
+    const total = books.reduce((sum, b) => sum + b.total, 0);
+    const done = books.reduce((sum, b) => sum + b.done, 0);
+    return { round: state.bonusProgress.round ?? 1, total, done, pct: total ? Math.round(done / total * 100) : 0, books };
+  }
+
+  function completeBonusChapter(book, id) {
+    const data = state.bonusData[book];
+    const seg = data?.segments?.find((s) => s.id === id);
+    if (!seg) return { error: 'bonus chapter not found' };
+    const list = new Set(state.bonusProgress.completed?.[book] ?? []);
+    list.add(id);
+    state.bonusProgress.completed[book] = Array.from(list).sort((a, b) => a - b);
+    const next = data.segments.find((s) => !state.bonusProgress.completed[book].includes(s.id));
+    state.bonusProgress.current[book] = next?.id ?? id;
+    state.bonusProgress.updated = new Date().toISOString();
+    const entry = getTodayEntry();
+    entry.bonus_chapters_completed = (entry.bonus_chapters_completed ?? 0) + 1;
+    entry.last_bonus = { book, id, title: seg.title, time: new Date().toISOString() };
+    scheduleSave();
+    return { ok: true, book, completedId: id, next: next ? { id: next.id, title: next.title } : null, status: getBonusStatus(), daily: getDailyStatus() };
+  }
+
   function getGuideSegmentById(subject, id) {
     const guide = subject === 1 ? state.guideS1 : state.guideS3;
     const seg = guide.segments.find((s) => s.id === id);
@@ -275,6 +310,7 @@
     guideS1: 'guide_s1.json',
     guideS3: 'guide_s3.json',
     dailyLog: 'daily_log.json',
+    bonusProgress: 'bonus_progress.json',
   };
 
   const ghShas = {};
@@ -381,6 +417,7 @@
       ghPutFile('guideS1', state.guideS1),
       ghPutFile('guideS3', state.guideS3),
       ghPutFile('dailyLog', state.dailyLog),
+      ghPutFile('bonusProgress', state.bonusProgress),
     ]);
     const failed = results.filter((r) => !r.ok);
     if (failed.length) return { ok: false, reason: failed.map((f) => f.reason).join('; ') };
@@ -423,24 +460,30 @@
     let guideS3 = null;
 
     if (token) {
-      const [pRes, gpRes, s1Res, s3Res, dlRes] = await Promise.all([
+      const [pRes, gpRes, s1Res, s3Res, dlRes, bpRes] = await Promise.all([
         ghGetFile('progress'),
         ghGetFile('guideProgress'),
         ghGetFile('guideS1'),
         ghGetFile('guideS3'),
         ghGetFile('dailyLog'),
+        ghGetFile('bonusProgress'),
       ]);
       if (pRes.ok && pRes.found) state.progress = pRes.json;
       if (gpRes.ok && gpRes.found) state.guideProgress = gpRes.json;
       if (dlRes.ok && dlRes.found) state.dailyLog = dlRes.json;
+      if (bpRes.ok && bpRes.found) state.bonusProgress = { ...state.bonusProgress, ...bpRes.json, completed: { ...state.bonusProgress.completed, ...(bpRes.json.completed ?? {}) }, current: { ...state.bonusProgress.current, ...(bpRes.json.current ?? {}) } };
       if (s1Res.ok && s1Res.found) guideS1 = s1Res.json;
       if (s3Res.ok && s3Res.found) guideS3 = s3Res.json;
     }
 
-    const [bundledS1, bundledS3] = await Promise.all([
+    const [bundledS1, bundledS3, bundledBonusLlms, bundledBonusAgent] = await Promise.all([
       fetchJSONOrNull('guide_s1.json'),
       fetchJSONOrNull('guide_s3.json'),
+      fetchJSONOrNull('bonus_llms.json'),
+      fetchJSONOrNull('bonus_agent.json'),
     ]);
+    state.bonusData.llms = bundledBonusLlms;
+    state.bonusData.agent = bundledBonusAgent;
 
     if (!guideS1 && bundledS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
     if (!guideS3 && bundledS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
@@ -457,6 +500,7 @@
       state.progress.stats = { total_answered: 0, total_correct: 0, total_wrong: 0 };
       state.guideProgress = { round: 1 };
       state.dailyLog = {};
+      state.bonusProgress = { round: 1, completed: { llms: [], agent: [] }, current: { llms: 1, agent: 1 }, updated: null };
     }
 
     state.guideS1 = guideS1;
@@ -483,6 +527,8 @@
 
     if (p === '/api/status') return getStatus();
     if (p === '/api/daily/status') return getDailyStatus();
+    if (p === '/api/bonus/status') return getBonusStatus();
+    if (p === '/api/bonus/complete' && method === 'POST') return completeBonusChapter(body.book, body.id);
     if (p === '/api/guide/current') return getGuideSegment(parseInt(qs.get('subject') || '3', 10));
     if (p === '/api/guide/complete' && method === 'POST') return completeSegment(body.subject, body.id);
     if (p === '/api/quiz/current') return getCurrentQuestion() ?? { error: 'no question' };

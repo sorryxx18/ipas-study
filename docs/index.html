@@ -310,6 +310,7 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
       </div>
       <span class="action-arrow">▼</span>
     </div>
+    <div class="action-mini-bar"><div class="action-mini-fill" id="bonusCardBar" style="width:0%"></div></div>
     <div class="expand-panel" id="bonusExpand">
       <div class="subject-toggle">
         <button class="subject-btn active" id="bonusLlmsBtn" onclick="switchBonusBook('llms')">動手學大模型</button>
@@ -379,6 +380,7 @@ let quizLoaded = false;
 let bonusData = { llms: null, agent: null };
 let currentBonusBook = 'llms';
 let bonusLoaded = false;
+let bonusStatus = null;
 let publicDisplayMode = true;
 
 async function api(path, opts = {}) {
@@ -413,6 +415,9 @@ async function loadStatus() {
     document.getElementById('guideCardBar').style.width = '0%';
     document.getElementById('quizCardDesc').innerHTML = '公開展示：題庫可參考，個人進度需設定 token';
     document.getElementById('quizCardBar').style.width = '0%';
+    if (s.bonus) updateBonusSummary(s.bonus);
+    document.getElementById('bonusCardDesc').innerHTML = '公開展示：番外篇 21 章，個人進度需設定 token';
+    document.getElementById('bonusCardBar').style.width = '0%';
     document.getElementById('heroStreakWrap').innerHTML = '';
     currentGuideRound = 1;
     currentQuizRound = 1;
@@ -447,6 +452,8 @@ async function loadStatus() {
   document.getElementById('guideCardBar').style.width = Math.round(totalDone / totalSegs * 100) + '%';
   document.getElementById('quizCardDesc').innerHTML = `已答 ${s.quiz.answered} 題 · 掌握率 ${masteredPct}%${quizRoundBadge}`;
   document.getElementById('quizCardBar').style.width = masteredPct + '%';
+
+  if (s.bonus) updateBonusSummary(s.bonus);
 
   if (s.streak > 0) {
     document.getElementById('heroStreakWrap').innerHTML =
@@ -539,6 +546,44 @@ function toggleBonus() {
   }
 }
 
+function updateBonusSummary(status) {
+  bonusStatus = status;
+  const desc = document.getElementById('bonusCardDesc');
+  const bar = document.getElementById('bonusCardBar');
+  if (!status || !desc || !bar) return;
+  desc.innerHTML = `番外進度 ${status.done}/${status.total} · ${status.pct}%`;
+  bar.style.width = status.pct + '%';
+}
+
+function getBonusBookProgress(book) {
+  const found = bonusStatus?.books?.find(b => b.book === book);
+  return found ?? { completed: [], done: 0, total: 0, next: null };
+}
+
+function buildBonusExamCard(book, seg) {
+  const isAgent = book === 'agent';
+  const priorityMap = {
+    llms: {1:'必讀',2:'必讀',3:'次讀',4:'必讀',5:'有空再讀',6:'次讀',7:'有空再讀',8:'次讀',9:'必讀',10:'必讀',11:'必讀'},
+    agent: {1:'必讀',2:'必讀',3:'必讀',4:'必讀',5:'次讀',6:'必讀',7:'必讀',8:'次讀',9:'次讀',10:'必讀'}
+  };
+  const subject = isAgent ? '科目一：應用規劃 / 系統導入' : '科目三：模型訓練 / 評估 / 安全';
+  const keywords = (seg.content.match(/\*\*([^*]+)\*\*/g) || []).slice(0, 5).map(x => x.replace(/\*/g, ''));
+  return `
+    <div style="background:rgba(37,99,235,0.08);border:1px solid rgba(37,99,235,0.25);border-radius:12px;padding:12px;margin:12px 0;font-size:14px;line-height:1.7">
+      <div style="font-weight:700;color:var(--accent);margin-bottom:6px">🎯 考前卡</div>
+      <div>優先級：<b>${priorityMap[book]?.[seg.id] || '次讀'}</b></div>
+      <div>對應：${subject}</div>
+      <div>秒判斷：看到「${escHtml(seg.title)}」先想應用場景、限制、常見混淆，不要只背名詞。</div>
+      ${keywords.length ? `<div>關鍵字：${keywords.map(escHtml).join('、')}</div>` : ''}
+    </div>`;
+}
+
+async function refreshBonusStatus() {
+  const status = await api('/api/bonus/status');
+  if (!status.error) updateBonusSummary(status);
+  return status;
+}
+
 async function loadBonusBook(book) {
   currentBonusBook = book;
   document.getElementById('bonusLlmsBtn').classList.toggle('active', book === 'llms');
@@ -553,6 +598,7 @@ async function loadBonusBook(book) {
       return;
     }
   }
+  await refreshBonusStatus();
   renderBonusList(book);
 }
 
@@ -563,34 +609,67 @@ function switchBonusBook(book) {
 function renderBonusList(book) {
   const data = bonusData[book];
   if (!data) return;
-  const listHtml = data.segments.map(seg => `
-    <div class="segment-card" style="cursor:pointer" onclick="openBonusChapter('${book}', ${seg.id})">
+  const progress = getBonusBookProgress(book);
+  const completed = new Set(progress.completed || []);
+  const listHtml = data.segments.map(seg => {
+    const done = completed.has(seg.id);
+    return `
+    <div class="segment-card" style="cursor:pointer;${done ? 'border-color:var(--green)' : ''}" onclick="openBonusChapter('${book}', ${seg.id})">
       <div class="segment-header">
         <span class="segment-num">第 ${seg.id} 章</span>
+        ${done ? '<span style="color:var(--green);font-size:12px">✅ 已讀</span>' : ''}
       </div>
       <div class="segment-title" style="margin-bottom:0">${escHtml(seg.title)}</div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   document.getElementById('bonusContent').innerHTML = listHtml;
   scrollToCard('bonusCard');
 }
 
-function openBonusChapter(book, id) {
+async function openBonusChapter(book, id) {
   const data = bonusData[book];
   if (!data) return;
+  await refreshBonusStatus();
+  const progress = getBonusBookProgress(book);
+  const completed = new Set(progress.completed || []);
   const seg = data.segments.find(s => s.id === id);
   if (!seg) return;
+  const isDone = completed.has(seg.id);
   document.getElementById('bonusContent').innerHTML = `
     <button class="btn btn-secondary" onclick="renderBonusList('${book}')">← 返回目錄</button>
     <div class="segment-card" style="margin-top:12px">
       <div class="segment-header">
         <span class="segment-num">第 ${seg.id} 章</span>
       </div>
-      <div class="segment-title">${escHtml(seg.title)}</div>
+      <div class="segment-title">${escHtml(seg.title)} ${isDone ? '<span style="color:var(--green);font-size:12px">✅ 已讀</span>' : ''}</div>
+      ${buildBonusExamCard(book, seg)}
       <div class="segment-content">${escHtml(seg.content)}</div>
     </div>
+    ${publicDisplayMode ? `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">公開展示模式不記錄番外篇進度；設定同步 token 後可啟用讀完本章。</div>` : (isDone ? '' : `<button class="btn btn-primary" onclick="completeBonusChapter('${book}', ${seg.id})">✅ 讀完本章</button>`)}
+    <button class="btn btn-secondary" onclick="openNextBonusChapter('${book}', ${seg.id})">下一章 →</button>
     <a href="${data.page}#${seg.anchor}" target="_blank" rel="noopener" style="display:block;text-align:center;margin-top:10px;font-size:12px;color:var(--muted)">看原文完整頁 ↗</a>
   `;
   scrollToCard('bonusCard');
+}
+
+async function completeBonusChapter(book, id) {
+  const result = await api('/api/bonus/complete', { method: 'POST', body: JSON.stringify({ book, id }) });
+  if (result.error) { alert(result.error); return; }
+  await loadStatus();
+  await refreshBonusStatus();
+  const next = result.next;
+  if (next) {
+    openBonusChapter(book, next.id);
+  } else {
+    renderBonusList(book);
+    alert('這本番外篇讀完了 🎉');
+  }
+}
+
+function openNextBonusChapter(book, id) {
+  const data = bonusData[book];
+  const next = data?.segments?.find(s => s.id > id);
+  if (next) openBonusChapter(book, next.id);
 }
 
 function toggleStats() {

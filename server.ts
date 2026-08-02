@@ -11,10 +11,15 @@ const PATHS = {
   guideS3: join(BASE, "guide_s3.json"),
   guideS1: join(BASE, "guide_s1.json"),
   dailyLog: join(BASE, "daily_log.json"),
+  bonusProgress: join(BASE, "bonus_progress.json"),
+  bonusLlms: join(BASE, "webapp", "bonus_llms.json"),
+  bonusAgent: join(BASE, "webapp", "bonus_agent.json"),
   webapp: join(BASE, "webapp", "index.html"),
 };
 
 const DAILY_TARGETS = { guide: 20, quiz: 10 };
+const BONUS_BOOKS = { llms: "bonusLlms", agent: "bonusAgent" } as const;
+type BonusBook = keyof typeof BONUS_BOOKS;
 
 async function runGit(args: string[]): Promise<{ code: number; out: string; err: string }> {
   const proc = Bun.spawn(["git", ...args], { cwd: BASE, stdout: "pipe", stderr: "pipe" });
@@ -44,6 +49,7 @@ async function gitSync(): Promise<{ ok: boolean; pushed: boolean; message: strin
 
 let gitSyncTimer: ReturnType<typeof setTimeout> | null = null;
 function scheduleGitSync() {
+  if (process.env.NO_GIT_SYNC === "1") return;
   if (gitSyncTimer) clearTimeout(gitSyncTimer);
   gitSyncTimer = setTimeout(() => {
     gitSyncTimer = null;
@@ -54,6 +60,7 @@ function scheduleGitSync() {
 let lastPullAttempt = 0;
 const PULL_THROTTLE_MS = 15000;
 function maybeBackgroundPull() {
+  if (process.env.NO_GIT_SYNC === "1") return;
   const now = Date.now();
   if (now - lastPullAttempt < PULL_THROTTLE_MS) return;
   lastPullAttempt = now;
@@ -138,11 +145,75 @@ function writeJSON(path: string, data: unknown) {
   writeFileSync(path, JSON.stringify(data, null, 2));
 }
 
+function defaultBonusProgress() {
+  return { round: 1, completed: { llms: [], agent: [] }, current: { llms: 1, agent: 1 }, updated: new Date().toISOString() };
+}
+
+function readBonusData(book: BonusBook) {
+  const key = BONUS_BOOKS[book];
+  return readJSON((PATHS as any)[key]);
+}
+
+function getBonusProgress() {
+  const saved = readJSON(PATHS.bonusProgress) ?? {};
+  const base = defaultBonusProgress();
+  return {
+    ...base,
+    ...saved,
+    completed: { ...base.completed, ...(saved.completed ?? {}) },
+    current: { ...base.current, ...(saved.current ?? {}) },
+  };
+}
+
+function getBonusStatus() {
+  const progress = getBonusProgress();
+  const books = (Object.keys(BONUS_BOOKS) as BonusBook[]).map((book) => {
+    const data = readBonusData(book);
+    const total = data?.segments?.length ?? 0;
+    const completed = Array.from(new Set(progress.completed?.[book] ?? [])).filter((id: any) => Number.isFinite(Number(id)));
+    const next = data?.segments?.find((seg: any) => !completed.includes(seg.id)) ?? null;
+    return {
+      book,
+      title: data?.title ?? book,
+      total,
+      done: completed.length,
+      completed,
+      next: next ? { id: next.id, title: next.title } : null,
+    };
+  });
+  const total = books.reduce((sum, b) => sum + b.total, 0);
+  const done = books.reduce((sum, b) => sum + b.done, 0);
+  return { round: progress.round ?? 1, total, done, pct: total ? Math.round(done / total * 100) : 0, books };
+}
+
+function completeBonusChapter(book: BonusBook, id: number) {
+  if (!(book in BONUS_BOOKS)) return { error: "unknown bonus book" };
+  const data = readBonusData(book);
+  const seg = data?.segments?.find((s: any) => s.id === id);
+  if (!seg) return { error: "bonus chapter not found" };
+  const progress = getBonusProgress();
+  const list = new Set(progress.completed?.[book] ?? []);
+  list.add(id);
+  progress.completed[book] = Array.from(list).sort((a: any, b: any) => Number(a) - Number(b));
+  const next = data.segments.find((s: any) => !progress.completed[book].includes(s.id));
+  progress.current[book] = next?.id ?? id;
+  progress.updated = new Date().toISOString();
+  writeJSON(PATHS.bonusProgress, progress);
+
+  const log = getDailyLog();
+  const today = todayStr();
+  if (!log[today]) log[today] = { guide_completed: 0, quiz_answered: 0, rested_early: false, bonus_rounds: 0 };
+  log[today].bonus_chapters_completed = (log[today].bonus_chapters_completed ?? 0) + 1;
+  log[today].last_bonus = { book, id, title: seg.title, time: new Date().toISOString() };
+  writeJSON(PATHS.dailyLog, log);
+  return { ok: true, book, completedId: id, next: next ? { id: next.id, title: next.title } : null, status: getBonusStatus() };
+}
+
 function calcStreak(): number {
   const log = readJSON(PATHS.dailyLog) ?? {};
   const today = new Date().toISOString().slice(0, 10);
   const todayEntry = log[today];
-  const isActive = (e: any) => e && (e.guide_completed > 0 || e.quiz_answered > 0 || e.rested_early);
+  const isActive = (e: any) => e && (e.guide_completed > 0 || e.quiz_answered > 0 || (e.bonus_chapters_completed ?? 0) > 0 || e.rested_early);
   const todayActive = isActive(todayEntry);
   let streak = 0;
   for (let i = todayActive ? 0 : 1; i < 365; i++) {
@@ -168,6 +239,7 @@ function examDaysLeft() {
 function getStatus() {
   const progress = readJSON(PATHS.progress);
   const guideProgress = readJSON(PATHS.guideProgress);
+  const bonus = getBonusStatus();
   const guideS3 = readJSON(PATHS.guideS3);
   const guideS1 = readJSON(PATHS.guideS1);
   const questions = readJSON(PATHS.questions);
@@ -197,6 +269,7 @@ function getStatus() {
       wrongPending,
       round: progress?.round ?? 1,
     },
+    bonus,
   };
 }
 
@@ -469,7 +542,7 @@ ${context ? `\n目前學習段落內容：\n${context}` : ""}${currentQuestionCo
 }
 
 const server = serve({
-  port: 8080,
+  port: Number(process.env.PORT ?? 8080),
   fetch(req) {
     const url = new URL(req.url);
     const path = url.pathname;
@@ -570,6 +643,18 @@ const server = serve({
       return Response.json(getDailyStatus());
     }
 
+    if (path === "/api/bonus/status") {
+      return Response.json(getBonusStatus());
+    }
+
+    if (path === "/api/bonus/complete" && req.method === "POST") {
+      return req.json().then((body: any) => {
+        const result = completeBonusChapter(body.book, Number(body.id));
+        scheduleGitSync();
+        return Response.json({ ...result, daily: getDailyStatus() });
+      });
+    }
+
     if (path === "/api/daily/rest" && req.method === "POST") {
       return req.json().then((body: any) => {
         const result = recordEarlyRest(body.note ?? "");
@@ -643,4 +728,4 @@ const server = serve({
   },
 });
 
-console.log(`IPAS 備考系統 running at http://localhost:8080`);
+console.log(`IPAS 備考系統 running at http://localhost:${server.port}`);
