@@ -72,5 +72,11 @@
     "quiz_answered": 3,
     "rested_early": false,
     "bonus_rounds": 0
+  },
+  "2026-08-02": {
+    "guide_completed": 0,
+    "quiz_answered": 1,
+    "rested_early": false,
+    "bonus_rounds": 0
   }
 }
