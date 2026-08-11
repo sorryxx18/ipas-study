@@ -166,7 +166,7 @@ function toggleTheme() {
 
 async function loadSubjectData(n) {
   if (dataCache[n]) return dataCache[n];
-  const res = await fetch(`/exam_emphasis_s${n}.json`);
+  const res = await fetch(`exam_emphasis_s${n}.json`);
   const json = await res.json();
   dataCache[n] = json;
   return json;
