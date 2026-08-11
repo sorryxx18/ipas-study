@@ -1,0 +1,1416 @@
+{
+  "subject": "科目一：人工智慧技術應用與規劃",
+  "subjectNum": 1,
+  "totalQuestions": 130,
+  "totalSegments": 71,
+  "hitCountSum": 137,
+  "sourceFile": "exam_emphasis_s1.md",
+  "generatedAt": "2026-08-11T01:52:32.021Z",
+  "topSegmentIds": [
+    31,
+    66,
+    16,
+    33,
+    28,
+    4,
+    71,
+    26,
+    32,
+    51,
+    9,
+    10,
+    13,
+    21,
+    27,
+    30,
+    35,
+    37,
+    49,
+    54
+  ],
+  "overallObservation": [
+    "本科目（科目一）130 題中，出題明顯集中在「AI 導入與維運治理」這條主線：MLOps 生命週期(31)、模型監控 Model Drift(33)、CI/CD for ML(32)、資料收集與標注策略(26)、特徵工程在應用端(28)，合計命中超過 30 題，顯示官方考題非常重視「模型上線後如何被治理、監控、部署」而非單純技術原理。另一個熱區是多模態 AI(66) 與 BERT(16)／Transformer 相關生成式技術，反映近兩次官方考試（114-2、115-1）明顯加重生成式 AI／LLM 應用題型的比重。",
+    "目前科目一讀書進度只到第 24 段（BERT 之前），而上述幾乎所有🔥熱區段落（26～71 之間）都尚未讀到，包括 MLOps(31)、模型監控(33)、CI/CD(32)、多模態 AI(66)、圖像生成(71)、AI偏見與公平性(37)、AutoML(51)、異常偵測應用(49)、AI基礎設施(54)、Explainability(35)、資料品質管理(27)、ROC曲線與模型比較(30) 等，這些段落合計命中超過 60 題（占科目一考題近一半），是目前最需要優先安排讀書順序的區塊。相對地，26 段（1~24）多為 NLP／CV／Transformer 基礎技術題，已讀完且命中率高，屬於「已經穩了」的部分。",
+    "需要特別提醒的落差：有多題官方考題內容（如 Kubernetes 容器編排、Circuit Breaker 斷路器模式、RESTful API 檔案上傳設計、數位簽章與不可否認性、SWOT分析、Sigmoid梯度消失細節）在整份《科目一學習指引》71 段中都找不到專門對應段落，只能勉強掛在最接近的段落下（如 MLOps 或 AI基礎設施）。這代表指引內容對「純軟體工程/系統設計」類的考題覆蓋較薄弱，考生宜額外自行補強容器化部署、API 設計、加密簽章等基礎知識，不能完全依賴指引內容。另外有 22 個段落（約三成）完全沒有被 260 題題庫命中過，多集中在特定產業應用(42-47)、語音辨識/TTS(64-65)、知識圖譜(62)、綠色AI(69)等偏冷門主題，可視實際準備時間排在最後讀。"
+  ],
+  "segments": [
+    {
+      "id": 1,
+      "title": "AI 發展歷程與現況",
+      "hitCount": 0,
+      "completed": true,
+      "status": "已完成",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 2,
+      "title": "AI 應用領域總覽",
+      "hitCount": 0,
+      "completed": true,
+      "status": "已完成",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 3,
+      "title": "NLP 自然語言處理概覽",
+      "hitCount": 1,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_16",
+          "note": "Seq2Seq模型最適合的應用情境(翻譯/摘要)"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "Word2Vec / GloVe 詞嵌入",
+      "hitCount": 5,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_4",
+          "note": "GloVe與Word2Vec的差異：預測式vs共現統計式"
+        },
+        {
+          "id": "official_114_2_subject1_33",
+          "note": "Word2Vec Skip-gram對低頻詞學習效果較佳"
+        },
+        {
+          "id": "official_115_1_subject1_3",
+          "note": "CBOW vs Skip-gram在長尾詞訓練效率與品質的取捨"
+        },
+        {
+          "id": "official_115_1_subject1_5",
+          "note": "Word2Vec解決One-Hot高維稀疏表示的限制"
+        },
+        {
+          "id": "S1_06",
+          "note": "靜態詞嵌入(同詞同向量)：Word2Vec"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "TF-IDF 與文本表示",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_5",
+          "note": "TF-IDF處理長文本時常見詞權重被放大問題"
+        },
+        {
+          "id": "S1_26",
+          "note": "TF-IDF中IDF的作用：降低常見詞權重"
+        }
+      ]
+    },
+    {
+      "id": 6,
+      "title": "N-gram 語言模型",
+      "hitCount": 1,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_6",
+          "note": "N-gram模型缺乏長距離依賴、語意連貫性限制"
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "title": "情感分析 Sentiment Analysis",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_1",
+          "note": "情感分析模型的主要目的：判斷文本情感傾向"
+        },
+        {
+          "id": "S1_20",
+          "note": "情感分析屬於分類(Classification)任務"
+        }
+      ]
+    },
+    {
+      "id": 8,
+      "title": "NLP Pipeline 完整流程",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_1",
+          "note": "詞性標註(POS Tagging)在資訊擷取前處理中的目的"
+        },
+        {
+          "id": "S1_03",
+          "note": "詞形還原(Lemmatization)：還原字典原形保留語意"
+        }
+      ]
+    },
+    {
+      "id": 9,
+      "title": "電腦視覺 Computer Vision 概覽",
+      "hitCount": 3,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_8",
+          "note": "Softmax與Max-Pooling功能差異辨析"
+        },
+        {
+          "id": "S1_07",
+          "note": "CNN池化層功能：降低特徵圖維度、減少計算量"
+        },
+        {
+          "id": "S1_28",
+          "note": "最適合電腦視覺技術的應用場景：製造業瑕疵自動偵測"
+        }
+      ]
+    },
+    {
+      "id": 10,
+      "title": "影像分類 Image Classification",
+      "hitCount": 3,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_12",
+          "note": "Sigmoid函數特性與梯度消失限制(二元分類器)"
+        },
+        {
+          "id": "official_115_1_subject1_32",
+          "note": "CNN卷積輸出接全連接層前需Flatten展平"
+        },
+        {
+          "id": "official_115_1_subject1_36",
+          "note": "工業瑕疵小樣本(500張)：預訓練CNN遷移學習微調"
+        }
+      ]
+    },
+    {
+      "id": 11,
+      "title": "物件偵測 Object Detection / YOLO",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_10",
+          "note": "YOLO單階段vs Faster R-CNN兩階段偵測流程差異"
+        },
+        {
+          "id": "S1_02",
+          "note": "即時物件偵測最適合技術：YOLO"
+        }
+      ]
+    },
+    {
+      "id": 12,
+      "title": "語義分割 Semantic Segmentation",
+      "hitCount": 1,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_6",
+          "note": "語義分割與實例分割根本差異(是否區分同類個體)"
+        }
+      ]
+    },
+    {
+      "id": 13,
+      "title": "實例分割 Instance Segmentation",
+      "hitCount": 3,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_34",
+          "note": "全景分割：同時分類像素又區分同類個體"
+        },
+        {
+          "id": "official_115_1_subject1_6",
+          "note": "語義分割與實例分割根本差異(是否區分同類個體)"
+        },
+        {
+          "id": "official_115_1_subject1_7",
+          "note": "需要像素級遮罩且區分不同個體 -> 實例分割"
+        }
+      ]
+    },
+    {
+      "id": 14,
+      "title": "mAP / IoU 評估指標",
+      "hitCount": 1,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_7",
+          "note": "mAP/IoU閾值設定較高代表的意義"
+        }
+      ]
+    },
+    {
+      "id": 15,
+      "title": "Transformer 應用於視覺 ViT",
+      "hitCount": 0,
+      "completed": true,
+      "status": "已完成",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 16,
+      "title": "BERT 雙向編碼器",
+      "hitCount": 8,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_2",
+          "note": "Transformer自注意力機制助長距離語境依賴翻譯"
+        },
+        {
+          "id": "official_114_2_subject1_3",
+          "note": "BERT遮罩語言模型(MLM)雙向預測訓練策略"
+        },
+        {
+          "id": "official_114_2_subject1_18",
+          "note": "Transformer注意力塌縮(Attention Collapse)改善策略"
+        },
+        {
+          "id": "official_114_2_subject1_47",
+          "note": "多任務BERT模型NER與分類任務競爭：loss權重未平衡"
+        },
+        {
+          "id": "official_115_1_subject1_4",
+          "note": "MLM核心訓練目標：隨機遮蔽token由雙向上下文預測"
+        },
+        {
+          "id": "official_115_1_subject1_11",
+          "note": "Self-Attention核心功能：token間建立關聯並加權"
+        },
+        {
+          "id": "S1_01",
+          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異"
+        },
+        {
+          "id": "S1_08",
+          "note": "Transformer架構核心機制：自注意力機制"
+        }
+      ]
+    },
+    {
+      "id": 17,
+      "title": "GPT 系列與生成模型",
+      "hitCount": 1,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "S1_01",
+          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異"
+        }
+      ]
+    },
+    {
+      "id": 18,
+      "title": "Prompt Engineering 提示工程",
+      "hitCount": 0,
+      "completed": true,
+      "status": "已完成",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 19,
+      "title": "Prompt Tuning vs Fine-tuning",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_13",
+          "note": "Prompt Tuning(調整輸入表示)vs傳統Fine-tuning(更新權重)本質差異"
+        },
+        {
+          "id": "S1_30",
+          "note": "遷移學習與微調的關係：Fine-tuning是遷移學習的實作方式"
+        }
+      ]
+    },
+    {
+      "id": 20,
+      "title": "LoRA / PEFT 微調方法",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_2",
+          "note": "LoRA凍結原權重、僅訓練低秩矩陣，降低GPU記憶體需求"
+        },
+        {
+          "id": "official_115_1_subject1_14",
+          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解"
+        }
+      ]
+    },
+    {
+      "id": 21,
+      "title": "Catastrophic Forgetting 災難性遺忘",
+      "hitCount": 3,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_14",
+          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解"
+        },
+        {
+          "id": "official_115_1_subject1_34",
+          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型"
+        },
+        {
+          "id": "S1_27",
+          "note": "持續學習(Continual Learning)核心概念：部署後隨新資料更新"
+        }
+      ]
+    },
+    {
+      "id": 22,
+      "title": "RAG 檢索增強生成",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_17",
+          "note": "RAG系統檢索階段最關鍵的挑戰"
+        },
+        {
+          "id": "official_115_1_subject1_21",
+          "note": "RAG系統token成本優化：Prompt Caching+對話歷史摘要壓縮"
+        }
+      ]
+    },
+    {
+      "id": 23,
+      "title": "Vector Database 向量資料庫",
+      "hitCount": 0,
+      "completed": true,
+      "status": "已完成",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 24,
+      "title": "Multi-Agent Systems 多智能體系統",
+      "hitCount": 2,
+      "completed": true,
+      "status": "已完成",
+      "priority": "done",
+      "priorityIcon": "✅",
+      "priorityLabel": "✅ 常考且已讀完 → 沒問題",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_15",
+          "note": "Multi-Agent Orchestrator對不合格結果重試/重新分配的容錯機制"
+        },
+        {
+          "id": "official_115_1_subject1_16",
+          "note": "ReAct框架Agent未先用工具驗證，直接回答產生幻覺"
+        }
+      ]
+    },
+    {
+      "id": 25,
+      "title": "AI 專案規劃流程",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "S1_14",
+          "note": "SWOT分析T代表威脅(Threat)"
+        },
+        {
+          "id": "S1_22",
+          "note": "AI專案設定KPI的原因：提供可量化標準追蹤成效"
+        }
+      ]
+    },
+    {
+      "id": 26,
+      "title": "資料收集與標注策略",
+      "hitCount": 4,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_9",
+          "note": "資料增強造成特徵分布不一致、影響泛化能力"
+        },
+        {
+          "id": "official_114_2_subject1_19",
+          "note": "低資源語言以反向翻譯做資料增強緩解過擬合"
+        },
+        {
+          "id": "official_114_2_subject1_25",
+          "note": "生成式AI著作權風險：訓練資料授權驗證機制"
+        },
+        {
+          "id": "official_115_1_subject1_33",
+          "note": "合成資料(Synthetic Data)在自駕車惡劣天氣訓練中的角色"
+        }
+      ]
+    },
+    {
+      "id": 27,
+      "title": "資料品質管理",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_37",
+          "note": "SMOTE過採樣處理製造業99%/1%類別不平衡問題"
+        },
+        {
+          "id": "official_115_1_subject1_38",
+          "note": "IoT感測器999度極端值：刪除或以中位數填補"
+        },
+        {
+          "id": "S1_12",
+          "note": "AI可行性評估技術前提：足夠且高品質訓練資料"
+        }
+      ]
+    },
+    {
+      "id": 28,
+      "title": "特徵工程在應用端",
+      "hitCount": 7,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_12",
+          "note": "PCA解決多重共線性問題(房價迴歸)"
+        },
+        {
+          "id": "official_114_2_subject1_26",
+          "note": "多重共線性下選用LASSO正則化迴歸"
+        },
+        {
+          "id": "official_114_2_subject1_27",
+          "note": "半結構化JSON日誌的巢狀特徵工程與時間窗聚合"
+        },
+        {
+          "id": "official_114_2_subject1_28",
+          "note": "連續+類別特徵工程流程(標準化+目標編碼+交互特徵)"
+        },
+        {
+          "id": "official_114_2_subject1_45",
+          "note": "PCA降維接SVM：降低訓練時間、減少過擬合"
+        },
+        {
+          "id": "official_115_1_subject1_30",
+          "note": "PCA以協方差矩陣特徵值分解找最大變異方向"
+        },
+        {
+          "id": "S1_17",
+          "note": "資料標準化目的：讓特徵尺度一致避免偏向大數值特徵"
+        }
+      ]
+    },
+    {
+      "id": 29,
+      "title": "模型選型決策框架",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_43",
+          "note": "生成式(VAE)vs鑑別式(BERT)路徑資料效率比較實驗設計"
+        }
+      ]
+    },
+    {
+      "id": 30,
+      "title": "ROC 曲線與模型比較",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_10",
+          "note": "F1分數兼顧Precision與Recall的綜合指標"
+        },
+        {
+          "id": "official_115_1_subject1_8",
+          "note": "ROC曲線X/Y軸(FPR/TPR)在醫療情境的意義"
+        },
+        {
+          "id": "official_115_1_subject1_9",
+          "note": "混淆矩陣無法直接算出AUC(需不同閾值)"
+        }
+      ]
+    },
+    {
+      "id": 31,
+      "title": "MLOps 生命週期",
+      "hitCount": 9,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_13",
+          "note": "Kubernetes在AI模型部署中的核心功能(容器編排)"
+        },
+        {
+          "id": "official_114_2_subject1_15",
+          "note": "MLOps流程中Model Registry的用途"
+        },
+        {
+          "id": "official_115_1_subject1_22",
+          "note": "MLOps在訓練-測試-部署-監控-再訓練自動化中的核心角色"
+        },
+        {
+          "id": "official_115_1_subject1_24",
+          "note": "延遲測試(Latency Testing)：評估回應時間是否符合系統要求"
+        },
+        {
+          "id": "official_115_1_subject1_44",
+          "note": "推論服務API設計：POST+multipart/form-data傳輸高解析影像"
+        },
+        {
+          "id": "official_115_1_subject1_45",
+          "note": "斷路器模式(Circuit Breaker)預防微服務連鎖故障"
+        },
+        {
+          "id": "official_115_1_subject1_49",
+          "note": "訓練實驗超參數軌跡屬離線實驗追蹤，非線上持續監控範疇"
+        },
+        {
+          "id": "S1_16",
+          "note": "MLOps核心目的：管理模型開發到生產的完整生命週期"
+        },
+        {
+          "id": "S1_21",
+          "note": "模型部署用API的優點：跨平台跨語言系統整合"
+        }
+      ]
+    },
+    {
+      "id": 32,
+      "title": "CI/CD for ML 持續整合部署",
+      "hitCount": 4,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_23",
+          "note": "醫院AI系統漸進式部署(Phased Rollout)策略"
+        },
+        {
+          "id": "official_114_2_subject1_29",
+          "note": "CI持續整合核心實踐(commit後自動建置測試)"
+        },
+        {
+          "id": "official_115_1_subject1_43",
+          "note": "全面上線前以金絲雀發布(Canary Release)量化真實業務指標"
+        },
+        {
+          "id": "official_115_1_subject1_47",
+          "note": "漸進式部署延遲上升：暫停並先做效能優化再繼續擴量"
+        }
+      ]
+    },
+    {
+      "id": 33,
+      "title": "模型監控 Model Drift",
+      "hitCount": 8,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_22",
+          "note": "以KL散度偵測資料漂移(Data Drift)"
+        },
+        {
+          "id": "official_114_2_subject1_32",
+          "note": "PSI指數最具預測力的模型效能衰退預警指標"
+        },
+        {
+          "id": "official_114_2_subject1_42",
+          "note": "以VAE監控潛在空間分佈偵測輸入資料偏移"
+        },
+        {
+          "id": "official_114_2_subject1_46",
+          "note": "MLOps中建立資料漂移與概念漂移即時監測機制"
+        },
+        {
+          "id": "official_115_1_subject1_42",
+          "note": "高額理賠案件屬長尾樣本，需分群監控而非只看整體RMSE"
+        },
+        {
+          "id": "official_115_1_subject1_48",
+          "note": "AUC不變但特徵與標籤關聯改變 -> 概念漂移(Concept Drift)"
+        },
+        {
+          "id": "S1_19",
+          "note": "資料漂移：生產環境資料分佈與訓練時不同"
+        },
+        {
+          "id": "S1_23",
+          "note": "持續監控模型效能最重要兩指標：準確率和F1值"
+        }
+      ]
+    },
+    {
+      "id": 34,
+      "title": "A/B Testing 實驗設計",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_19",
+          "note": "只看離線AUC忽略線上業務指標(CTR/營收)的評估缺陷"
+        },
+        {
+          "id": "S1_29",
+          "note": "A/B測試在AI系統的主要用途：比較新舊模型版本效益"
+        }
+      ]
+    },
+    {
+      "id": 35,
+      "title": "Explainability SHAP / Grad-CAM",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_26",
+          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明"
+        },
+        {
+          "id": "official_115_1_subject1_28",
+          "note": "SHAP值解讀：相對基準值的特徵貢獻方向與大小"
+        },
+        {
+          "id": "official_115_1_subject1_29",
+          "note": "Grad-CAM適合近即時、視覺化像素區域的CNN可解釋性方法"
+        }
+      ]
+    },
+    {
+      "id": 36,
+      "title": "Responsible AI 負責任AI",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_26",
+          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明"
+        }
+      ]
+    },
+    {
+      "id": 37,
+      "title": "AI 偏見與公平性 Bias & Fairness",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_49",
+          "note": "情感分析模型對不同語言/族群偏誤(資料代表性/內隱偏誤)"
+        },
+        {
+          "id": "S1_13",
+          "note": "AI倫理公平性：不同族群一致對待不歧視"
+        },
+        {
+          "id": "S1_25",
+          "note": "AI系統倫理風險：模型偏差導致特定族群不公平對待"
+        }
+      ]
+    },
+    {
+      "id": 38,
+      "title": "Human-in-the-Loop HITL",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_27",
+          "note": "醫療AI人機協作(HITL)：由醫師最終審核決策"
+        }
+      ]
+    },
+    {
+      "id": 39,
+      "title": "資料隱私 GDPR / 個資法",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "S1_10",
+          "note": "GDPR核心要求：個資使用需明確同意並告知目的"
+        }
+      ]
+    },
+    {
+      "id": 40,
+      "title": "聯邦學習 Federated Learning",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_46",
+          "note": "聯邦學習在院內訓練、僅傳模型更新，符合HIPAA不外流限制"
+        },
+        {
+          "id": "S1_11",
+          "note": "差分隱私：加入雜訊防止個資被還原"
+        }
+      ]
+    },
+    {
+      "id": 41,
+      "title": "AI 治理框架 Governance",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 42,
+      "title": "產業應用：製造業 AI",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 43,
+      "title": "產業應用：金融 AI",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 44,
+      "title": "產業應用：醫療 AI",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 45,
+      "title": "產業應用：零售 / 電商 AI",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 46,
+      "title": "智慧製造 Smart Manufacturing",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 47,
+      "title": "預測維護 Predictive Maintenance",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 48,
+      "title": "推薦系統 Recommendation Systems",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_20",
+          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取"
+        },
+        {
+          "id": "official_115_1_subject1_34",
+          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型"
+        }
+      ]
+    },
+    {
+      "id": 49,
+      "title": "異常偵測應用場景",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_11",
+          "note": "DBSCAN的兩個核心超參數：ε與MinPts"
+        },
+        {
+          "id": "official_114_2_subject1_48",
+          "note": "DBSCAN高維大量資料效率提升：KD-Tree/Ball-Tree索引"
+        },
+        {
+          "id": "official_115_1_subject1_31",
+          "note": "高維度DBSCAN因維度詛咒導致密度估計失效"
+        }
+      ]
+    },
+    {
+      "id": 50,
+      "title": "時間序列預測 Time Series",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_39",
+          "note": "ARIMA殘差自相關顯著->欠擬合需調整p,q參數"
+        }
+      ]
+    },
+    {
+      "id": 51,
+      "title": "AutoML 自動機器學習平台",
+      "hitCount": 4,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_14",
+          "note": "交叉驗證選出穩定超參數組合避免過擬合"
+        },
+        {
+          "id": "official_114_2_subject1_36",
+          "note": "Grid Search系統化搜尋超參數組合"
+        },
+        {
+          "id": "official_114_2_subject1_41",
+          "note": "交叉驗證同時調參評估造成資料洩漏、過度樂觀偏差"
+        },
+        {
+          "id": "S1_18",
+          "note": "過擬合典型症狀：訓練集表現極佳但測試集表現差"
+        }
+      ]
+    },
+    {
+      "id": 52,
+      "title": "雲端AI服務 Cloud AI",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 53,
+      "title": "Edge AI 邊緣運算",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_23",
+          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求"
+        },
+        {
+          "id": "S1_15",
+          "note": "邊緣運算部署優勢：本地即時處理降低延遲"
+        }
+      ]
+    },
+    {
+      "id": 54,
+      "title": "AI 基礎設施 GPU / TPU",
+      "hitCount": 3,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_31",
+          "note": "高RPS高可用架構：容器化水平擴展+Auto Scaling"
+        },
+        {
+          "id": "official_114_2_subject1_37",
+          "note": "GPU記憶體不足：降低batch size+資料分片"
+        },
+        {
+          "id": "official_115_1_subject1_41",
+          "note": "GPU使用率60%但延遲波動：排程與批次大小設定不當"
+        }
+      ]
+    },
+    {
+      "id": 55,
+      "title": "資料倉儲與特徵平台",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_20",
+          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取"
+        },
+        {
+          "id": "official_115_1_subject1_39",
+          "note": "多模態資料儲存：原始資料存Data Lake，結構化特徵存Data Warehouse"
+        }
+      ]
+    },
+    {
+      "id": 56,
+      "title": "AI 專案風險管理",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 57,
+      "title": "AI 成本效益分析",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "S1_05",
+          "note": "AI導入評估中ROI代表投資報酬率"
+        }
+      ]
+    },
+    {
+      "id": 58,
+      "title": "AI 導入策略與變革管理",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 59,
+      "title": "AI 人才培育與組織設計",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 60,
+      "title": "AI 倫理框架",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_25",
+          "note": "NIST AI RMF可驗證性：建立可追溯測試資料與評估流程"
+        }
+      ]
+    },
+    {
+      "id": 61,
+      "title": "AI 法規環境 AI Act",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_30",
+          "note": "不可否認性：雜湊+數位簽章確保稽核追溯"
+        }
+      ]
+    },
+    {
+      "id": 62,
+      "title": "知識圖譜 Knowledge Graph",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 63,
+      "title": "對話系統 Chatbot / Dialogue Systems",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 64,
+      "title": "語音辨識 ASR",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 65,
+      "title": "文字轉語音 TTS",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 66,
+      "title": "多模態 AI Multimodal",
+      "hitCount": 9,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_21",
+          "note": "多模態模型應對模態缺失的策略"
+        },
+        {
+          "id": "official_114_2_subject1_35",
+          "note": "CLIP圖文對比學習達成零樣本分類"
+        },
+        {
+          "id": "official_114_2_subject1_50",
+          "note": "CLIP文字影像編碼器語意嵌入空間未充分對齊(生成細節錯誤)"
+        },
+        {
+          "id": "official_115_1_subject1_17",
+          "note": "多模態患者風險評估：各模態選用對應模型架構(CNN/Transformer/LSTM)"
+        },
+        {
+          "id": "official_115_1_subject1_18",
+          "note": "跨模態對齊(Cross-Modal Alignment)解決的問題：對齊至共同語意空間"
+        },
+        {
+          "id": "official_115_1_subject1_35",
+          "note": "基因序列+電子病歷文本異質特徵分層處理與融合策略"
+        },
+        {
+          "id": "official_115_1_subject1_50",
+          "note": "晚期融合(Late Fusion)各模態獨立預測，低品質模態影響有限"
+        },
+        {
+          "id": "S1_09",
+          "note": "CLIP專門用於圖像與文字對齊的多模態模型"
+        },
+        {
+          "id": "S1_24",
+          "note": "多模態AI核心優勢：整合多種資訊更全面理解情境"
+        }
+      ]
+    },
+    {
+      "id": 67,
+      "title": "AI 安全與對抗攻擊 Adversarial",
+      "hitCount": 1,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_24",
+          "note": "對抗性攻擊防禦手段辨析(排除防火牆選項)"
+        }
+      ]
+    },
+    {
+      "id": 68,
+      "title": "模型壓縮 Pruning / Distillation",
+      "hitCount": 2,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "warn",
+      "priorityIcon": "⚠️",
+      "priorityLabel": "⚠️ 常考(命中≥1題)但尚未讀完 → 該補",
+      "hitQuestions": [
+        {
+          "id": "official_115_1_subject1_23",
+          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求"
+        },
+        {
+          "id": "official_115_1_subject1_40",
+          "note": "邊緣裝置FP32量化INT8降低推論延遲"
+        }
+      ]
+    },
+    {
+      "id": 69,
+      "title": "綠色AI 能效與碳足跡",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 70,
+      "title": "科目1 總複習 Review",
+      "hitCount": 0,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "none",
+      "priorityIcon": "⭕",
+      "priorityLabel": "⭕ 完全沒考過 → 可以先跳過或最後讀",
+      "hitQuestions": []
+    },
+    {
+      "id": 71,
+      "title": "圖像生成 Image Generation",
+      "hitCount": 5,
+      "completed": false,
+      "status": "尚未讀到",
+      "priority": "hot",
+      "priorityIcon": "🔥",
+      "priorityLabel": "🔥 常考(命中≥3題)且尚未讀完 → 優先讀",
+      "hitQuestions": [
+        {
+          "id": "official_114_2_subject1_20",
+          "note": "GAN模式崩潰(Mode Collapse)解法：WGAN"
+        },
+        {
+          "id": "official_114_2_subject1_38",
+          "note": "Stable Diffusion提升細節：增加取樣步數"
+        },
+        {
+          "id": "official_114_2_subject1_40",
+          "note": "VAE/GAN/擴散模型在多模態生成策略上的根本差異"
+        },
+        {
+          "id": "official_114_2_subject1_44",
+          "note": "VAE/GAN同時兼顧預測與合成虛擬樣本(流失預測+A/B測試)"
+        },
+        {
+          "id": "S1_04",
+          "note": "GAN由生成器+判別器組成"
+        }
+      ]
+    }
+  ]
+}

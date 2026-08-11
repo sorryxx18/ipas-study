@@ -572,6 +572,12 @@ const server = serve({
       return new Response(html, { headers: new Headers({ "Content-Type": "text/html; charset=utf-8" }) });
     }
 
+    // Serve exam emphasis (出題熱區分析) subpage — independent page, not part of guide flow
+    if (path === "/exam-emphasis" || path === "/exam-emphasis.html") {
+      const html = readFileSync(join(BASE, "webapp", "exam-emphasis.html"), "utf-8");
+      return new Response(html, { headers: new Headers({ "Content-Type": "text/html; charset=utf-8" }) });
+    }
+
     // Serve static webapp assets (images, etc.)
     if (path.startsWith("/images/")) {
       const filePath = join(BASE, "webapp", path);
@@ -584,6 +590,15 @@ const server = serve({
 
     // Serve bonus reading data (static reference JSON, no sync/API needed)
     if (path === "/bonus_llms.json" || path === "/bonus_agent.json") {
+      const filePath = join(BASE, "webapp", path);
+      if (existsSync(filePath)) {
+        return new Response(Bun.file(filePath), { headers: new Headers({ "Content-Type": "application/json; charset=utf-8" }) });
+      }
+      return new Response("Not found", { status: 404 });
+    }
+
+    // Serve exam emphasis data (static reference JSON, no sync/API needed)
+    if (path === "/exam_emphasis_s1.json" || path === "/exam_emphasis_s3.json") {
       const filePath = join(BASE, "webapp", path);
       if (existsSync(filePath)) {
         return new Response(Bun.file(filePath), { headers: new Headers({ "Content-Type": "application/json; charset=utf-8" }) });
