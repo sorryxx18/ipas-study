@@ -911,26 +911,30 @@ function setJumpSubject(s) {
   document.getElementById('jumpS3Btn').classList.toggle('active', s === 3);
   document.getElementById('jumpSegMax').textContent = `/${s === 1 ? 70 : 95}`;
 }
-async function doJumpGuide() {
-  const id = parseInt(document.getElementById('jumpSegId').value);
+async function doJumpGuide(explicitSubject, explicitId, fromHotspot) {
+  const subject = explicitSubject ?? jumpSubject;
+  const id = explicitId ?? parseInt(document.getElementById('jumpSegId').value);
   if (!id) return;
-  const seg = await api(`/api/guide/segment?subject=${jumpSubject}&id=${id}`);
+  const seg = await api(`/api/guide/segment?subject=${subject}&id=${id}`);
   if (seg.error) { alert('找不到該段'); return; }
   closeJumpMenu();
-  currentSubject = jumpSubject;
-  document.getElementById(`s${jumpSubject === 1 ? 3 : 1}Btn`)?.classList.remove('active');
-  document.getElementById(`s${jumpSubject}Btn`)?.classList.add('active');
+  currentSubject = subject;
+  document.getElementById(`s${subject === 1 ? 3 : 1}Btn`)?.classList.remove('active');
+  document.getElementById(`s${subject}Btn`)?.classList.add('active');
   const panel = document.getElementById('guideExpand');
   if (panel) {
     const badge = seg.completed ? '<span style="color:var(--green);font-size:12px">✅ 已讀過</span>' : '';
+    const backLink = fromHotspot ? '<div style="margin-bottom:10px"><a href="exam-emphasis.html" style="font-size:13px;color:var(--muted)">← 回出題熱區分析</a></div>' : '';
     panel.innerHTML = `
       <div class="guide-content" id="guideContent">
+        ${backLink}
         <div class="guide-title">第 ${seg.id} 段：${escHtml(seg.title ?? '')} ${badge}</div>
         <div class="guide-body">${escHtml(seg.content ?? '（無內容）')}</div>
-        <button class="btn btn-primary" onclick="completeSegment(${jumpSubject}, ${seg.id})" style="margin-top:12px">✅ 讀完，下一段</button>
+        <button class="btn btn-primary" onclick="completeSegment(${subject}, ${seg.id})" style="margin-top:12px">✅ 讀完，下一段</button>
       </div>`;
     document.getElementById('guideCard')?.classList.add('expanded');
     panel.classList.add('open');
+    scrollToCard('guideCard');
   }
 }
 async function doJumpQuiz() {
@@ -1051,6 +1055,20 @@ async function initApp() {
 }
 
 initApp();
+
+// Deep link from exam-emphasis page: index.html?jump=guide&subject=1&seg=31
+(function checkDeepLink() {
+  const params = new URLSearchParams(location.search);
+  if (params.get('jump') === 'guide') {
+    const subj = parseInt(params.get('subject'));
+    const seg = parseInt(params.get('seg'));
+    if (subj && seg) {
+      window.addEventListener('load', () => {
+        setTimeout(() => doJumpGuide(subj, seg, true), 300);
+      });
+    }
+  }
+})();
 </script>
 
 <!-- Jump menu bottom sheet -->

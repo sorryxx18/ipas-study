@@ -73,7 +73,8 @@ a { color: var(--accent); }
 
 /* Top hotspot cards */
 .top-list { padding: 0 16px 8px; display: flex; flex-direction: column; gap: 8px; }
-.top-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; }
+.top-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.top-card:active { background: rgba(37,99,235,0.06); }
 .top-rank { font-size: 13px; font-weight: 700; color: var(--muted); min-width: 20px; text-align: center; flex-shrink: 0; }
 .top-body { flex: 1; min-width: 0; }
 .top-title-row { display: flex; align-items: baseline; gap: 6px; }
@@ -109,6 +110,7 @@ a { color: var(--accent); }
 .seg-detail { display: none; padding: 0 14px 14px; }
 .seg-card.open .seg-detail { display: block; }
 .seg-status-line { font-size: 11px; color: var(--muted); margin-bottom: 8px; padding-top: 4px; border-top: 1px solid var(--border); padding-top: 10px; }
+.seg-read-link { display: inline-block; font-size: 12px; color: var(--accent); text-decoration: none; margin-bottom: 10px; }
 .seg-q { background: var(--bg); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 12px; line-height: 1.6; }
 .seg-q:last-child { margin-bottom: 0; }
 .seg-q-id { color: var(--accent); font-weight: 600; font-size: 11px; display: block; margin-bottom: 2px; word-break: break-all; }
@@ -216,7 +218,7 @@ async function render() {
   html += `<div class="section-title">🎯 TOP ${topSegs.length} 出題熱區 <span class="section-sub">（依命中題數排序）</span></div>`;
   html += '<div class="top-list">';
   topSegs.forEach((s, i) => {
-    html += `<div class="top-card">
+    html += `<a class="top-card" href="index.html?jump=guide&subject=${currentSubject}&seg=${s.id}">
       <div class="top-rank">${i + 1}</div>
       <div class="top-body">
         <div class="top-title-row">
@@ -225,7 +227,7 @@ async function render() {
         <div class="top-meta">段落 #${s.id} · ${s.completed ? '已讀完' : '尚未讀到'}</div>
       </div>
       <div class="top-hit">${s.hitCount}<span class="top-hit-unit">題</span></div>
-    </div>`;
+    </a>`;
   });
   html += '</div>';
 
@@ -267,6 +269,7 @@ async function render() {
       </div>
       <div class="seg-detail">
         <div class="seg-status-line">讀書進度：${s.completed ? '✅ 已完成' : '⏳ 尚未讀到'} ・ ${escapeHtml(s.priorityLabel)}</div>
+        <a class="seg-read-link" href="index.html?jump=guide&subject=${currentSubject}&seg=${s.id}">📖 前往閱讀第 ${s.id} 段 →</a>
         ${s.hitQuestions.length
           ? s.hitQuestions.map(q => `<div class="seg-q"><span class="seg-q-id">${escapeHtml(q.id)}</span><span class="seg-q-note">${escapeHtml(q.note)}</span></div>`).join('')
           : '<div class="seg-empty">目前題庫沒有命中這個段落的題目。</div>'}
