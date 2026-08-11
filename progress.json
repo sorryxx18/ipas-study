@@ -7,7 +7,6 @@
     "note": "官方考古題優先排序"
   },
   "current_queue": [
-    "official_115_1_subject3_47",
     "official_115_1_subject1_26",
     "official_115_1_subject1_50",
     "S3_11",
@@ -142,7 +141,8 @@
     "official_115_1_subject3_8",
     "official_114_2_subject3_43",
     "official_115_1_subject3_20",
-    "official_114_2_subject3_5"
+    "official_114_2_subject3_5",
+    "official_115_1_subject3_47"
   ],
   "completed_correct": [
     "official_114_2_subject1_3",
@@ -781,14 +781,21 @@
       "history": [
         "B"
       ]
+    },
+    "official_115_1_subject3_47": {
+      "count": 1,
+      "last_wrong": "D",
+      "history": [
+        "D"
+      ]
     }
   },
   "stats": {
-    "total_answered": 197,
+    "total_answered": 198,
     "total_correct": 118,
-    "total_wrong": 79,
+    "total_wrong": 80,
     "mastered": 24,
     "wrong_pending": 14
   },
-  "current_question": "official_115_1_subject3_47"
+  "current_question": "official_115_1_subject1_26"
 }
