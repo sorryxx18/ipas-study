@@ -73,7 +73,7 @@ a { color: var(--accent); }
 
 /* Top hotspot cards */
 .top-list { padding: 0 16px 8px; display: flex; flex-direction: column; gap: 8px; }
-.top-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; text-decoration: none; color: inherit; }
+.top-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 14px; display: flex; align-items: center; gap: 10px; cursor: pointer; }
 .top-card:active { background: rgba(37,99,235,0.06); }
 .top-rank { font-size: 13px; font-weight: 700; color: var(--muted); min-width: 20px; text-align: center; flex-shrink: 0; }
 .top-body { flex: 1; min-width: 0; }
@@ -218,7 +218,7 @@ async function render() {
   html += `<div class="section-title">🎯 TOP ${topSegs.length} 出題熱區 <span class="section-sub">（依命中題數排序）</span></div>`;
   html += '<div class="top-list">';
   topSegs.forEach((s, i) => {
-    html += `<a class="top-card" href="index.html?jump=guide&subject=${currentSubject}&seg=${s.id}">
+    html += `<div class="top-card" onclick="scrollToSegment(${s.id})">
       <div class="top-rank">${i + 1}</div>
       <div class="top-body">
         <div class="top-title-row">
@@ -227,7 +227,7 @@ async function render() {
         <div class="top-meta">段落 #${s.id} · ${s.completed ? '已讀完' : '尚未讀到'}</div>
       </div>
       <div class="top-hit">${s.hitCount}<span class="top-hit-unit">題</span></div>
-    </a>`;
+    </div>`;
   });
   html += '</div>';
 
@@ -291,6 +291,16 @@ function toggleSeg(id, subject) {
   segOpenState[id] = !segOpenState[id];
   const el = document.getElementById('seg-' + id);
   if (el) el.classList.toggle('open');
+}
+
+function scrollToSegment(id) {
+  if (currentFilter !== 'all') { currentFilter = 'all'; render(); }
+  segOpenState[id] = true;
+  const el = document.getElementById('seg-' + id);
+  if (el) {
+    el.classList.add('open');
+    el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 render();
