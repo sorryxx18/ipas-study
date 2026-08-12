@@ -111,10 +111,13 @@ a { color: var(--accent); }
 .seg-card.open .seg-detail { display: block; }
 .seg-status-line { font-size: 11px; color: var(--muted); margin-bottom: 8px; padding-top: 4px; border-top: 1px solid var(--border); padding-top: 10px; }
 .seg-read-link { display: inline-block; font-size: 12px; color: var(--accent); text-decoration: none; margin-bottom: 10px; }
+.seg-actions { display: flex; gap: 7px; flex-wrap: wrap; margin-bottom: 10px; }
+.seg-action { display: inline-block; padding: 7px 10px; border: 1px solid var(--border); border-radius: 8px; color: var(--accent); text-decoration: none; font-size: 12px; }
 .seg-q { background: var(--bg); border-radius: 8px; padding: 8px 10px; margin-bottom: 6px; font-size: 12px; line-height: 1.6; }
 .seg-q:last-child { margin-bottom: 0; }
 .seg-q-id { color: var(--accent); font-weight: 600; font-size: 11px; display: block; margin-bottom: 2px; word-break: break-all; }
 .seg-q-note { color: var(--text); }
+.seg-q-link { display: inline-block; margin-top: 5px; color: var(--accent); text-decoration: none; font-size: 11px; }
 .seg-empty { font-size: 12px; color: var(--muted); font-style: italic; }
 
 .loading { text-align: center; padding: 40px; color: var(--muted); }
@@ -269,9 +272,9 @@ async function render() {
       </div>
       <div class="seg-detail">
         <div class="seg-status-line">讀書進度：${s.completed ? '✅ 已完成' : '⏳ 尚未讀到'} ・ ${escapeHtml(s.priorityLabel)}</div>
-        <a class="seg-read-link" href="index.html?jump=guide&subject=${currentSubject}&seg=${s.id}">📖 前往閱讀第 ${s.id} 段 →</a>
+        <div class="seg-actions"><a class="seg-action" href="index.html?jump=guide&subject=${currentSubject}&seg=${s.id}&from=hotspot">📖 閱讀這篇指引</a>${s.hitQuestions.length ? `<a class="seg-action" href="index.html?jump=quiz&qid=${encodeURIComponent(s.hitQuestions[0].id)}&from=hotspot">✏️ 正式作答代表題</a>` : ''}</div>
         ${s.hitQuestions.length
-          ? s.hitQuestions.map(q => `<div class="seg-q"><span class="seg-q-id">${escapeHtml(q.id)}</span><span class="seg-q-note">${escapeHtml(q.note)}</span></div>`).join('')
+          ? s.hitQuestions.map(q => `<div class="seg-q"><span class="seg-q-id">${escapeHtml(q.id)}</span><span class="seg-q-note">${escapeHtml(q.note)}</span><a class="seg-q-link" href="index.html?jump=quiz&qid=${encodeURIComponent(q.id)}&from=hotspot">前往這一題 →</a></div>`).join('')
           : '<div class="seg-empty">目前題庫沒有命中這個段落的題目。</div>'}
       </div>
     </div>`;

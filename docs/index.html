@@ -137,10 +137,39 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 .segment-num { font-size: 12px; color: var(--muted); }
 .segment-round { font-size: 11px; color: var(--yellow); background: rgba(245,158,11,0.1); padding: 2px 6px; border-radius: 4px; }
 .segment-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
-.segment-content { font-size: 18px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+.segment-content { font-size: 18px; line-height: 1.8; color: var(--text); }
 .guide-content { }
 .guide-title { font-size: 18px; font-weight: 700; margin-bottom: 14px; }
-.guide-body { font-size: 18px; line-height: 1.8; color: var(--text); white-space: pre-wrap; }
+.guide-body { font-size: 18px; line-height: 1.8; color: var(--text); }
+.guide-reading-meta { display: flex; gap: 8px; margin-bottom: 8px; color: var(--muted); font-size: 12px; }
+.guide-reading-meta span { background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 3px 9px; }
+.guide-reading-progress { height: 5px; background: var(--border); border-radius: 999px; overflow: hidden; margin-bottom: 10px; }
+.guide-reading-progress-fill { width: 0; height: 100%; background: linear-gradient(90deg, var(--accent), var(--green)); transition: width .15s linear; }
+.guide-section-nav { position: sticky; top: 0; z-index: 20; display: flex; gap: 6px; overflow-x: auto; padding: 9px 0; margin-bottom: 8px; background: var(--bg); scrollbar-width: none; }
+.guide-section-nav::-webkit-scrollbar { display: none; }
+.guide-nav-chip { flex: 0 0 auto; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--text); padding: 7px 11px; font: inherit; font-size: 12px; cursor: pointer; }
+.guide-nav-chip:active { border-color: var(--accent); color: var(--accent); }
+.guide-sections { display: grid; gap: 10px; }
+.guide-section-card { scroll-margin-top: 54px; overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+.guide-section-card.open { border-color: color-mix(in srgb, var(--accent) 45%, var(--border)); }
+.guide-section-toggle { width: 100%; display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 13px 14px; border: 0; background: transparent; color: var(--text); text-align: left; font: inherit; font-size: 16px; font-weight: 700; cursor: pointer; }
+.guide-section-arrow { color: var(--muted); transition: transform .2s; }
+.guide-section-card.open .guide-section-arrow { transform: rotate(180deg); color: var(--accent); }
+.guide-section-body { padding: 2px 14px 16px; font-size: 17px; line-height: 1.85; }
+.guide-section-body[hidden] { display: none; }
+.guide-section-body p { margin: 10px 0; }
+.guide-section-body h3 { margin: 18px 0 8px; color: var(--accent); font-size: 16px; line-height: 1.5; }
+.guide-section-body ul, .guide-section-body ol { margin: 10px 0; padding-left: 1.45em; }
+.guide-section-body li { margin: 7px 0; padding-left: 2px; }
+.guide-section-body strong { color: var(--text); font-weight: 700; }
+.guide-section-body code { background: var(--bg); border: 1px solid var(--border); border-radius: 5px; padding: 1px 5px; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: .9em; overflow-wrap: anywhere; }
+.guide-section-body blockquote { margin: 12px 0; padding: 10px 12px; border-left: 4px solid var(--accent); border-radius: 0 8px 8px 0; background: var(--bg); color: var(--muted); }
+.guide-table-wrap { overflow-x: auto; margin: 12px 0; border: 1px solid var(--border); border-radius: 9px; }
+.guide-table-wrap table { width: 100%; border-collapse: collapse; min-width: 360px; font-size: 14px; }
+.guide-table-wrap th, .guide-table-wrap td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; vertical-align: top; }
+.guide-table-wrap th { background: var(--bg); color: var(--accent); }
+.guide-table-wrap tr:last-child td { border-bottom: 0; }
+.guide-back-top { width: 100%; margin-top: 12px; padding: 10px; border: 1px solid var(--border); border-radius: 9px; background: transparent; color: var(--muted); font: inherit; cursor: pointer; }
 .content-pending { color: var(--muted); font-style: italic; font-size: 14px; padding: 20px 0; text-align: center; }
 
 /* Buttons */
@@ -167,6 +196,12 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 .result-correct { background: #dcfce7; color: var(--green); border: 1px solid #bbf7d0; }
 .result-wrong { background: #fee2e2; color: var(--red); border: 1px solid #fecaca; }
 .explanation { background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 14px; margin-top: 8px; font-size: 18px; color: var(--text); line-height: 1.7; }
+.study-link-card { margin-top: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 10px; background: var(--surface); }
+.study-link-title { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 7px; }
+.study-link-note { font-size: 12px; line-height: 1.6; color: var(--muted); margin-bottom: 7px; }
+.study-link-actions { display: flex; gap: 7px; flex-wrap: wrap; }
+.study-link-btn { display: inline-block; padding: 8px 11px; border: 1px solid var(--accent); border-radius: 8px; background: transparent; color: var(--accent); font: inherit; font-size: 12px; text-decoration: none; cursor: pointer; }
+.study-link-btn.secondary { border-color: var(--border); color: var(--muted); }
 .no-more { text-align: center; padding: 40px 16px; color: var(--muted); }
 .no-more .icon { font-size: 32px; margin-bottom: 8px; }
 .loading { text-align: center; padding: 40px; color: var(--muted); }
@@ -373,11 +408,15 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 </div>
 
 <script src="local-backend.js"></script>
+<script src="guide-reader.js?v=20260812"></script>
+<script src="study-navigation.js?v=20260812"></script>
 <script>
 const API = '';
 let currentSubject = 3;
 let currentQuestion = null;
 let answered = false;
+let targetedQuestion = false;
+let questionOrigin = '';
 let currentGuideRound = 1;
 let currentQuizRound = 1;
 let guideLoaded = false;
@@ -690,6 +729,10 @@ function scrollToCard(id) {
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
+function initGuideReadingProgress() {
+  requestAnimationFrame(() => GuideReader.initProgress());
+}
+
 async function loadGuide() {
   document.getElementById('guideContent').innerHTML = '<div class="loading">載入中...</div>';
   const seg = await api(`/api/guide/current?subject=${currentSubject}`);
@@ -705,7 +748,7 @@ async function loadGuide() {
   }
 
   const contentHtml = seg.hasContent
-    ? `<div class="segment-content">${escHtml(seg.content)}</div>`
+    ? `<div class="segment-content">${GuideReader.render(seg.content)}</div>`
     : `<div class="content-pending">⏳ 此段教材尚未匯入</div>`;
 
   document.getElementById('guideContent').innerHTML = `
@@ -721,6 +764,7 @@ async function loadGuide() {
     ${seg.hasContent && publicDisplayMode ? `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">公開展示模式不記錄閱讀進度；設定同步 token 後可啟用個人進度。</div>` : ''}
     <button class="btn btn-secondary" style="margin-top:8px" onclick="loadGuide()">🔄 重新載入</button>
   `;
+  initGuideReadingProgress();
   scrollToCard('guideCard');
 }
 
@@ -760,6 +804,8 @@ function switchSubject(s) {
 
 async function loadQuiz() {
   answered = false;
+  targetedQuestion = false;
+  questionOrigin = '';
   document.getElementById('quizContent').innerHTML = '<div class="loading">載入中...</div>';
   const q = await api('/api/quiz/current');
 
@@ -770,7 +816,7 @@ async function loadQuiz() {
   }
 
   currentQuestion = q;
-  const sourceLabel = q.source?.replace('official_', '').replace('_', '年').replace('_', '梯次-科目') || '自建題';
+  const sourceLabel = StudyNavigation.sourceLabel(q.id);
   const wrongBadge = q.wrongCount > 0 ? `<span class="quiz-wrong-badge">❌ 已錯 ${q.wrongCount} 次</span>` : '';
 
   document.getElementById('quizMeta').textContent = `已答 ${q.totalAnswered} 題 | 待答 ${q.totalInQueue} 題`;
@@ -835,12 +881,39 @@ async function submitAnswer(answer) {
         <div style="font-size:15px;font-weight:600;color:var(--green);margin-bottom:8px">🎉 今日刷題目標達成！辛苦了！</div>
         <button class="daily-btn" onclick="bonusThenNext('quiz')" style="margin:0 auto">⚡ 加碼多一輪</button>
        </div>`
+    : targetedQuestion
+    ? `<button class="btn btn-primary" style="margin-top:12px" onclick="loadQuiz()">返回正常刷題進度 →</button>`
     : `<button class="btn btn-primary" style="margin-top:12px" onclick="loadQuiz()">下一題 →</button>`;
 
-  document.getElementById('resultArea').innerHTML = resultHtml + expHtml + nextBtn;
+  const guideLinks = await buildQuestionGuideLinks(currentQuestion.id);
+  document.getElementById('resultArea').innerHTML = resultHtml + expHtml + guideLinks + nextBtn;
 
   await loadStatus();
   await loadDailyStatus();
+}
+
+async function buildQuestionGuideLinks(questionId) {
+  const refs = await StudyNavigation.findGuides(questionId);
+  if (!refs.length) return '';
+  return `<div class="study-link-card">
+    <div class="study-link-title">📖 本題對應指引</div>
+    ${refs.map((ref, index) => `<div class="study-link-note">${index === 0 ? '主要／相關考點' : '延伸考點'}：科目${ref.subject}第 ${ref.segmentId} 段「${escHtml(ref.segmentTitle)}」${ref.note ? `<br>${escHtml(ref.note)}` : ''}</div>
+      <div class="study-link-actions"><button class="study-link-btn" onclick="openGuideFromQuestion(${ref.subject},${ref.segmentId},'${escHtml(questionId)}')">離開刷題，查看指引</button></div>`).join('')}
+  </div>`;
+}
+
+function openGuideFromQuestion(subject, segmentId, questionId) {
+  doJumpGuide(subject, segmentId, 'quiz', questionId);
+}
+
+function returnToQuestion(questionId) {
+  if (currentQuestion?.id === questionId && answered) {
+    document.getElementById('quizCard')?.classList.add('expanded');
+    document.getElementById('quizExpand')?.classList.add('open');
+    scrollToCard('quizCard');
+    return;
+  }
+  doJumpQuiz(questionId, 'guide');
 }
 
 async function recordRest() {
@@ -911,7 +984,7 @@ function setJumpSubject(s) {
   document.getElementById('jumpS3Btn').classList.toggle('active', s === 3);
   document.getElementById('jumpSegMax').textContent = `/${s === 1 ? 70 : 95}`;
 }
-async function doJumpGuide(explicitSubject, explicitId, fromHotspot) {
+async function doJumpGuide(explicitSubject, explicitId, origin, questionId) {
   const subject = explicitSubject ?? jumpSubject;
   const id = explicitId ?? parseInt(document.getElementById('jumpSegId').value);
   if (!id) return;
@@ -924,28 +997,35 @@ async function doJumpGuide(explicitSubject, explicitId, fromHotspot) {
   const panel = document.getElementById('guideExpand');
   if (panel) {
     const badge = seg.completed ? '<span style="color:var(--green);font-size:12px">✅ 已讀過</span>' : '';
-    const backLink = fromHotspot ? '<div style="margin-bottom:10px"><a href="exam-emphasis.html" style="font-size:13px;color:var(--muted)">← 回出題熱區分析</a></div>' : '';
+    const backLink = origin === 'hotspot'
+      ? '<div style="margin-bottom:10px"><a href="exam-emphasis.html" style="font-size:13px;color:var(--muted)">← 回出題熱區分析</a></div>'
+      : origin === 'quiz' && questionId
+      ? `<div class="study-link-card" style="margin-bottom:10px"><div class="study-link-note">你是從「${escHtml(StudyNavigation.sourceLabel(questionId))}」前來複習。</div><button class="study-link-btn secondary" onclick="returnToQuestion('${escHtml(questionId)}')">← 返回剛才題目</button></div>`
+      : '';
     panel.innerHTML = `
       <div class="guide-content" id="guideContent">
         ${backLink}
         <div class="guide-title">第 ${seg.id} 段：${escHtml(seg.title ?? '')} ${badge}</div>
-        <div class="guide-body">${escHtml(seg.content ?? '（無內容）')}</div>
+        <div class="guide-body">${GuideReader.render(seg.content ?? '（無內容）')}</div>
         <button class="btn btn-primary" onclick="completeSegment(${subject}, ${seg.id})" style="margin-top:12px">✅ 讀完，下一段</button>
       </div>`;
     document.getElementById('guideCard')?.classList.add('expanded');
     panel.classList.add('open');
+    initGuideReadingProgress();
     scrollToCard('guideCard');
   }
 }
-async function doJumpQuiz() {
-  const n = parseInt(document.getElementById('jumpQIdx').value);
-  if (!n) return;
-  const q = await api(`/api/quiz/question?n=${n}`);
+async function doJumpQuiz(explicitId, origin) {
+  const n = explicitId ? null : parseInt(document.getElementById('jumpQIdx').value);
+  if (!explicitId && !n) return;
+  const q = await api(explicitId ? `/api/quiz/question?id=${encodeURIComponent(explicitId)}` : `/api/quiz/question?n=${n}`);
   if (q.error) { alert('找不到該題'); return; }
   closeJumpMenu();
   answered = false;
+  targetedQuestion = true;
+  questionOrigin = origin || 'direct';
   currentQuestion = q;
-  const sourceLabel = q.source?.replace('official_', '').replace('_', '年').replace('_', '梯次-科目') || '自建題';
+  const sourceLabel = StudyNavigation.sourceLabel(q.id);
   const imageHtml = q.image ? `<img src="${q.image}?v=2" alt="題目附圖" style="max-width:100%;border-radius:8px;margin:10px 0;display:block;">` : '';
   const masteredBadge = q.mastered ? '<span style="color:var(--green);font-size:12px;margin-left:6px">✅ 已掌握</span>' : '';
   const optionsHtml = Object.entries(q.options).map(([key, text]) => `
@@ -954,8 +1034,9 @@ async function doJumpQuiz() {
       <span>${escHtml(text)}</span>
     </button>`).join('');
   document.getElementById('quizContent').innerHTML = `
+    <div class="study-link-card"><div class="study-link-title">✏️ 指定題目</div><div class="study-link-note">從${questionOrigin === 'hotspot' ? '出題熱區' : '題號跳轉'}開啟；載入本題不會改變進度，提交答案後才會正式記錄。</div></div>
     <div class="question-card">
-      <div class="question-source">${sourceLabel} — 第 ${q.index} 題 ${masteredBadge}</div>
+      <div class="question-source">${sourceLabel} — 題庫第 ${q.index} 題 ${masteredBadge}</div>
       <div class="question-text">${escHtml(q.question)}</div>
       ${imageHtml}
     </div>
@@ -1056,7 +1137,7 @@ async function initApp() {
 
 initApp();
 
-// Deep link from exam-emphasis page: index.html?jump=guide&subject=1&seg=31
+// Deep links from hotspot and quiz/guide cross-navigation.
 (function checkDeepLink() {
   const params = new URLSearchParams(location.search);
   if (params.get('jump') === 'guide') {
@@ -1064,9 +1145,13 @@ initApp();
     const seg = parseInt(params.get('seg'));
     if (subj && seg) {
       window.addEventListener('load', () => {
-        setTimeout(() => doJumpGuide(subj, seg, true), 300);
+        setTimeout(() => doJumpGuide(subj, seg, params.get('from') || 'hotspot', params.get('qid') || ''), 300);
       });
     }
+  } else if (params.get('jump') === 'quiz' && params.get('qid')) {
+    window.addEventListener('load', () => {
+      setTimeout(() => doJumpQuiz(params.get('qid'), params.get('from') || 'hotspot'), 300);
+    });
   }
 })();
 </script>

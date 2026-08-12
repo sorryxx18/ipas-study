@@ -295,6 +295,11 @@
     };
   }
 
+  function getQuestionById(id) {
+    const index = state.questions.questions.findIndex((q) => q.id === id);
+    return index >= 0 ? getQuestionByIndex(index + 1) : { error: 'not found' };
+  }
+
   // ── GitHub-token based progress sync (option B, shared with production) ──
   const GH_OWNER = 'sorryxx18';
   const GH_REPO = 'ipas-study';
@@ -536,7 +541,7 @@
     if (p === '/api/daily/rest' && method === 'POST') return recordEarlyRest(body.note ?? '');
     if (p === '/api/daily/bonus' && method === 'POST') return recordBonusRound();
     if (p === '/api/guide/segment') return getGuideSegmentById(parseInt(qs.get('subject') || '1', 10), parseInt(qs.get('id') || '0', 10));
-    if (p === '/api/quiz/question') return getQuestionByIndex(parseInt(qs.get('n') || '1', 10));
+    if (p === '/api/quiz/question') return qs.get('id') ? getQuestionById(qs.get('id')) : getQuestionByIndex(parseInt(qs.get('n') || '1', 10));
     if (p === '/api/guide/newround' && method === 'POST') return startGuideNewRound();
     if (p === '/api/quiz/newround' && method === 'POST') return startQuizNewRound();
 

@@ -578,6 +578,18 @@ const server = serve({
       return new Response(html, { headers: new Headers({ "Content-Type": "text/html; charset=utf-8" }) });
     }
 
+    if (path === "/guide-reader.js") {
+      return new Response(Bun.file(join(BASE, "webapp", "guide-reader.js")), {
+        headers: new Headers({ "Content-Type": "text/javascript; charset=utf-8" }),
+      });
+    }
+
+    if (path === "/study-navigation.js") {
+      return new Response(Bun.file(join(BASE, "webapp", "study-navigation.js")), {
+        headers: new Headers({ "Content-Type": "text/javascript; charset=utf-8" }),
+      });
+    }
+
     // Serve static webapp assets (images, etc.)
     if (path.startsWith("/images/")) {
       const filePath = join(BASE, "webapp", path);
@@ -724,7 +736,10 @@ const server = serve({
     if (path === "/api/quiz/question") {
       const n = parseInt(url.searchParams.get("n") ?? "1");
       const questions = readJSON(PATHS.questions);
-      const q = questions?.questions?.[n - 1];
+      const requestedId = url.searchParams.get("id");
+      const list = questions?.questions ?? [];
+      const index = requestedId ? list.findIndex((item: any) => item.id === requestedId) : n - 1;
+      const q = index >= 0 ? list[index] : null;
       if (!q) return Response.json({ error: "not found" }, { status: 404 });
       const progress = readJSON(PATHS.progress);
       const wrongHistory = progress?.wrong_history ?? {};
@@ -735,7 +750,7 @@ const server = serve({
         totalInQueue: progress?.current_queue?.length ?? 0,
         totalAnswered: progress?.stats?.total_answered ?? 0,
         mastered: completedCorrect.has(q.id),
-        index: n,
+        index: index + 1,
       });
     }
 
