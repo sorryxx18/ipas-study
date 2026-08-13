@@ -892,9 +892,15 @@ async function submitAnswer(answer) {
 async function buildQuestionGuideLinks(questionId) {
   const refs = await StudyNavigation.findGuides(questionId);
   if (!refs.length) return '';
+  const coverageLabels = {
+    full: '✅ 指引完整涵蓋',
+    partial: '🟡 指引部分涵蓋',
+    none: '🔴 指引尚未涵蓋',
+    disputed: '⚠️ 題目／官方答案有技術爭議',
+  };
   return `<div class="study-link-card">
-    <div class="study-link-title">📖 本題對應指引</div>
-    ${refs.map((ref, index) => `<div class="study-link-note">${index === 0 ? '主要／相關考點' : '延伸考點'}：科目${ref.subject}第 ${ref.segmentId} 段「${escHtml(ref.segmentTitle)}」${ref.note ? `<br>${escHtml(ref.note)}` : ''}</div>
+    <div class="study-link-title">📖 本題指引涵蓋狀態</div>
+    ${refs.map((ref, index) => `<div class="study-link-note"><strong>${coverageLabels[ref.coverageStatus] || coverageLabels.partial}</strong><br>${index === 0 ? '主要考點' : '延伸考點'}：科目${ref.subject}第 ${ref.segmentId} 段「${escHtml(ref.segmentTitle)}」${ref.note ? `<br>${escHtml(ref.note)}` : ''}${ref.coverageNote ? `<br>${escHtml(ref.coverageNote)}` : ''}</div>
       <div class="study-link-actions"><button class="study-link-btn" onclick="openGuideFromQuestion(${ref.subject},${ref.segmentId},'${escHtml(questionId)}')">離開刷題，查看指引</button></div>`).join('')}
   </div>`;
 }

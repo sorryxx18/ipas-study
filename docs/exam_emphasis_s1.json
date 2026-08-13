@@ -68,7 +68,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_16",
-          "note": "Seq2Seq模型最適合的應用情境(翻譯/摘要)"
+          "note": "Seq2Seq模型最適合的應用情境(翻譯/摘要)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -84,23 +86,33 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_4",
-          "note": "GloVe與Word2Vec的差異：預測式vs共現統計式"
+          "note": "GloVe與Word2Vec的差異：預測式vs共現統計式",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_33",
-          "note": "Word2Vec Skip-gram對低頻詞學習效果較佳"
+          "note": "Word2Vec Skip-gram對低頻詞學習效果較佳",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_3",
-          "note": "CBOW vs Skip-gram在長尾詞訓練效率與品質的取捨"
+          "note": "CBOW vs Skip-gram在長尾詞訓練效率與品質的取捨",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_5",
-          "note": "Word2Vec解決One-Hot高維稀疏表示的限制"
+          "note": "Word2Vec解決One-Hot高維稀疏表示的限制",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_06",
-          "note": "靜態詞嵌入(同詞同向量)：Word2Vec"
+          "note": "靜態詞嵌入(同詞同向量)：Word2Vec",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -116,11 +128,15 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_5",
-          "note": "TF-IDF處理長文本時常見詞權重被放大問題"
+          "note": "TF-IDF處理長文本時常見詞權重被放大問題",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         },
         {
           "id": "S1_26",
-          "note": "TF-IDF中IDF的作用：降低常見詞權重"
+          "note": "TF-IDF中IDF的作用：降低常見詞權重",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -136,7 +152,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_6",
-          "note": "N-gram模型缺乏長距離依賴、語意連貫性限制"
+          "note": "N-gram模型缺乏長距離依賴、語意連貫性限制",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -152,11 +170,15 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_1",
-          "note": "情感分析模型的主要目的：判斷文本情感傾向"
+          "note": "情感分析模型的主要目的：判斷文本情感傾向",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_20",
-          "note": "情感分析屬於分類(Classification)任務"
+          "note": "情感分析屬於分類(Classification)任務",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -172,11 +194,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_1",
-          "note": "詞性標註(POS Tagging)在資訊擷取前處理中的目的"
+          "note": "詞性標註(POS Tagging)在資訊擷取前處理中的目的",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_03",
-          "note": "詞形還原(Lemmatization)：還原字典原形保留語意"
+          "note": "詞形還原(Lemmatization)：還原字典原形保留語意",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -192,15 +218,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_8",
-          "note": "Softmax與Max-Pooling功能差異辨析"
+          "note": "Softmax與Max-Pooling功能差異辨析",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_07",
-          "note": "CNN池化層功能：降低特徵圖維度、減少計算量"
+          "note": "CNN池化層功能：降低特徵圖維度、減少計算量",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_28",
-          "note": "最適合電腦視覺技術的應用場景：製造業瑕疵自動偵測"
+          "note": "最適合電腦視覺技術的應用場景：製造業瑕疵自動偵測",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -216,15 +248,21 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_12",
-          "note": "Sigmoid函數特性與梯度消失限制(二元分類器)"
+          "note": "Sigmoid函數特性與梯度消失限制(二元分類器)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_32",
-          "note": "CNN卷積輸出接全連接層前需Flatten展平"
+          "note": "CNN卷積輸出接全連接層前需Flatten展平",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_36",
-          "note": "工業瑕疵小樣本(500張)：預訓練CNN遷移學習微調"
+          "note": "工業瑕疵小樣本(500張)：預訓練CNN遷移學習微調",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -240,11 +278,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_10",
-          "note": "YOLO單階段vs Faster R-CNN兩階段偵測流程差異"
+          "note": "YOLO單階段vs Faster R-CNN兩階段偵測流程差異",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_02",
-          "note": "即時物件偵測最適合技術：YOLO"
+          "note": "即時物件偵測最適合技術：YOLO",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -260,7 +302,9 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_6",
-          "note": "語義分割與實例分割根本差異(是否區分同類個體)"
+          "note": "語義分割與實例分割根本差異(是否區分同類個體)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -276,15 +320,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_34",
-          "note": "全景分割：同時分類像素又區分同類個體"
+          "note": "全景分割：同時分類像素又區分同類個體",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_6",
-          "note": "語義分割與實例分割根本差異(是否區分同類個體)"
+          "note": "語義分割與實例分割根本差異(是否區分同類個體)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_7",
-          "note": "需要像素級遮罩且區分不同個體 -> 實例分割"
+          "note": "需要像素級遮罩且區分不同個體 -> 實例分割",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -300,7 +350,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_7",
-          "note": "mAP/IoU閾值設定較高代表的意義"
+          "note": "mAP/IoU閾值設定較高代表的意義",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -327,35 +379,51 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_2",
-          "note": "Transformer自注意力機制助長距離語境依賴翻譯"
+          "note": "Transformer自注意力機制助長距離語境依賴翻譯",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_3",
-          "note": "BERT遮罩語言模型(MLM)雙向預測訓練策略"
+          "note": "BERT遮罩語言模型(MLM)雙向預測訓練策略",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_18",
-          "note": "Transformer注意力塌縮(Attention Collapse)改善策略"
+          "note": "Transformer注意力塌縮(Attention Collapse)改善策略",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_47",
-          "note": "多任務BERT模型NER與分類任務競爭：loss權重未平衡"
+          "note": "多任務BERT模型NER與分類任務競爭：loss權重未平衡",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_4",
-          "note": "MLM核心訓練目標：隨機遮蔽token由雙向上下文預測"
+          "note": "MLM核心訓練目標：隨機遮蔽token由雙向上下文預測",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_11",
-          "note": "Self-Attention核心功能：token間建立關聯並加權"
+          "note": "Self-Attention核心功能：token間建立關聯並加權",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_01",
-          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異"
+          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_08",
-          "note": "Transformer架構核心機制：自注意力機制"
+          "note": "Transformer架構核心機制：自注意力機制",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -371,7 +439,9 @@
       "hitQuestions": [
         {
           "id": "S1_01",
-          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異"
+          "note": "BERT(雙向預訓練)與GPT(單向生成)最主要差異",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -398,11 +468,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_13",
-          "note": "Prompt Tuning(調整輸入表示)vs傳統Fine-tuning(更新權重)本質差異"
+          "note": "Prompt Tuning(調整輸入表示)vs傳統Fine-tuning(更新權重)本質差異",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_30",
-          "note": "遷移學習與微調的關係：Fine-tuning是遷移學習的實作方式"
+          "note": "遷移學習與微調的關係：Fine-tuning是遷移學習的實作方式",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -418,11 +492,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_2",
-          "note": "LoRA凍結原權重、僅訓練低秩矩陣，降低GPU記憶體需求"
+          "note": "LoRA凍結原權重、僅訓練低秩矩陣，降低GPU記憶體需求",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_14",
-          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解"
+          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -438,15 +516,21 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_14",
-          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解"
+          "note": "SFT遭遇災難性遺忘，以LoRA凍結多數參數緩解",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_34",
-          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型"
+          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_27",
-          "note": "持續學習(Continual Learning)核心概念：部署後隨新資料更新"
+          "note": "持續學習(Continual Learning)核心概念：部署後隨新資料更新",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -462,11 +546,15 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_17",
-          "note": "RAG系統檢索階段最關鍵的挑戰"
+          "note": "RAG系統檢索階段最關鍵的挑戰",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_21",
-          "note": "RAG系統token成本優化：Prompt Caching+對話歷史摘要壓縮"
+          "note": "RAG系統token成本優化：Prompt Caching+對話歷史摘要壓縮",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -493,11 +581,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_15",
-          "note": "Multi-Agent Orchestrator對不合格結果重試/重新分配的容錯機制"
+          "note": "Multi-Agent Orchestrator對不合格結果重試/重新分配的容錯機制",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_16",
-          "note": "ReAct框架Agent未先用工具驗證，直接回答產生幻覺"
+          "note": "ReAct框架Agent未先用工具驗證，直接回答產生幻覺",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -513,11 +605,15 @@
       "hitQuestions": [
         {
           "id": "S1_14",
-          "note": "SWOT分析T代表威脅(Threat)"
+          "note": "SWOT分析T代表威脅(Threat)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_22",
-          "note": "AI專案設定KPI的原因：提供可量化標準追蹤成效"
+          "note": "AI專案設定KPI的原因：提供可量化標準追蹤成效",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -533,19 +629,27 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_9",
-          "note": "資料增強造成特徵分布不一致、影響泛化能力"
+          "note": "資料增強造成特徵分布不一致、影響泛化能力",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_19",
-          "note": "低資源語言以反向翻譯做資料增強緩解過擬合"
+          "note": "低資源語言以反向翻譯做資料增強緩解過擬合",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_25",
-          "note": "生成式AI著作權風險：訓練資料授權驗證機制"
+          "note": "生成式AI著作權風險：訓練資料授權驗證機制",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_33",
-          "note": "合成資料(Synthetic Data)在自駕車惡劣天氣訓練中的角色"
+          "note": "合成資料(Synthetic Data)在自駕車惡劣天氣訓練中的角色",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -561,15 +665,21 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_37",
-          "note": "SMOTE過採樣處理製造業99%/1%類別不平衡問題"
+          "note": "SMOTE過採樣處理製造業99%/1%類別不平衡問題",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_38",
-          "note": "IoT感測器999度極端值：刪除或以中位數填補"
+          "note": "IoT感測器999度極端值：刪除或以中位數填補",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_12",
-          "note": "AI可行性評估技術前提：足夠且高品質訓練資料"
+          "note": "AI可行性評估技術前提：足夠且高品質訓練資料",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -585,31 +695,45 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_12",
-          "note": "PCA解決多重共線性問題(房價迴歸)"
+          "note": "PCA解決多重共線性問題(房價迴歸)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_26",
-          "note": "多重共線性下選用LASSO正則化迴歸"
+          "note": "多重共線性下選用LASSO正則化迴歸",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_27",
-          "note": "半結構化JSON日誌的巢狀特徵工程與時間窗聚合"
+          "note": "半結構化JSON日誌的巢狀特徵工程與時間窗聚合",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_28",
-          "note": "連續+類別特徵工程流程(標準化+目標編碼+交互特徵)"
+          "note": "連續+類別特徵工程流程(標準化+目標編碼+交互特徵)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_45",
-          "note": "PCA降維接SVM：降低訓練時間、減少過擬合"
+          "note": "PCA降維接SVM：降低訓練時間、減少過擬合",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_30",
-          "note": "PCA以協方差矩陣特徵值分解找最大變異方向"
+          "note": "PCA以協方差矩陣特徵值分解找最大變異方向",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_17",
-          "note": "資料標準化目的：讓特徵尺度一致避免偏向大數值特徵"
+          "note": "資料標準化目的：讓特徵尺度一致避免偏向大數值特徵",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -625,7 +749,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_43",
-          "note": "生成式(VAE)vs鑑別式(BERT)路徑資料效率比較實驗設計"
+          "note": "生成式(VAE)vs鑑別式(BERT)路徑資料效率比較實驗設計",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -641,15 +767,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_10",
-          "note": "F1分數兼顧Precision與Recall的綜合指標"
+          "note": "F1分數兼顧Precision與Recall的綜合指標",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_8",
-          "note": "ROC曲線X/Y軸(FPR/TPR)在醫療情境的意義"
+          "note": "ROC曲線X/Y軸(FPR/TPR)在醫療情境的意義",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_9",
-          "note": "混淆矩陣無法直接算出AUC(需不同閾值)"
+          "note": "混淆矩陣無法直接算出AUC(需不同閾值)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -665,39 +797,57 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_13",
-          "note": "Kubernetes在AI模型部署中的核心功能(容器編排)"
+          "note": "Kubernetes在AI模型部署中的核心功能(容器編排)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_15",
-          "note": "MLOps流程中Model Registry的用途"
+          "note": "MLOps流程中Model Registry的用途",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_22",
-          "note": "MLOps在訓練-測試-部署-監控-再訓練自動化中的核心角色"
+          "note": "MLOps在訓練-測試-部署-監控-再訓練自動化中的核心角色",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_24",
-          "note": "延遲測試(Latency Testing)：評估回應時間是否符合系統要求"
+          "note": "延遲測試(Latency Testing)：評估回應時間是否符合系統要求",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_44",
-          "note": "推論服務API設計：POST+multipart/form-data傳輸高解析影像"
+          "note": "推論服務API設計：POST+multipart/form-data傳輸高解析影像",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_45",
-          "note": "斷路器模式(Circuit Breaker)預防微服務連鎖故障"
+          "note": "斷路器模式(Circuit Breaker)預防微服務連鎖故障",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_49",
-          "note": "訓練實驗超參數軌跡屬離線實驗追蹤，非線上持續監控範疇"
+          "note": "訓練實驗超參數軌跡屬離線實驗追蹤，非線上持續監控範疇",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_16",
-          "note": "MLOps核心目的：管理模型開發到生產的完整生命週期"
+          "note": "MLOps核心目的：管理模型開發到生產的完整生命週期",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_21",
-          "note": "模型部署用API的優點：跨平台跨語言系統整合"
+          "note": "模型部署用API的優點：跨平台跨語言系統整合",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -713,19 +863,27 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_23",
-          "note": "醫院AI系統漸進式部署(Phased Rollout)策略"
+          "note": "醫院AI系統漸進式部署(Phased Rollout)策略",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_29",
-          "note": "CI持續整合核心實踐(commit後自動建置測試)"
+          "note": "CI持續整合核心實踐(commit後自動建置測試)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_43",
-          "note": "全面上線前以金絲雀發布(Canary Release)量化真實業務指標"
+          "note": "全面上線前以金絲雀發布(Canary Release)量化真實業務指標",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_47",
-          "note": "漸進式部署延遲上升：暫停並先做效能優化再繼續擴量"
+          "note": "漸進式部署延遲上升：暫停並先做效能優化再繼續擴量",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -741,35 +899,51 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_22",
-          "note": "以KL散度偵測資料漂移(Data Drift)"
+          "note": "以KL散度偵測資料漂移(Data Drift)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_32",
-          "note": "PSI指數最具預測力的模型效能衰退預警指標"
+          "note": "PSI指數最具預測力的模型效能衰退預警指標",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_42",
-          "note": "以VAE監控潛在空間分佈偵測輸入資料偏移"
+          "note": "以VAE監控潛在空間分佈偵測輸入資料偏移",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_46",
-          "note": "MLOps中建立資料漂移與概念漂移即時監測機制"
+          "note": "MLOps中建立資料漂移與概念漂移即時監測機制",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_42",
-          "note": "高額理賠案件屬長尾樣本，需分群監控而非只看整體RMSE"
+          "note": "高額理賠案件屬長尾樣本，需分群監控而非只看整體RMSE",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_48",
-          "note": "AUC不變但特徵與標籤關聯改變 -> 概念漂移(Concept Drift)"
+          "note": "AUC不變但特徵與標籤關聯改變 -> 概念漂移(Concept Drift)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_19",
-          "note": "資料漂移：生產環境資料分佈與訓練時不同"
+          "note": "資料漂移：生產環境資料分佈與訓練時不同",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_23",
-          "note": "持續監控模型效能最重要兩指標：準確率和F1值"
+          "note": "持續監控模型效能最重要兩指標：準確率和F1值",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         }
       ]
     },
@@ -785,11 +959,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_19",
-          "note": "只看離線AUC忽略線上業務指標(CTR/營收)的評估缺陷"
+          "note": "只看離線AUC忽略線上業務指標(CTR/營收)的評估缺陷",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_29",
-          "note": "A/B測試在AI系統的主要用途：比較新舊模型版本效益"
+          "note": "A/B測試在AI系統的主要用途：比較新舊模型版本效益",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -805,15 +983,21 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_26",
-          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明"
+          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_28",
-          "note": "SHAP值解讀：相對基準值的特徵貢獻方向與大小"
+          "note": "SHAP值解讀：相對基準值的特徵貢獻方向與大小",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_29",
-          "note": "Grad-CAM適合近即時、視覺化像素區域的CNN可解釋性方法"
+          "note": "Grad-CAM適合近即時、視覺化像素區域的CNN可解釋性方法",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -829,7 +1013,9 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_26",
-          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明"
+          "note": "負責任AI要求對拒絕決策提供可解釋性/特徵貢獻說明",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -845,15 +1031,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_49",
-          "note": "情感分析模型對不同語言/族群偏誤(資料代表性/內隱偏誤)"
+          "note": "情感分析模型對不同語言/族群偏誤(資料代表性/內隱偏誤)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_13",
-          "note": "AI倫理公平性：不同族群一致對待不歧視"
+          "note": "AI倫理公平性：不同族群一致對待不歧視",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_25",
-          "note": "AI系統倫理風險：模型偏差導致特定族群不公平對待"
+          "note": "AI系統倫理風險：模型偏差導致特定族群不公平對待",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -869,7 +1061,9 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_27",
-          "note": "醫療AI人機協作(HITL)：由醫師最終審核決策"
+          "note": "醫療AI人機協作(HITL)：由醫師最終審核決策",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -885,7 +1079,9 @@
       "hitQuestions": [
         {
           "id": "S1_10",
-          "note": "GDPR核心要求：個資使用需明確同意並告知目的"
+          "note": "GDPR核心要求：個資使用需明確同意並告知目的",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         }
       ]
     },
@@ -901,11 +1097,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_46",
-          "note": "聯邦學習在院內訓練、僅傳模型更新，符合HIPAA不外流限制"
+          "note": "聯邦學習在院內訓練、僅傳模型更新，符合HIPAA不外流限制",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         },
         {
           "id": "S1_11",
-          "note": "差分隱私：加入雜訊防止個資被還原"
+          "note": "差分隱私：加入雜訊防止個資被還原",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -998,11 +1198,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_20",
-          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取"
+          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_34",
-          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型"
+          "note": "CTR預測特徵空間持續擴展：改用支援增量學習的模型",
+          "coverageStatus": "partial",
+          "coverageNote": "此為延伸考點；完整教學請閱讀科目1第 21 段。"
         }
       ]
     },
@@ -1018,15 +1222,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_11",
-          "note": "DBSCAN的兩個核心超參數：ε與MinPts"
+          "note": "DBSCAN的兩個核心超參數：ε與MinPts",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_48",
-          "note": "DBSCAN高維大量資料效率提升：KD-Tree/Ball-Tree索引"
+          "note": "DBSCAN高維大量資料效率提升：KD-Tree/Ball-Tree索引",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_31",
-          "note": "高維度DBSCAN因維度詛咒導致密度估計失效"
+          "note": "高維度DBSCAN因維度詛咒導致密度估計失效",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1042,7 +1252,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_39",
-          "note": "ARIMA殘差自相關顯著->欠擬合需調整p,q參數"
+          "note": "ARIMA殘差自相關顯著->欠擬合需調整p,q參數",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1058,19 +1270,27 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_14",
-          "note": "交叉驗證選出穩定超參數組合避免過擬合"
+          "note": "交叉驗證選出穩定超參數組合避免過擬合",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_36",
-          "note": "Grid Search系統化搜尋超參數組合"
+          "note": "Grid Search系統化搜尋超參數組合",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_41",
-          "note": "交叉驗證同時調參評估造成資料洩漏、過度樂觀偏差"
+          "note": "交叉驗證同時調參評估造成資料洩漏、過度樂觀偏差",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_18",
-          "note": "過擬合典型症狀：訓練集表現極佳但測試集表現差"
+          "note": "過擬合典型症狀：訓練集表現極佳但測試集表現差",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1097,11 +1317,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_23",
-          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求"
+          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "S1_15",
-          "note": "邊緣運算部署優勢：本地即時處理降低延遲"
+          "note": "邊緣運算部署優勢：本地即時處理降低延遲",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1117,15 +1341,21 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_31",
-          "note": "高RPS高可用架構：容器化水平擴展+Auto Scaling"
+          "note": "高RPS高可用架構：容器化水平擴展+Auto Scaling",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_37",
-          "note": "GPU記憶體不足：降低batch size+資料分片"
+          "note": "GPU記憶體不足：降低batch size+資料分片",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_41",
-          "note": "GPU使用率60%但延遲波動：排程與批次大小設定不當"
+          "note": "GPU使用率60%但延遲波動：排程與批次大小設定不當",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1141,11 +1371,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_20",
-          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取"
+          "note": "即時推薦系統技術規劃：批次訓練+Kafka串流+Feature Store快取",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_39",
-          "note": "多模態資料儲存：原始資料存Data Lake，結構化特徵存Data Warehouse"
+          "note": "多模態資料儲存：原始資料存Data Lake，結構化特徵存Data Warehouse",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1172,7 +1406,9 @@
       "hitQuestions": [
         {
           "id": "S1_05",
-          "note": "AI導入評估中ROI代表投資報酬率"
+          "note": "AI導入評估中ROI代表投資報酬率",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1210,7 +1446,9 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_25",
-          "note": "NIST AI RMF可驗證性：建立可追溯測試資料與評估流程"
+          "note": "NIST AI RMF可驗證性：建立可追溯測試資料與評估流程",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1226,7 +1464,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_30",
-          "note": "不可否認性：雜湊+數位簽章確保稽核追溯"
+          "note": "不可否認性：雜湊+數位簽章確保稽核追溯",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         }
       ]
     },
@@ -1286,39 +1526,57 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_21",
-          "note": "多模態模型應對模態缺失的策略"
+          "note": "多模態模型應對模態缺失的策略",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_35",
-          "note": "CLIP圖文對比學習達成零樣本分類"
+          "note": "CLIP圖文對比學習達成零樣本分類",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_114_2_subject1_50",
-          "note": "CLIP文字影像編碼器語意嵌入空間未充分對齊(生成細節錯誤)"
+          "note": "CLIP文字影像編碼器語意嵌入空間未充分對齊(生成細節錯誤)",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         },
         {
           "id": "official_115_1_subject1_17",
-          "note": "多模態患者風險評估：各模態選用對應模型架構(CNN/Transformer/LSTM)"
+          "note": "多模態患者風險評估：各模態選用對應模型架構(CNN/Transformer/LSTM)",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_115_1_subject1_18",
-          "note": "跨模態對齊(Cross-Modal Alignment)解決的問題：對齊至共同語意空間"
+          "note": "跨模態對齊(Cross-Modal Alignment)解決的問題：對齊至共同語意空間",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_35",
-          "note": "基因序列+電子病歷文本異質特徵分層處理與融合策略"
+          "note": "基因序列+電子病歷文本異質特徵分層處理與融合策略",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "official_115_1_subject1_50",
-          "note": "晚期融合(Late Fusion)各模態獨立預測，低品質模態影響有限"
+          "note": "晚期融合(Late Fusion)各模態獨立預測，低品質模態影響有限",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_09",
-          "note": "CLIP專門用於圖像與文字對齊的多模態模型"
+          "note": "CLIP專門用於圖像與文字對齊的多模態模型",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         },
         {
           "id": "S1_24",
-          "note": "多模態AI核心優勢：整合多種資訊更全面理解情境"
+          "note": "多模態AI核心優勢：整合多種資訊更全面理解情境",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1334,7 +1592,9 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_24",
-          "note": "對抗性攻擊防禦手段辨析(排除防火牆選項)"
+          "note": "對抗性攻擊防禦手段辨析(排除防火牆選項)",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1350,11 +1610,15 @@
       "hitQuestions": [
         {
           "id": "official_115_1_subject1_23",
-          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求"
+          "note": "製造業瑕疵檢測：遷移學習微調+量化/蒸餾壓縮以符合邊緣延遲需求",
+          "coverageStatus": "partial",
+          "coverageNote": "此為延伸考點；完整教學請閱讀科目1第 53 段。"
         },
         {
           "id": "official_115_1_subject1_40",
-          "note": "邊緣裝置FP32量化INT8降低推論延遲"
+          "note": "邊緣裝置FP32量化INT8降低推論延遲",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     },
@@ -1392,25 +1656,42 @@
       "hitQuestions": [
         {
           "id": "official_114_2_subject1_20",
-          "note": "GAN模式崩潰(Mode Collapse)解法：WGAN"
+          "note": "GAN模式崩潰(Mode Collapse)解法：WGAN",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_38",
-          "note": "Stable Diffusion提升細節：增加取樣步數"
+          "note": "Stable Diffusion提升細節：增加取樣步數",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_40",
-          "note": "VAE/GAN/擴散模型在多模態生成策略上的根本差異"
+          "note": "VAE/GAN/擴散模型在多模態生成策略上的根本差異",
+          "coverageStatus": "full",
+          "coverageNote": "原指引內容不足，現已補入本題所需機制、判斷條件與錯項界線。"
         },
         {
           "id": "official_114_2_subject1_44",
-          "note": "VAE/GAN同時兼顧預測與合成虛擬樣本(流失預測+A/B測試)"
+          "note": "VAE/GAN同時兼顧預測與合成虛擬樣本(流失預測+A/B測試)",
+          "coverageStatus": "disputed",
+          "coverageNote": "指引已補充官方作答與技術事實；題目或答案仍有實質爭議。"
         },
         {
           "id": "S1_04",
-          "note": "GAN由生成器+判別器組成"
+          "note": "GAN由生成器+判別器組成",
+          "coverageStatus": "full",
+          "coverageNote": "現有指引已足以推導正解並辨識主要錯項。"
         }
       ]
     }
-  ]
+  ],
+  "coverageAuditVersion": "question_guide_coverage_v1",
+  "coverageAuditQuestionCounts": {
+    "full": 73,
+    "partial": 34,
+    "disputed": 6,
+    "none": 17
+  }
 }
