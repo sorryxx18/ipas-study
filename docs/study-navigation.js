@@ -32,6 +32,8 @@
                 segmentId: segment.id,
                 segmentTitle: segment.title,
                 note: question.note || "",
+                coverageStatus: question.coverageStatus || "partial",
+                coverageNote: question.coverageNote || "此映射尚未完成內容覆蓋稽核。",
               });
             }
           }
