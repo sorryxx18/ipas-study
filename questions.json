@@ -1472,7 +1472,7 @@
     {
       "id": "official_114_2_subject3_48",
       "source": "official_114_2_subject3",
-      "question": "參考下圖程式碼，下列何者正確？ A：X_train -= X_train.mean(axis=0) 將每個訓練集特徵的平均值調整為 0 B：X_train /= X_train.std(axis=0) 將每個訓練集特徵的標準差調整為 0 C：X_train 處理結果會將資料壓縮到 0 和 1 之間 D：標準化結果防止梯度爆炸或消失 E：標準化是屬於特徵選擇(Feature Selection)方法 F：X_train 程式碼應修正為 X_train = X_train.std(axis=0), X_test 程式碼應修正為 X_test = X_test.std(axis=0)",
+      "question": "參考下方程式碼，下列何者正確？\n\nX_train -= X_train.mean(axis=0)\nX_train /= X_train.std(axis=0)\nX_test -= X_test.mean(axis=0)\nX_test /= X_test.std(axis=0)\n\nA：X_train -= X_train.mean(axis=0) 將每個訓練集特徵的平均值調整為 0\nB：X_train /= X_train.std(axis=0) 將每個訓練集特徵的標準差調整為 0\nC：X_train 處理結果會將資料壓縮到 0 和 1 之間\nD：標準化結果防止梯度爆炸或消失\nE：標準化是屬於特徵選擇(Feature Selection)方法\nF：X_train 程式碼應修正為 X_train = X_train.std(axis=0), X_test 程式碼應修正為 X_test = X_test.std(axis=0)",
       "options": {
         "A": "A、B、C、D",
         "B": "A、E",
@@ -1482,7 +1482,6 @@
       "answer": "C",
       "explanation": "【先抓題目關鍵字】題目把六個敘述組合成答案，必須先逐一判斷。`X_train -= X_train.mean(axis=0)` 是逐特徵減去訓練均值；`X_train /= X_train.std(axis=0)` 是逐特徵除以訓練標準差。關鍵區分包括平均值歸零、標準差變成一、是否壓到 0～1、標準化對梯度尺度的影響，以及特徵轉換是否等於特徵選擇。\n【這題在考什麼】Z-score 標準化的式子是 z=(x−μ_train)/σ_train。減均值後，各欄在訓練集上的平均約為 0；再除以非零標準差後，各欄標準差約為 1，不是 0。測試集必須使用訓練集算出的 μ_train 與 σ_train，不能用測試集自己的統計量。標準化不保證數值落在 0 與 1 之間，那是 min-max scaling 的典型性質；它也不刪除欄位，故屬特徵縮放而非特徵選擇。\n【正解怎麼想】正確答案是 C：A、D。敘述 A 正確，因 axis=0 對每一個特徵欄計算跨樣本平均，再以原地減法移除該欄中心位置。敘述 D 在一般神經網路訓練脈絡下成立：不同特徵若尺度差距很大，梯度在各方向的曲率與更新幅度可能極不均衡；標準化可改善條件數，使最佳化較穩定，降低飽和與數值尺度引發梯度爆炸或消失的風險。它不是保證永不發生梯度問題，因深層網路仍受初始化、活化函數與網路深度影響，但題目說「防止」應理解為抑制風險。\n【錯項陷阱】A：A、B、C、D。A、D 對，但 B 把標準差為 1 說成 0；C 又把 z-score 混成 min-max，因此整組錯。B：A、E。A 對，E 錯；標準化保留所有特徵，只改變尺度，沒有依重要性挑欄位。C：A、D。這是正解，精確對應中心化與改善梯度數值條件。D：A、C、F。A 對，但 C 錯；F 把整個資料矩陣指定成一列標準差，既丟失每筆樣本，也沒有執行除法標準化，且測試集不應獨立估計縮放統計量。另就六項個別機制而言，B 的正確結果應是標準差 1；C 描述的是最小最大縮放；E 把 feature scaling 與 feature selection 混淆。\n【下次怎麼秒判斷】專屬口訣是「減均值歸零，除標差歸一；測試沿用訓練尺」。看到 axis=0 就想成每欄特徵；看到 0～1 先找 min 與 max；看到 selection 則要有刪欄、選子集或權重門檻。若某欄標準差為 0，實務上還要用 scaler 的保護機制，避免直接除以零。\n【必要名詞】中心化是減去均值；標準化通常指 z-score；單位變異表示標準差為 1、變異數為 1；min-max scaling 依欄位極值映射至指定區間；資料洩漏是測試資訊影響訓練轉換；條件數反映最佳化問題沿不同方向的尺度差異；特徵選擇會保留部分原欄位，與改變全部欄位尺度的特徵縮放不同。",
       "topic": "特徵標準化與訓練測試一致轉換",
-      "image": "images/exam_pages/q46_114s3_48_fig.png",
       "explanation_style": "teacher_walkthrough_v3"
     },
     {
