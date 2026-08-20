@@ -465,11 +465,12 @@
       ]
     },
     "official_115_1_subject3_25": {
-      "count": 2,
-      "last_wrong": "C",
+      "count": 3,
+      "last_wrong": "D",
       "history": [
         "D",
-        "C"
+        "C",
+        "D"
       ]
     },
     "official_115_1_subject1_3": {
@@ -971,9 +972,9 @@
     }
   },
   "stats": {
-    "total_answered": 293,
+    "total_answered": 294,
     "total_correct": 183,
-    "total_wrong": 110,
+    "total_wrong": 111,
     "mastered": 24,
     "wrong_pending": 14
   },
