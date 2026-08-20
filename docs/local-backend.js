@@ -387,34 +387,89 @@
       }
       const data = await res.json();
       ghShas[key] = data.sha;
-      return { ok: true, found: true, json: JSON.parse(b64ToUtf8(data.content)) };
+      if (data.content) {
+        // Contents API inlines base64 content for files up to 1MB.
+        return { ok: true, found: true, json: JSON.parse(b64ToUtf8(data.content)) };
+      }
+      // Past 1MB (guide_s1.json / guide_s3.json already are, and only grow),
+      // Contents API omits inline content — fetch the blob directly by sha
+      // instead; the Git Data API supports blobs up to 100MB.
+      const blobRes = await fetch(`https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git/blobs/${data.sha}`, {
+        headers: { Authorization: `Bearer ${token}`, Accept: 'application/vnd.github+json' },
+      });
+      if (!blobRes.ok) {
+        const body = await blobRes.text().catch(() => '');
+        return { ok: false, reason: `blob http ${blobRes.status}: ${body.slice(0, 300)}` };
+      }
+      const blob = await blobRes.json();
+      return { ok: true, found: true, json: JSON.parse(b64ToUtf8(blob.content)) };
     } catch (e) {
       return { ok: false, reason: `network error: ${e && e.message ? e.message : e}` };
     }
   }
 
   async function ghPutFileOnce(key, json) {
+    // The Contents API's single-call PUT only accepts content up to 1MB
+    // decoded; guide_s1.json/guide_s3.json are already past that and only
+    // grow. Do it the way git itself commits: create a blob, graft it into
+    // a new tree off the current commit, create the commit, fast-forward
+    // the branch ref — this has no file-size ceiling below 100MB/blob.
     const token = getToken();
     const path = SYNC_FILES[key];
-    const res = await fetch(GH_API_BASE + path, {
-      method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        message: `sync ${key}: ${new Date().toISOString()}`,
-        content: utf8ToB64(JSON.stringify(json, null, 2)),
-        sha: ghShas[key] || undefined,
-      }),
+    const content = JSON.stringify(json, null, 2);
+    const authHeaders = {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/vnd.github+json',
+      'Content-Type': 'application/json',
+    };
+    const gitApi = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/git`;
+
+    const refRes = await fetch(`${gitApi}/refs/heads/main`, { headers: authHeaders });
+    if (!refRes.ok) return { ok: false, status: refRes.status, reason: `ref read http ${refRes.status}` };
+    const ref = await refRes.json();
+    const baseCommitSha = ref.object.sha;
+
+    const commitRes = await fetch(`${gitApi}/commits/${baseCommitSha}`, { headers: authHeaders });
+    if (!commitRes.ok) return { ok: false, status: commitRes.status, reason: `commit read http ${commitRes.status}` };
+    const baseCommit = await commitRes.json();
+
+    const blobRes = await fetch(`${gitApi}/blobs`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({ content: utf8ToB64(content), encoding: 'base64' }),
     });
-    if (!res.ok) {
-      const body = await res.text().catch(() => '');
-      return { ok: false, status: res.status, reason: `http ${res.status}: ${body.slice(0, 300)}` };
+    if (!blobRes.ok) return { ok: false, status: blobRes.status, reason: `blob create http ${blobRes.status}` };
+    const blob = await blobRes.json();
+
+    const treeRes = await fetch(`${gitApi}/trees`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({ base_tree: baseCommit.tree.sha, tree: [{ path, mode: '100644', type: 'blob', sha: blob.sha }] }),
+    });
+    if (!treeRes.ok) return { ok: false, status: treeRes.status, reason: `tree create http ${treeRes.status}` };
+    const tree = await treeRes.json();
+
+    const newCommitRes = await fetch(`${gitApi}/commits`, {
+      method: 'POST',
+      headers: authHeaders,
+      body: JSON.stringify({ message: `sync ${key}: ${new Date().toISOString()}`, tree: tree.sha, parents: [baseCommitSha] }),
+    });
+    if (!newCommitRes.ok) return { ok: false, status: newCommitRes.status, reason: `commit create http ${newCommitRes.status}` };
+    const newCommit = await newCommitRes.json();
+
+    const updateRefRes = await fetch(`${gitApi}/refs/heads/main`, {
+      method: 'PATCH',
+      headers: authHeaders,
+      body: JSON.stringify({ sha: newCommit.sha }),
+    });
+    if (!updateRefRes.ok) {
+      const body = await updateRefRes.text().catch(() => '');
+      // Non-fast-forward (something else moved main since baseCommitSha was
+      // read) surfaces as 422 here — the same conflict class ghPutFile
+      // already retries on below.
+      return { ok: false, status: updateRefRes.status, reason: `ref update http ${updateRefRes.status}: ${body.slice(0, 200)}` };
     }
-    const data = await res.json();
-    ghShas[key] = data.content?.sha ?? ghShas[key];
+    ghShas[key] = blob.sha;
     return { ok: true };
   }
 
