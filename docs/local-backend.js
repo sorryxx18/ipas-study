@@ -19,6 +19,39 @@
     bonusData: { llms: null, agent: null },
   };
 
+  // ── Local persistence (localStorage) ───────────────────────────────
+  // Keeps progress on-device across app restarts even with no network at
+  // all (e.g. an e-ink reader offline for days). GitHub sync below is a
+  // separate, best-effort layer on top of this — the device never depends
+  // on connectivity just to remember what's already been read/answered.
+  const LOCAL_KEY = 'ipas_local_state_v1';
+
+  function saveLocalState() {
+    try {
+      const snapshot = {
+        progress: state.progress,
+        guideProgress: state.guideProgress,
+        guideS1: state.guideS1,
+        guideS3: state.guideS3,
+        dailyLog: state.dailyLog,
+        bonusProgress: state.bonusProgress,
+        savedAt: new Date().toISOString(),
+      };
+      localStorage.setItem(LOCAL_KEY, JSON.stringify(snapshot));
+    } catch (e) {
+      console.warn('local save failed:', e);
+    }
+  }
+
+  function loadLocalState() {
+    try {
+      const raw = localStorage.getItem(LOCAL_KEY);
+      return raw ? JSON.parse(raw) : null;
+    } catch {
+      return null;
+    }
+  }
+
   function todayStr() {
     return new Date().toLocaleDateString('en-CA', { timeZone: 'Asia/Taipei' });
   }
@@ -433,6 +466,9 @@
   let lastSyncReason = '';
 
   function scheduleSave() {
+    // Always persist locally first and immediately — this must not depend
+    // on having a GitHub token or being online.
+    saveLocalState();
     if (!getToken()) return;
     clearTimeout(saveTimer);
     saveTimer = setTimeout(() => {
@@ -443,6 +479,148 @@
         if (window.__onSyncResult) window.__onSyncResult(result);
       });
     }, 3000);
+  }
+
+  // ── Merge helpers for cross-device sync ────────────────────────────
+  // Progress in this app is monotonic (a segment read stays read, a question
+  // mastered stays mastered), so merging two copies is a safe union rather
+  // than a risky "pick one side" — a device that's been offline for weeks
+  // never loses progress made on another device, and vice versa.
+
+  function mergeGuideContent(bundled, local) {
+    // Content (title/body) always comes from the freshest bundled build;
+    // only completed/completed_date carries over from what's on-device.
+    if (!bundled) return local;
+    if (!local) return JSON.parse(JSON.stringify(bundled));
+    const localById = new Map((local.segments ?? []).map((s) => [s.id, s]));
+    const merged = JSON.parse(JSON.stringify(bundled));
+    for (const seg of merged.segments ?? []) {
+      const ls = localById.get(seg.id);
+      if (ls?.completed) {
+        seg.completed = true;
+        seg.completed_date = ls.completed_date ?? seg.completed_date ?? todayStr();
+      }
+    }
+    return merged;
+  }
+
+  function mergeGuideCompleted(current, remote) {
+    if (!remote || !current) return current;
+    const remoteById = new Map((remote.segments ?? []).map((s) => [s.id, s]));
+    for (const seg of current.segments ?? []) {
+      const rs = remoteById.get(seg.id);
+      if (rs?.completed && !seg.completed) {
+        seg.completed = true;
+        seg.completed_date = rs.completed_date ?? seg.completed_date ?? todayStr();
+      }
+    }
+    return current;
+  }
+
+  function mergeProgress(local, remote) {
+    if (!remote) return local;
+    const merged = { ...local };
+    merged.completed_correct = Array.from(new Set([...(local.completed_correct ?? []), ...(remote.completed_correct ?? [])]));
+    const wh = { ...(remote.wrong_history ?? {}) };
+    for (const [id, lh] of Object.entries(local.wrong_history ?? {})) {
+      const rh = wh[id];
+      if (!rh) { wh[id] = lh; continue; }
+      const lLen = lh.history?.length ?? 0;
+      const rLen = rh.history?.length ?? 0;
+      wh[id] = {
+        count: Math.max(lh.count ?? 0, rh.count ?? 0),
+        last_wrong: lLen >= rLen ? lh.last_wrong : rh.last_wrong,
+        history: lLen >= rLen ? lh.history : rh.history,
+      };
+    }
+    merged.wrong_history = wh;
+    merged.stats = {
+      total_answered: Math.max(local.stats?.total_answered ?? 0, remote.stats?.total_answered ?? 0),
+      total_correct: Math.max(local.stats?.total_correct ?? 0, remote.stats?.total_correct ?? 0),
+      total_wrong: Math.max(local.stats?.total_wrong ?? 0, remote.stats?.total_wrong ?? 0),
+    };
+    merged.round = Math.max(local.round ?? 1, remote.round ?? 1);
+    return merged;
+  }
+
+  function mergeDailyLog(local, remote) {
+    const merged = { ...local };
+    for (const [date, rEntry] of Object.entries(remote ?? {})) {
+      const lEntry = merged[date];
+      if (!lEntry) { merged[date] = rEntry; continue; }
+      merged[date] = {
+        guide_completed: Math.max(lEntry.guide_completed ?? 0, rEntry.guide_completed ?? 0),
+        quiz_answered: Math.max(lEntry.quiz_answered ?? 0, rEntry.quiz_answered ?? 0),
+        rested_early: !!(lEntry.rested_early || rEntry.rested_early),
+        rest_note: lEntry.rest_note || rEntry.rest_note,
+        bonus_rounds: Math.max(lEntry.bonus_rounds ?? 0, rEntry.bonus_rounds ?? 0),
+        bonus_chapters_completed: Math.max(lEntry.bonus_chapters_completed ?? 0, rEntry.bonus_chapters_completed ?? 0),
+        last_bonus: lEntry.last_bonus || rEntry.last_bonus,
+      };
+    }
+    return merged;
+  }
+
+  function mergeBonusProgress(local, remote) {
+    if (!remote) return local;
+    const merged = { ...local, completed: { ...local.completed }, current: { ...local.current } };
+    merged.round = Math.max(local.round ?? 1, remote.round ?? 1);
+    for (const book of Object.keys(BONUS_BOOKS)) {
+      merged.completed[book] = Array.from(new Set([...(local.completed?.[book] ?? []), ...(remote.completed?.[book] ?? [])])).sort((a, b) => a - b);
+    }
+    merged.current = { ...local.current, ...remote.current };
+    return merged;
+  }
+
+  function mergeGuideProgress(local, remote) {
+    if (!remote) return local;
+    return {
+      round: Math.max(local.round ?? 1, remote.round ?? 1),
+      subject1: { completed_segments: Math.max(local.subject1?.completed_segments ?? 0, remote.subject1?.completed_segments ?? 0) },
+      subject3: { completed_segments: Math.max(local.subject3?.completed_segments ?? 0, remote.subject3?.completed_segments ?? 0) },
+    };
+  }
+
+  function reconcileQuizQueue() {
+    const allIds = state.questions.questions.map((q) => q.id);
+    const stillQueued = new Set(allIds);
+    const mastered = new Set(state.progress.completed_correct ?? []);
+    state.progress.current_queue = (state.progress.current_queue ?? []).filter((id) => stillQueued.has(id) && !mastered.has(id));
+    for (const id of allIds) {
+      if (!mastered.has(id) && !state.progress.current_queue.includes(id)) state.progress.current_queue.push(id);
+    }
+    if (!state.progress.current_question || !stillQueued.has(state.progress.current_question) || mastered.has(state.progress.current_question)) {
+      state.progress.current_question = state.progress.current_queue[0] ?? null;
+    }
+  }
+
+  async function pullAndMerge() {
+    const token = getToken();
+    if (!token) return { ok: false, reason: 'no-token' };
+    const [pRes, gpRes, s1Res, s3Res, dlRes, bpRes] = await Promise.all([
+      ghGetFile('progress'),
+      ghGetFile('guideProgress'),
+      ghGetFile('guideS1'),
+      ghGetFile('guideS3'),
+      ghGetFile('dailyLog'),
+      ghGetFile('bonusProgress'),
+    ]);
+    const failures = [pRes, gpRes, s1Res, s3Res, dlRes, bpRes].filter((r) => !r.ok);
+    if (failures.length) return { ok: false, reason: failures.map((f) => f.reason).join('; ') };
+
+    if (pRes.found) state.progress = mergeProgress(state.progress, pRes.json);
+    if (gpRes.found) state.guideProgress = mergeGuideProgress(state.guideProgress, gpRes.json);
+    if (dlRes.found) state.dailyLog = mergeDailyLog(state.dailyLog, dlRes.json);
+    if (bpRes.found) state.bonusProgress = mergeBonusProgress(state.bonusProgress, bpRes.json);
+    if (s1Res.found) state.guideS1 = mergeGuideCompleted(state.guideS1, s1Res.json);
+    if (s3Res.found) state.guideS3 = mergeGuideCompleted(state.guideS3, s3Res.json);
+
+    reconcileQuizQueue();
+    saveLocalState();
+    // Push the merged (union) result back so every device converges on the
+    // same state instead of the pull silently staying ahead of GitHub.
+    const pushResult = await ghSave();
+    return pushResult.ok ? { ok: true } : { ok: false, reason: pushResult.reason };
   }
 
   async function fetchJSONOrNull(path) {
@@ -460,27 +638,6 @@
     state.questions = questions;
     const allIds = questions.questions.map((q) => q.id);
 
-    const token = getToken();
-    let guideS1 = null;
-    let guideS3 = null;
-
-    if (token) {
-      const [pRes, gpRes, s1Res, s3Res, dlRes, bpRes] = await Promise.all([
-        ghGetFile('progress'),
-        ghGetFile('guideProgress'),
-        ghGetFile('guideS1'),
-        ghGetFile('guideS3'),
-        ghGetFile('dailyLog'),
-        ghGetFile('bonusProgress'),
-      ]);
-      if (pRes.ok && pRes.found) state.progress = pRes.json;
-      if (gpRes.ok && gpRes.found) state.guideProgress = gpRes.json;
-      if (dlRes.ok && dlRes.found) state.dailyLog = dlRes.json;
-      if (bpRes.ok && bpRes.found) state.bonusProgress = { ...state.bonusProgress, ...bpRes.json, completed: { ...state.bonusProgress.completed, ...(bpRes.json.completed ?? {}) }, current: { ...state.bonusProgress.current, ...(bpRes.json.current ?? {}) } };
-      if (s1Res.ok && s1Res.found) guideS1 = s1Res.json;
-      if (s3Res.ok && s3Res.found) guideS3 = s3Res.json;
-    }
-
     const [bundledS1, bundledS3, bundledBonusLlms, bundledBonusAgent] = await Promise.all([
       fetchJSONOrNull('guide_s1.json'),
       fetchJSONOrNull('guide_s3.json'),
@@ -490,32 +647,45 @@
     state.bonusData.llms = bundledBonusLlms;
     state.bonusData.agent = bundledBonusAgent;
 
-    if (!guideS1 && bundledS1) guideS1 = JSON.parse(JSON.stringify(bundledS1));
-    if (!guideS3 && bundledS3) guideS3 = JSON.parse(JSON.stringify(bundledS3));
+    const local = loadLocalState();
+    const token = getToken();
 
-    if (!token) {
-      // Public display mode: keep guide content, but do not expose or imply
-      // the owner's personal reading/quiz progress.
-      for (const seg of guideS1?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
-      for (const seg of guideS3?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
-      state.progress.current_queue = allIds;
-      state.progress.current_question = allIds[0] ?? null;
-      state.progress.completed_correct = [];
-      state.progress.wrong_history = {};
-      state.progress.stats = { total_answered: 0, total_correct: 0, total_wrong: 0 };
-      state.guideProgress = { round: 1 };
-      state.dailyLog = {};
-      state.bonusProgress = { round: 1, completed: { llms: [], agent: [] }, current: { llms: 1, agent: 1 }, updated: null };
+    if (local) {
+      // Offline-first: this device already has progress — trust it
+      // immediately, with zero dependency on network. Content itself still
+      // tracks the freshest bundled build; only completed/completed_date
+      // carries over from what's on-device.
+      state.progress = local.progress ?? state.progress;
+      state.guideProgress = local.guideProgress ?? state.guideProgress;
+      state.dailyLog = local.dailyLog ?? state.dailyLog;
+      state.bonusProgress = local.bonusProgress ?? state.bonusProgress;
+      state.guideS1 = mergeGuideContent(bundledS1, local.guideS1);
+      state.guideS3 = mergeGuideContent(bundledS3, local.guideS3);
+    } else if (!token) {
+      // True first run, no saved progress, no token: this is the public
+      // GitHub Pages demo — show content but not any owner-only progress.
+      state.guideS1 = bundledS1 ? JSON.parse(JSON.stringify(bundledS1)) : null;
+      state.guideS3 = bundledS3 ? JSON.parse(JSON.stringify(bundledS3)) : null;
+      for (const seg of state.guideS1?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
+      for (const seg of state.guideS3?.segments ?? []) { seg.completed = false; delete seg.completed_date; }
+    } else {
+      // First run on this device but a token is already configured (e.g.
+      // app reinstalled) — start from bundled content, real sync happens
+      // in the background pull below.
+      state.guideS1 = bundledS1 ? JSON.parse(JSON.stringify(bundledS1)) : null;
+      state.guideS3 = bundledS3 ? JSON.parse(JSON.stringify(bundledS3)) : null;
     }
 
-    state.guideS1 = guideS1;
-    state.guideS3 = guideS3;
+    reconcileQuizQueue();
 
-    const stillQueued = new Set(allIds);
-    state.progress.current_queue = (state.progress.current_queue?.length ? state.progress.current_queue : allIds)
-      .filter((id) => stillQueued.has(id));
-    if (!state.progress.current_question || !stillQueued.has(state.progress.current_question)) {
-      state.progress.current_question = state.progress.current_queue[0] ?? allIds[0] ?? null;
+    if (token) {
+      // Don't block first render on network — pull, merge (union, never
+      // destructive) and persist in the background once it resolves.
+      pullAndMerge().then((result) => {
+        lastSyncFailed = !result.ok;
+        lastSyncReason = result.reason || '';
+        if (window.__onSyncResult) window.__onSyncResult({ ...result, pulled: true });
+      });
     }
   }
 
@@ -552,7 +722,7 @@
     }
     if (p === '/api/demo/sync-now' && method === 'POST') {
       clearTimeout(saveTimer);
-      const result = await ghSave();
+      const result = await pullAndMerge();
       lastSyncFailed = !result.ok;
       lastSyncReason = result.reason || '';
       return result;
