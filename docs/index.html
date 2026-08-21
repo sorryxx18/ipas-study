@@ -268,12 +268,20 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 .jump-go { width: 100%; padding: 12px; border: none; border-radius: 12px; background: var(--accent); color: #fff; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 4px; }
 .round-badge { display: inline-flex; align-items: center; gap: 3px; background: rgba(245,158,11,0.15); border: 1px solid rgba(245,158,11,0.4); border-radius: 999px; padding: 2px 8px; font-size: 11px; color: var(--yellow); font-weight: 700; margin-left: 6px; }
 
+/* Floating TTS stop control */
+.tts-float { display: none; position: fixed; left: 50%; bottom: 90px; transform: translateX(-50%); z-index: 300; width: 56px; height: 56px; border-radius: 50%; background: var(--accent); color: #fff; align-items: center; justify-content: center; font-size: 22px; box-shadow: 0 10px 24px -8px rgba(0,0,0,.4); cursor: grab; touch-action: none; user-select: none; }
+.tts-float.show { display: flex; }
+.tts-float.dragging { cursor: grabbing; box-shadow: 0 14px 30px -6px rgba(0,0,0,.5); }
+@keyframes ttsPulse { 0%,100% { box-shadow: 0 10px 24px -8px rgba(0,0,0,.4), 0 0 0 0 rgba(37,99,235,.5); } 50% { box-shadow: 0 10px 24px -8px rgba(0,0,0,.4), 0 0 0 10px rgba(37,99,235,0); } }
+.tts-float:not(.dragging) { animation: ttsPulse 1.8s ease-out infinite; }
+
 @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
 .pop-anim { animation: pop 0.4s ease; }
 </style>
 </head>
 <body>
 <button id="syncBadge" onclick="openSyncMenu()" style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);cursor:pointer;">🧪 靜態展示版・進度不會保存・點擊設定同步</button>
+<div id="ttsFloat" class="tts-float" title="停止朗讀">⏹</div>
 <div class="header">
   <h1>📚 IPAS 備考系統</h1>
   <div class="header-right">
@@ -999,16 +1007,36 @@ function ttsPlugin() {
 function ttsAvailable() {
   return !!ttsPlugin();
 }
-const speakState = { speaking: false, cancelled: false };
+const speakState = { speaking: false, cancelled: false, btnId: null };
+
+function showTtsFloat() {
+  const el = document.getElementById('ttsFloat');
+  if (el) el.classList.add('show');
+}
+function hideTtsFloat() {
+  const el = document.getElementById('ttsFloat');
+  if (el) el.classList.remove('show');
+}
+function resetSpeakButton() {
+  if (speakState.btnId) {
+    const btn = document.getElementById(speakState.btnId);
+    if (btn) btn.textContent = '🔊 朗讀本段';
+  }
+}
+async function stopSpeaking() {
+  if (!speakState.speaking) return;
+  speakState.cancelled = true;
+  const tts = ttsPlugin();
+  if (tts) { try { await tts.stop(); } catch (e) {} }
+  speakState.speaking = false;
+  resetSpeakButton();
+  hideTtsFloat();
+}
 async function toggleSpeakSegment(btnId) {
   const tts = ttsPlugin();
   if (!tts) { alert('朗讀功能僅限手機 App 內使用。'); return; }
-  const btn = document.getElementById(btnId);
   if (speakState.speaking) {
-    speakState.cancelled = true;
-    try { await tts.stop(); } catch (e) {}
-    speakState.speaking = false;
-    if (btn) btn.textContent = '🔊 朗讀本段';
+    await stopSpeaking();
     return;
   }
   const text = stripForSpeech(window.__ttsText || '');
@@ -1016,7 +1044,10 @@ async function toggleSpeakSegment(btnId) {
   const chunks = chunkForSpeech(text);
   speakState.speaking = true;
   speakState.cancelled = false;
+  speakState.btnId = btnId;
+  const btn = document.getElementById(btnId);
   if (btn) btn.textContent = '⏹ 停止朗讀';
+  showTtsFloat();
   try {
     for (const chunk of chunks) {
       if (speakState.cancelled) break;
@@ -1026,9 +1057,48 @@ async function toggleSpeakSegment(btnId) {
     console.error('TTS error', e);
   } finally {
     speakState.speaking = false;
-    if (btn) btn.textContent = '🔊 朗讀本段';
+    resetSpeakButton();
+    hideTtsFloat();
   }
 }
+
+// Draggable floating stop control
+(function initTtsFloatDrag() {
+  const el = document.getElementById('ttsFloat');
+  if (!el) return;
+  let dragging = false, moved = false, startX = 0, startY = 0, origLeft = 0, origTop = 0;
+  const onDown = (e) => {
+    dragging = true; moved = false;
+    el.classList.add('dragging');
+    const rect = el.getBoundingClientRect();
+    origLeft = rect.left; origTop = rect.top;
+    startX = e.clientX; startY = e.clientY;
+    el.style.left = origLeft + 'px';
+    el.style.top = origTop + 'px';
+    el.style.bottom = 'auto';
+    el.style.transform = 'none';
+    el.setPointerCapture && el.setPointerCapture(e.pointerId);
+  };
+  const onMove = (e) => {
+    if (!dragging) return;
+    const dx = e.clientX - startX, dy = e.clientY - startY;
+    if (Math.abs(dx) > 4 || Math.abs(dy) > 4) moved = true;
+    let newLeft = origLeft + dx, newTop = origTop + dy;
+    newLeft = Math.max(4, Math.min(window.innerWidth - el.offsetWidth - 4, newLeft));
+    newTop = Math.max(4, Math.min(window.innerHeight - el.offsetHeight - 4, newTop));
+    el.style.left = newLeft + 'px';
+    el.style.top = newTop + 'px';
+  };
+  const onUp = () => {
+    dragging = false;
+    el.classList.remove('dragging');
+    if (!moved) stopSpeaking();
+  };
+  el.addEventListener('pointerdown', onDown);
+  el.addEventListener('pointermove', onMove);
+  el.addEventListener('pointerup', onUp);
+  el.addEventListener('pointercancel', onUp);
+})();
 
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
