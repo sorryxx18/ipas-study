@@ -751,6 +751,8 @@ async function loadGuide() {
     ? `<div class="segment-content">${GuideReader.render(seg.content)}</div>`
     : `<div class="content-pending">⏳ 此段教材尚未匯入</div>`;
 
+  window.__ttsText = seg.hasContent ? seg.content : '';
+
   document.getElementById('guideContent').innerHTML = `
     <div class="segment-card">
       <div class="segment-header">
@@ -761,6 +763,7 @@ async function loadGuide() {
       ${contentHtml}
     </div>
     ${seg.hasContent && !publicDisplayMode ? `<button class="btn btn-primary" onclick="completeSegment(${seg.subject}, ${seg.id})">✅ 讀完，下一段</button>` : ''}
+    ${seg.hasContent && ttsAvailable() ? `<button class="btn btn-secondary" id="ttsBtn" style="margin-top:8px" onclick="toggleSpeakSegment('ttsBtn')">🔊 朗讀本段</button>` : ''}
     ${seg.hasContent && publicDisplayMode ? `<div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:12px;margin-top:12px;text-align:center;font-size:13px;color:var(--muted)">公開展示模式不記錄閱讀進度；設定同步 token 後可啟用個人進度。</div>` : ''}
     <button class="btn btn-secondary" style="margin-top:8px" onclick="loadGuide()">🔄 重新載入</button>
   `;
@@ -955,6 +958,76 @@ function escHtml(str) {
   return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
+// ── Text-to-Speech (native app only) ───────────────────────
+function stripForSpeech(md) {
+  if (!md) return '';
+  let t = String(md);
+  t = t.replace(/^\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)+\|?\s*$/gm, '');
+  t = t.replace(/\|/g, '，');
+  t = t.replace(/^#{1,6}\s*/gm, '');
+  t = t.replace(/^>\s?/gm, '');
+  t = t.replace(/^-{3,}\s*$/gm, '');
+  t = t.replace(/^[-*]\s+/gm, '');
+  t = t.replace(/\*\*(.*?)\*\*/g, '$1');
+  t = t.replace(/`([^`]*)`/g, '$1');
+  t = t.replace(/[*_]{1,2}/g, '');
+  t = t.replace(/[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2190}-\u{21FF}]/gu, '');
+  t = t.replace(/\n{2,}/g, '\n').replace(/[ \t]{2,}/g, ' ').trim();
+  return t;
+}
+function chunkForSpeech(text, maxLen) {
+  maxLen = maxLen || 800;
+  const paras = text.split('\n').map(s => s.trim()).filter(Boolean);
+  const chunks = [];
+  let cur = '';
+  for (const p of paras) {
+    if ((cur + '\n' + p).length > maxLen && cur) {
+      chunks.push(cur);
+      cur = p;
+    } else {
+      cur = cur ? cur + '\n' + p : p;
+    }
+  }
+  if (cur) chunks.push(cur);
+  return chunks;
+}
+function ttsPlugin() {
+  return (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform() && window.Capacitor.Plugins && window.Capacitor.Plugins.TextToSpeech) || null;
+}
+function ttsAvailable() {
+  return !!ttsPlugin();
+}
+const speakState = { speaking: false, cancelled: false };
+async function toggleSpeakSegment(btnId) {
+  const tts = ttsPlugin();
+  if (!tts) { alert('朗讀功能僅限手機 App 內使用。'); return; }
+  const btn = document.getElementById(btnId);
+  if (speakState.speaking) {
+    speakState.cancelled = true;
+    try { await tts.stop(); } catch (e) {}
+    speakState.speaking = false;
+    if (btn) btn.textContent = '🔊 朗讀本段';
+    return;
+  }
+  const text = stripForSpeech(window.__ttsText || '');
+  if (!text) return;
+  const chunks = chunkForSpeech(text);
+  speakState.speaking = true;
+  speakState.cancelled = false;
+  if (btn) btn.textContent = '⏹ 停止朗讀';
+  try {
+    for (const chunk of chunks) {
+      if (speakState.cancelled) break;
+      await tts.speak({ text: chunk, lang: 'zh-TW', rate: 1.0, pitch: 1.0, volume: 1.0 });
+    }
+  } catch (e) {
+    console.error('TTS error', e);
+  } finally {
+    speakState.speaking = false;
+    if (btn) btn.textContent = '🔊 朗讀本段';
+  }
+}
+
 function toggleTheme() {
   const isDark = document.documentElement.classList.toggle('dark');
   document.getElementById('themeBtn').textContent = isDark ? '☀️' : '🌙';
@@ -1008,12 +1081,14 @@ async function doJumpGuide(explicitSubject, explicitId, origin, questionId) {
       : origin === 'quiz' && questionId
       ? `<div class="study-link-card" style="margin-bottom:10px"><div class="study-link-note">你是從「${escHtml(StudyNavigation.sourceLabel(questionId))}」前來複習。</div><button class="study-link-btn secondary" onclick="returnToQuestion('${escHtml(questionId)}')">← 返回剛才題目</button></div>`
       : '';
+    window.__ttsText = seg.content ?? '';
     panel.innerHTML = `
       <div class="guide-content" id="guideContent">
         ${backLink}
         <div class="guide-title">第 ${seg.id} 段：${escHtml(seg.title ?? '')} ${badge}</div>
         <div class="guide-body">${GuideReader.render(seg.content ?? '（無內容）')}</div>
         <button class="btn btn-primary" onclick="completeSegment(${subject}, ${seg.id})" style="margin-top:12px">✅ 讀完，下一段</button>
+        ${seg.content && ttsAvailable() ? `<button class="btn btn-secondary" id="ttsBtnJump" style="margin-top:8px" onclick="toggleSpeakSegment('ttsBtnJump')">🔊 朗讀本段</button>` : ''}
       </div>`;
     document.getElementById('guideCard')?.classList.add('expanded');
     panel.classList.add('open');
