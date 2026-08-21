@@ -273,7 +273,7 @@ html.dark .subject-btn.active { background: rgba(59,130,246,0.15); }
 </style>
 </head>
 <body>
-<button id="syncBadge" onclick="manageSync()" style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);cursor:pointer;">🧪 靜態展示版・進度不會保存・點擊設定同步</button>
+<button id="syncBadge" onclick="openSyncMenu()" style="position:fixed;right:14px;bottom:14px;z-index:200;background:var(--surface);color:var(--muted);border:1px solid var(--border);border-radius:999px;padding:7px 13px;font-size:11px;box-shadow:0 6px 16px -8px rgba(0,0,0,.25);cursor:pointer;">🧪 靜態展示版・進度不會保存・點擊設定同步</button>
 <div class="header">
   <h1>📚 IPAS 備考系統</h1>
   <div class="header-right">
@@ -1093,30 +1093,60 @@ async function startQuizNewRound(nextRound) {
   hero.addEventListener('mouseleave', () => clearTimeout(pressTimer));
 })();
 
-async function manageSync() {
+async function openSyncMenu() {
   const status = await api('/api/demo/sync-status');
+  const body = document.getElementById('syncSheetBody');
   if (!status.hasToken) {
-    const token = prompt('貼上 GitHub fine-grained token(權限只需勾這個 repo 的 Contents: Read and write)。留空取消。');
-    if (!token) return;
-    const result = await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token }) });
-    if (result.hasToken) {
-      alert('已設定,進度會自動同步到 GitHub。頁面即將重新整理套用之前存的進度。');
-      location.reload();
-    } else {
-      alert('設定失敗');
-    }
+    body.innerHTML = `
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px;">🔗 設定同步</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:12px;line-height:1.6;">貼上 GitHub fine-grained token，權限只需勾這個 repo 的 Contents: Read and write。</div>
+      <input class="jump-input" type="password" id="syncTokenInput" placeholder="github_pat_..." style="width:100%;box-sizing:border-box;margin-bottom:12px;">
+      <button class="jump-go" onclick="doSyncConnect()">連接同步</button>
+      <button class="daily-btn" style="width:100%;margin-top:8px;" onclick="closeSyncMenu()">取消</button>
+    `;
   } else {
-    const failNote = status.lastSyncFailed ? `\n⚠️ 上次自動同步失敗：${status.lastSyncReason}` : '';
-    const choice = prompt(`目前已連線同步。輸入 clear 移除、sync 立即同步一次、留空取消：${failNote}`);
-    if (choice === 'clear') {
-      await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token: '' }) });
-      await updateSyncBadge();
-      alert('已移除,進度改回不保存(重新整理會重置)。');
-    } else if (choice === 'sync') {
-      const r = await api('/api/demo/sync-now', { method: 'POST' });
-      alert(r.ok ? '同步成功' : ('同步失敗:' + (r.reason || '未知錯誤')));
-    }
+    const failNote = status.lastSyncFailed
+      ? `<div style="font-size:13px;color:var(--yellow);margin-bottom:12px;line-height:1.6;">⚠️ 上次自動同步失敗：${escHtml(status.lastSyncReason || '未知原因')}</div>`
+      : `<div style="font-size:13px;color:var(--muted);margin-bottom:12px;">🔄 目前已連線同步。</div>`;
+    body.innerHTML = `
+      <div style="font-size:15px;font-weight:600;margin-bottom:8px;">同步管理</div>
+      ${failNote}
+      <button class="jump-go" id="syncNowBtn" onclick="doSyncNow()">立即同步一次</button>
+      <button class="daily-btn" style="width:100%;margin-top:8px;color:var(--yellow);border-color:var(--yellow);" onclick="doSyncClear()">移除同步（進度改回不保存）</button>
+      <button class="daily-btn" style="width:100%;margin-top:8px;" onclick="closeSyncMenu()">關閉</button>
+    `;
   }
+  document.getElementById('syncOverlay').classList.add('open');
+}
+function closeSyncMenu() {
+  document.getElementById('syncOverlay').classList.remove('open');
+}
+async function doSyncConnect() {
+  const input = document.getElementById('syncTokenInput');
+  const token = input ? input.value.trim() : '';
+  if (!token) return;
+  const result = await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token }) });
+  if (result.hasToken) {
+    alert('已設定,進度會自動同步到 GitHub。頁面即將重新整理套用之前存的進度。');
+    location.reload();
+  } else {
+    alert('設定失敗');
+  }
+}
+async function doSyncNow() {
+  const btn = document.getElementById('syncNowBtn');
+  if (btn) { btn.disabled = true; btn.textContent = '同步中...'; }
+  const r = await api('/api/demo/sync-now', { method: 'POST' });
+  await updateSyncBadge();
+  alert(r.ok ? '同步成功' : ('同步失敗:' + (r.reason || '未知錯誤')));
+  openSyncMenu();
+}
+async function doSyncClear() {
+  if (!confirm('確定要移除同步嗎？之後進度不會保存，重新整理會重置。')) return;
+  await api('/api/demo/set-token', { method: 'POST', body: JSON.stringify({ token: '' }) });
+  await updateSyncBadge();
+  closeSyncMenu();
+  alert('已移除,進度改回不保存(重新整理會重置)。');
 }
 
 async function updateSyncBadge() {
@@ -1191,6 +1221,14 @@ initApp();
       </div>
       <button class="jump-go" onclick="doJumpQuiz()">跳到該題 →</button>
     </div>
+  </div>
+</div>
+
+<!-- Sync management bottom sheet -->
+<div class="jump-overlay" id="syncOverlay" onclick="closeSyncMenu()">
+  <div class="jump-sheet" onclick="event.stopPropagation()">
+    <div class="jump-handle"></div>
+    <div id="syncSheetBody"></div>
   </div>
 </div>
 </body>
