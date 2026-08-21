@@ -185,7 +185,8 @@
     "official_115_1_subject3_25",
     "official_114_2_subject3_32",
     "official_114_2_subject1_26",
-    "official_114_2_subject1_8"
+    "official_114_2_subject1_8",
+    "official_114_2_subject1_12"
   ],
   "wrong_history": {
     "official_114_2_subject1_1": {
@@ -896,7 +897,6 @@
     }
   },
   "current_queue": [
-    "official_114_2_subject1_12",
     "official_114_2_subject1_14",
     "official_114_2_subject1_16",
     "official_114_2_subject1_20",
@@ -971,10 +971,10 @@
     "S3_24",
     "S3_25"
   ],
-  "current_question": "official_114_2_subject1_12",
+  "current_question": "official_114_2_subject1_14",
   "stats": {
-    "total_answered": 301,
-    "total_correct": 189,
+    "total_answered": 302,
+    "total_correct": 190,
     "total_wrong": 112
   },
   "round": 1
