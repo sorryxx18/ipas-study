@@ -9,176 +9,204 @@
     "guide_completed": 0,
     "quiz_answered": 2,
     "rested_early": true,
-    "bonus_rounds": 0,
     "rest_note": "提早休息",
-    "rest_time": "2026-07-10T14:39:23.987Z"
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-11": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-12": {
     "guide_completed": 12,
     "quiz_answered": 11,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-13": {
     "guide_completed": 7,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-14": {
     "guide_completed": 2,
     "quiz_answered": 1,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-22": {
     "guide_completed": 0,
     "quiz_answered": 6,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-23": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-25": {
     "guide_completed": 1,
     "quiz_answered": 0,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-28": {
     "guide_completed": 3,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-29": {
     "guide_completed": 1,
     "quiz_answered": 0,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-30": {
     "guide_completed": 6,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-07-31": {
     "guide_completed": 0,
     "quiz_answered": 3,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-02": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-03": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-04": {
     "guide_completed": 6,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-05": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-06": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-07": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-08": {
     "guide_completed": 1,
     "quiz_answered": 0,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-10": {
     "guide_completed": 1,
     "quiz_answered": 16,
     "rested_early": false,
-    "bonus_rounds": 6
+    "bonus_rounds": 6,
+    "bonus_chapters_completed": 0
   },
   "2026-08-11": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-12": {
     "guide_completed": 0,
     "quiz_answered": 19,
     "rested_early": false,
-    "bonus_rounds": 10
+    "bonus_rounds": 10,
+    "bonus_chapters_completed": 0
   },
   "2026-08-13": {
     "guide_completed": 1,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-14": {
     "guide_completed": 1,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-15": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-16": {
     "guide_completed": 0,
     "quiz_answered": 5,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-17": {
     "guide_completed": 1,
     "quiz_answered": 27,
     "rested_early": false,
-    "bonus_rounds": 16
+    "bonus_rounds": 16,
+    "bonus_chapters_completed": 0
   },
   "2026-08-18": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   },
   "2026-08-20": {
     "guide_completed": 0,
     "quiz_answered": 10,
     "rested_early": false,
-    "bonus_rounds": 0
+    "bonus_rounds": 0,
+    "bonus_chapters_completed": 0
   }
 }
