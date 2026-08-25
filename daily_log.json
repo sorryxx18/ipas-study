@@ -210,16 +210,16 @@
     "bonus_rounds": 0,
     "bonus_chapters_completed": 0
   },
-  "2026-08-22": {
+  "2026-08-24": {
     "guide_completed": 0,
-    "quiz_answered": 10,
+    "quiz_answered": 0,
     "rested_early": false,
     "bonus_rounds": 0,
     "bonus_chapters_completed": 0
   },
-  "2026-08-24": {
+  "2026-08-22": {
     "guide_completed": 0,
-    "quiz_answered": 0,
+    "quiz_answered": 10,
     "rested_early": false,
     "bonus_rounds": 0,
     "bonus_chapters_completed": 0
