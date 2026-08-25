@@ -226,9 +226,9 @@
   },
   "2026-08-25": {
     "guide_completed": 0,
-    "quiz_answered": 10,
+    "quiz_answered": 11,
     "rested_early": false,
-    "bonus_rounds": 0,
+    "bonus_rounds": 1,
     "bonus_chapters_completed": 0
   }
 }
