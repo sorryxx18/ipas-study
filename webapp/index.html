@@ -289,16 +289,67 @@ html.dark .chat-quick button { background: rgba(59,130,246,0.12); }
 
 @keyframes pop { 0%{transform:scale(0.8);opacity:0} 60%{transform:scale(1.08)} 100%{transform:scale(1);opacity:1} }
 .pop-anim { animation: pop 0.4s ease; }
+
+/* ── Game / Battle System ─────────────────────────────────── */
+.level-badge { font-size: 12px; font-weight: 700; color: var(--accent); border: 1px solid var(--accent); border-radius: 999px; padding: 2px 10px; background: rgba(37,99,235,0.08); flex-shrink: 0; }
+.xp-bar-wrap { height: 4px; background: var(--border); }
+.xp-bar-fill { height: 100%; background: linear-gradient(90deg, #22c55e, #3b82f6); transition: width 0.4s; }
+
+.battle-panel {
+  display: flex; align-items: center; justify-content: space-between; gap: 10px;
+  background: linear-gradient(135deg, #0f1e33 0%, #16243b 100%);
+  border: 1px solid rgba(59,130,246,0.35);
+  border-radius: 14px;
+  padding: 14px 12px;
+  margin-bottom: 12px;
+  position: relative;
+  overflow: hidden;
+}
+.battle-panel::before {
+  content: ''; position: absolute; inset: 0;
+  background: radial-gradient(circle at 20% 20%, rgba(59,130,246,0.12), transparent 60%);
+  pointer-events: none;
+}
+.battle-side { display: flex; flex-direction: column; align-items: center; gap: 6px; flex: 1; min-width: 0; z-index: 1; }
+.battle-vs { font-size: 12px; font-weight: 800; color: #fcd34d; letter-spacing: 1px; z-index: 1; flex-shrink: 0; }
+.sprite-wrap { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; position: relative; }
+.sprite-img { max-width: 100%; max-height: 100%; image-rendering: pixelated; }
+.sprite-fallback { font-size: 32px; display: none; align-items: center; justify-content: center; width: 100%; height: 100%; }
+.combo-badge { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 700; color: #fcd34d; background: rgba(252,211,77,0.12); border: 1px solid rgba(252,211,77,0.4); border-radius: 999px; padding: 2px 8px; }
+.combo-flame { font-size: 12px; }
+.monster-hp-bar { width: 100%; max-width: 80px; height: 6px; background: rgba(255,255,255,0.12); border-radius: 3px; overflow: hidden; }
+.monster-hp-fill { height: 100%; background: linear-gradient(90deg, #ef4444, #f97316); width: 100%; transition: width 0.4s ease; }
+.monster-tier-label { font-size: 10px; color: #94a3b8; text-transform: uppercase; letter-spacing: 0.5px; }
+
+@keyframes companion-bounce { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-8px)} }
+.companion-sprite.happy { animation: companion-bounce 0.5s ease 2; }
+@keyframes companion-glitch { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-3px)} 40%{transform:translateX(3px)} 60%{transform:translateX(-2px)} 80%{transform:translateX(2px)} }
+.companion-sprite.glitch { animation: companion-glitch 0.4s ease; filter: hue-rotate(-30deg) saturate(1.5); }
+
+@keyframes monster-shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(4px)} 75%{transform:translateX(-4px)} }
+.monster-sprite.attacking { animation: monster-shake 0.35s ease; }
+@keyframes monster-defeat { 0%{transform:scale(1);opacity:1} 60%{transform:scale(1.15) rotate(8deg);opacity:0.7} 100%{transform:scale(0.2) rotate(20deg);opacity:0} }
+.monster-sprite.defeated { animation: monster-defeat 0.5s ease forwards; }
+
+.level-badge { display: inline-flex; align-items: center; gap: 4px; }
+.level-badge-icon { width: 18px; height: 18px; object-fit: contain; }
+.level-up-burst { display: none; position: fixed; inset: 0; z-index: 300; align-items: center; justify-content: center; pointer-events: none; }
+.level-up-burst.show { display: flex; }
+.level-up-burst img { width: 160px; height: 160px; animation: burst-pop 0.8s ease forwards; }
+@keyframes burst-pop { 0%{transform:scale(0.3);opacity:0} 40%{transform:scale(1.1);opacity:1} 100%{transform:scale(1.4);opacity:0} }
 </style>
 </head>
 <body>
 <div class="header">
   <h1>📚 IPAS 備考系統</h1>
   <div class="header-right">
+    <div class="level-badge" id="levelBadge"><img class="level-badge-icon" id="levelBadgeIcon" src="images/game/badge_bronze.png" onerror="this.style.display='none'"><span id="levelBadgeText">Lv.-</span></div>
     <div class="exam-countdown">距考試 <span class="countdown-num" id="daysLeft">-</span> 天</div>
     <button class="theme-btn" onclick="toggleTheme()" id="themeBtn" title="切換主題">🌙</button>
   </div>
 </div>
+<div class="xp-bar-wrap"><div class="xp-bar-fill" id="xpBarFill" style="width:0%"></div></div>
+<div class="level-up-burst" id="levelUpBurst"><img src="images/game/burst.png" alt=""></div>
 
 <!-- Hero: Today's motivational status (long-press to open jump menu) -->
 <div class="hero" id="heroArea">
@@ -463,6 +514,8 @@ let bonusData = { llms: null, agent: null };
 let currentBonusBook = 'llms';
 let bonusLoaded = false;
 let bonusStatus = null;
+let comboCount = 0;
+let lastLevel = null;
 
 async function api(path, opts = {}) {
   try {
@@ -471,6 +524,113 @@ async function api(path, opts = {}) {
   } catch (e) {
     return { error: e.message };
   }
+}
+
+// ── Battle system: monster pool + companion fx ─────────────
+const MONSTER_EMOJI = {
+  s1: { easy: '📄', medium: '🗂️', boss: '📚' },
+  s3: { easy: '🧮', medium: '🕸️', boss: '🌐' }
+};
+const MONSTER_LABEL = {
+  s1: { easy: '文件小怪', medium: '流程中怪', boss: '規範巨怪' },
+  s3: { easy: '碎片小怪', medium: '節點中怪', boss: '矩陣巨怪' }
+};
+
+function hashCode(str) {
+  let h = 0;
+  for (let i = 0; i < str.length; i++) { h = (h * 31 + str.charCodeAt(i)) | 0; }
+  return Math.abs(h);
+}
+function questionFamily(q) {
+  if (q.source && q.source.includes('subject1')) return 's1';
+  if (q.source && q.source.includes('subject3')) return 's3';
+  if (q.id && q.id.startsWith('S1')) return 's1';
+  if (q.id && q.id.startsWith('S3')) return 's3';
+  return 's1';
+}
+function questionTier(q) {
+  const tiers = ['easy', 'medium', 'boss'];
+  return tiers[hashCode(q.id) % 3];
+}
+function buildBattlePanelHtml(q) {
+  const family = questionFamily(q);
+  const tier = questionTier(q);
+  const monsterSrc = `images/game/monster_${family}_${tier}.png`;
+  const monsterEmoji = MONSTER_EMOJI[family][tier];
+  const monsterLabel = MONSTER_LABEL[family][tier];
+  return `
+    <div class="battle-panel" id="battlePanel">
+      <div class="battle-side">
+        <div class="sprite-wrap companion-sprite" id="companionSprite">
+          <img src="images/game/companion_idle.png" class="sprite-img" id="companionImg" onerror="this.remove()">
+          <div class="sprite-fallback" id="companionFallback" style="display:flex">🤖</div>
+        </div>
+        <div class="combo-badge" id="comboBadge" style="display:${comboCount >= 2 ? 'inline-flex' : 'none'}">
+          <span class="combo-flame">🔥</span><span id="comboCountNum">${comboCount}</span> 連勝
+        </div>
+      </div>
+      <div class="battle-vs">VS</div>
+      <div class="battle-side">
+        <div class="sprite-wrap monster-sprite" id="monsterSprite">
+          <img src="${monsterSrc}" class="sprite-img" id="monsterImg" onerror="this.remove()">
+          <div class="sprite-fallback" id="monsterFallback" style="display:flex">${monsterEmoji}</div>
+        </div>
+        <div class="monster-hp-bar"><div class="monster-hp-fill" id="monsterHpFill" style="width:100%"></div></div>
+        <div class="monster-tier-label" id="monsterTierLabel">${monsterLabel}</div>
+      </div>
+    </div>`;
+}
+function triggerCorrectFx() {
+  comboCount++;
+  const sprite = document.getElementById('companionSprite');
+  sprite?.classList.remove('glitch');
+  sprite?.classList.add('happy');
+  const img = document.getElementById('companionImg');
+  if (img) img.src = 'images/game/companion_happy.png';
+  const fallback = document.getElementById('companionFallback');
+  if (fallback) fallback.textContent = '🤖✨';
+  document.getElementById('monsterSprite')?.classList.add('defeated');
+  const hp = document.getElementById('monsterHpFill');
+  if (hp) hp.style.width = '0%';
+  const badge = document.getElementById('comboBadge');
+  const countEl = document.getElementById('comboCountNum');
+  if (countEl) countEl.textContent = comboCount;
+  if (badge) badge.style.display = comboCount >= 2 ? 'inline-flex' : 'none';
+}
+function triggerWrongFx() {
+  comboCount = 0;
+  const sprite = document.getElementById('companionSprite');
+  sprite?.classList.remove('happy');
+  sprite?.classList.add('glitch');
+  const img = document.getElementById('companionImg');
+  if (img) img.src = 'images/game/companion_glitch.png';
+  const fallback = document.getElementById('companionFallback');
+  if (fallback) fallback.textContent = '🤖⚡';
+  document.getElementById('monsterSprite')?.classList.add('attacking');
+  const hp = document.getElementById('monsterHpFill');
+  if (hp) hp.style.width = '80%';
+  const badge = document.getElementById('comboBadge');
+  if (badge) badge.style.display = 'none';
+}
+function updateLevelBadge(masteredPct) {
+  const level = Math.floor(masteredPct / 10) + 1;
+  const textEl = document.getElementById('levelBadgeText');
+  if (textEl) textEl.textContent = `Lv.${level}`;
+  const iconEl = document.getElementById('levelBadgeIcon');
+  if (iconEl) {
+    const tier = level >= 8 ? 'gold' : level >= 4 ? 'silver' : 'bronze';
+    iconEl.src = `images/game/badge_${tier}.png`;
+  }
+  const xp = document.getElementById('xpBarFill');
+  if (xp) xp.style.width = masteredPct + '%';
+  if (lastLevel !== null && level > lastLevel) {
+    const burst = document.getElementById('levelUpBurst');
+    if (burst) {
+      burst.classList.add('show');
+      setTimeout(() => burst.classList.remove('show'), 800);
+    }
+  }
+  lastLevel = level;
 }
 
 async function loadStatus() {
@@ -482,6 +642,7 @@ async function loadStatus() {
   document.getElementById('s1Progress').textContent = `${s.guide.s1.done}/${s.guide.s1.total}`;
 
   const masteredPct = s.quiz.total > 0 ? Math.round(s.quiz.mastered / s.quiz.total * 100) : 0;
+  updateLevelBadge(masteredPct);
   document.getElementById('quizAccuracy').textContent = masteredPct + '%';
   document.getElementById('quizCount').textContent = `掌握 ${s.quiz.mastered}/${s.quiz.total}｜作答 ${s.quiz.answered} 次`;
   document.getElementById('wrongCount').textContent = s.quiz.wrongPending;
@@ -828,6 +989,7 @@ async function loadQuiz() {
   const imageHtml = q.image ? `<img src="/${q.image}?v=2" alt="題目附圖" style="max-width:100%;border-radius:8px;margin:10px 0;display:block;">` : '';
 
   document.getElementById('quizContent').innerHTML = `
+    ${buildBattlePanelHtml(q)}
     <div class="question-card">
       <div class="question-source">${sourceLabel}</div>
       <div class="question-text">${escHtml(q.question)}</div>
@@ -852,9 +1014,11 @@ async function submitAnswer(answer) {
   const chosenBtn = document.getElementById('opt_' + answer);
   if (result.correct) {
     chosenBtn?.classList.add('correct');
+    triggerCorrectFx();
   } else {
     chosenBtn?.classList.add('wrong');
     document.getElementById('opt_' + result.correctAnswer)?.classList.add('reveal');
+    triggerWrongFx();
   }
 
   const resultHtml = result.correct
@@ -1084,6 +1248,7 @@ async function doJumpQuiz(explicitId, origin) {
     </button>`).join('');
   document.getElementById('quizContent').innerHTML = `
     <div class="study-link-card"><div class="study-link-title">✏️ 指定題目</div><div class="study-link-note">從${questionOrigin === 'hotspot' ? '出題熱區' : '題號跳轉'}開啟；載入本題不會改變進度，提交答案後才會正式記錄。</div></div>
+    ${buildBattlePanelHtml(q)}
     <div class="question-card">
       <div class="question-source">${sourceLabel} — 題庫第 ${q.index} 題 ${masteredBadge}</div>
       <div class="question-text">${escHtml(q.question)}</div>
