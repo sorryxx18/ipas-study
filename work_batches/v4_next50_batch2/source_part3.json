@@ -1,0 +1,123 @@
+[
+  {
+    "id": "official_114_2_subject3_39",
+    "source": "official_114_2_subject3",
+    "question": "下列程式碼實現的是哪一種正則化技術？\n\ndef forward(x, p, training=True):\n    if training:\n        mask = np.random.binomial(1, p, size=x.shape)\n        return x * mask / p\n    else:\n        return x",
+    "options": {
+      "A": "L1 正則化",
+      "B": "L2 正則化",
+      "C": "Dropout",
+      "D": "Batch Normalization"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼要抓：附圖程式碼實現的是哪一種正則化技術？。題目核心屬於「過擬合控制與正則化」。作答時先判斷它問的是定義、主要機制、適用情境、評估指標，還是部署/治理流程；再看哪個選項真正回應題幹限制。\n\n【這題在考什麼】\n限制模型過度記住訓練資料，提升未見資料表現。 本題不是要你看到熟悉名詞就選，而是要把題幹描述轉成考點：題目給的情境、限制條件與問法，會排除那些只相關但不精準的選項。\n\n【正解怎麼想】\n正確答案是 C：Dropout。\n\n白話說，這個選項之所以成立，是因為它同時符合題幹的任務目標與技術邏輯。你要先問：「題目真正要解決什麼？」再問：「這個選項是否直接處理那個問題？」在本題中，C 對應到「過擬合控制與正則化」的核心判斷，因此比其他選項更直接、更完整。\n\n【錯項陷阱】\nA：錯。L1 正則化。它看起來可能和題目名詞有關，但沒有精準對上題幹限定的目的、條件或主要機制，因此不是最佳答案。\nB：錯。L2 正則化。它看起來可能和題目名詞有關，但沒有精準對上題幹限定的目的、條件或主要機制，因此不是最佳答案。\nC：正確。Dropout 直接對應本題的「過擬合控制與正則化」考點；它回答的是題幹真正要求的機制、目的或判斷標準，而不是只列一個相關名詞。\nD：錯。Batch Normalization。它看起來可能和題目名詞有關，但沒有精準對上題幹限定的目的、條件或主要機制，因此不是最佳答案。\n\n【下次怎麼秒判斷】\nRegularization/Dropout/Early Stopping 都是在限制模型；增加特徵或複雜度通常不是。 遇到同類題時，先圈關鍵詞與否定詞，再把每個選項分成「直接回答題目」、「只是相關名詞」、「方向相反」三類。考試通常不是考你背最多名詞，而是考你能不能在相近概念中選最貼題的一個。\n\n【必要名詞】\n- 過擬合控制與正則化：本題所屬核心範圍，重點是判斷題幹條件與選項技術是否一致。\n- 題幹限定詞：如主要、最適合、不屬於、相較於、在某情境下，會決定答案方向。\n- 直接對應：選項不只名詞相關，還必須解決題目指定的問題。\n- 干擾選項：通常把相近技術、次要效果或相反方向包裝成看似合理的答案。",
+    "topic": "過擬合控制與正則化",
+    "explanation_style": "teacher_walkthrough_v2"
+  },
+  {
+    "id": "official_114_2_subject3_40",
+    "source": "official_114_2_subject3",
+    "question": "依據下列程式碼進行資料處理，下列何者正確？\n\nimport numpy as np\n\nv1 = np.array([1, 2, 3])\nv2 = np.array([4, 5, 6])\nA = np.array([[1, 2], [3, 4]])",
+    "options": {
+      "A": "計算矩陣 A 的反矩陣",
+      "B": "v1 * v2 結果為 array([5, 7, 9])",
+      "C": "np.dot(v1, v2) 結果為 np.int64(32)",
+      "D": "np.linalg.eig"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】選項直接對比 v1 * v2 與 np.dot(v1, v2)，核心是 NumPy 的逐元素乘法和向量內積不同。程式碼給定 v1 = [1, 2, 3]、v2 = [4, 5, 6]、A = [[1, 2], [3, 4]]，四個選項分別對應反矩陣、逐元素乘法結果、內積結果、特徵分解四種不同運算。\n【這題在考什麼】考 NumPy 運算子的語義。對相同形狀的一維陣列，星號 * 執行 element-wise multiplication，輸出仍是一維陣列，每個位置是同位置元素乘積；np.dot 對兩個一維向量則計算內積，將所有對應乘積相加，輸出是 NumPy 純量。反矩陣要呼叫 np.linalg.inv，特徵值與特徵向量則用 np.linalg.eig。\n【正解怎麼想】正確答案是 C：np.dot(v1, v2) 結果為 np.int64(32)。逐項計算：v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2] = 1*4 + 2*5 + 3*6 = 4 + 10 + 18 = 32，兩個整數向量的 dot 結果型別即為 np.int64，數值與型別完全對上選項 C 的敘述。\n【錯項陷阱】A：計算矩陣 A 的反矩陣需要呼叫 np.linalg.inv(A)，程式碼裡完全沒有這個呼叫，選項只是單獨提出一個沒有在程式碼中執行的操作，不是程式碼「產生」的正確結果。B：v1 * v2 是逐元素相乘，結果應為 [1*4, 2*5, 3*6] = array([4, 10, 18])，選項給的 array([5, 7, 9]) 其實是 v1 + v2（逐元素相加）的結果，把加法結果誤標成乘法，是典型的運算子混淆陷阱。D：np.linalg.eig 只是函式名稱本身，沒有完整敘述傳入哪個矩陣、也沒有給出具體的特徵值/特徵向量結果，程式碼裡也沒有呼叫它，屬於沒有實際依據的選項。\n【下次怎麼秒判斷】口訣是「星號保形狀、dot 把一維壓成一個和；inv 求逆、eig 拆特徵」。看到 shape 相同的一維陣列，先逐格乘，再把那些乘積相加才是 dot；同時檢查選項描述的運算式有沒有真的出現在程式碼裡，沒被呼叫過的函式（如 inv、eig）就不可能是程式碼的「執行結果」。\n【必要名詞】逐元素運算：相同位置獨立計算並保留廣播後形狀。內積：兩向量對應分量乘積之和。NumPy scalar：如 np.int64 的零維純量型別，不是長度一陣列。反矩陣：與原矩陣相乘得到單位矩陣的方陣。特徵分解：求滿足 Av 等於 λv 的特徵值 λ 與特徵向量 v。",
+    "topic": "NumPy 向量逐元素乘法與內積",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_41",
+    "source": "official_114_2_subject3",
+    "question": "考慮擲出骰子並採用 Monte Carlo 方法估算條件機率，參考下列程式碼。\n事件 A：擲出偶數\n事件 B：擲出大於 3\n請問下列何者為條件機率 P(A∣B)的正確值？\n\nimport numpy as np\n\nnp.random.seed(123)\nn = 100000\ndice_rolls = np.random.randint(1, 7, size=n)\n\nA = (dice_rolls % 2 == 0)\nB = (dice_rolls > 3)\nA_and_B = A & B",
+    "options": {
+      "A": "A_and_B.sum() / (A.sum() * B.sum())",
+      "B": "A_and_B.sum() / (A.sum() + B.sum())",
+      "C": "A_and_B.sum() / A.sum()",
+      "D": "A_and_B.sum() / B.sum()"
+    },
+    "answer": "D",
+    "explanation": "【先抓題目關鍵字】要求的是 P(A∣B)，讀作「已知 B 發生時，A 發生的機率」。Monte Carlo 樣本中，分母必須只計算滿足條件 B 的試驗數，分子則計算 A 與 B 同時成立的試驗數。因此程式表達式是交集布林陣列的 sum 除以 B 的 sum。\n【這題在考什麼】考條件機率定義與布林遮罩的樣本頻率估計。公式是 P(A∣B)=P(A∩B)/P(B)，前提為 P(B)>0。骰子事件 B 為大於三，即樣本空間縮成四、五、六；其中同時為偶數的結果是四、六，所以理論值為二除以三。模擬程式用 A、B 布林陣列表示每次試驗是否符合事件，以邏輯 AND 建立交集，再用 sum 把 True 計為一。樣本夠大時，頻率比會接近二分之三，但有限模擬不一定精確等於理論值。\n【正解怎麼想】正確答案是 D：A_and_B.sum() / B.sum()。分母 B.sum() 是所有「已知骰點大於三」的有效條件樣本；分子 A_and_B.sum() 是這些樣本中又為偶數的次數。這正是先把觀察母體限制在 B，再詢問其中 A 的比例。若模擬剛好沒有任何 B 發生，分母為零，程式需防護；在大量公平骰試驗中此情況機率很低。題幹提到附圖程式碼但本批未含圖片，因此不能確認隨機種子、試驗次數或布林運算寫法，只能依事件及選項驗證公式。\n【錯項陷阱】A：把 A.sum() 與 B.sum() 相乘會讓分母成為兩個計數的乘積，量級約為樣本數平方，既不是 P(B) 也沒有正規化成合法條件機率。B：兩事件計數相加會重複計入交集，也不是任何條件樣本空間大小，無機率定義支持。C：交集除以 A 的次數其實估計 P(B∣A)；它把條件方向顛倒。此例已知偶數時大於三的結果也許恰為二分之三，但那是特定公平骰集合的數值巧合，公式概念仍不同。D：交集計數除以條件事件 B 的計數，與定義完全一致。\n【下次怎麼秒判斷】專屬口訣是「直線右邊放分母：A given B，就在 B 的世界裡數 A」。先圈出條件線右側事件，再將它放分母；分子永遠是兩事件交集。即使某個對稱例子讓反向條件機率數值碰巧相同，也要按公式辨別方向。\n【必要名詞】條件機率：在 B 已發生的限制下 A 的機率。交集：A 與 B 同時成立的事件。布林遮罩：以 True 或 False 標記每筆模擬是否符合條件。大數法則：試驗增加時樣本頻率趨近理論機率。Monte Carlo：以重複隨機抽樣近似機率、積分或期望值的方法。",
+    "topic": "Monte Carlo 條件機率估計",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_42",
+    "source": "official_114_2_subject3",
+    "question": "在深度神經網路中，不同層的參數量（parameter count）差異極大。有些 層雖然數量少但計算量大，有些則相反。了解參數分佈情形，有助於模型 壓縮與遷移學習設計。請問在 VGG16 中，下列何者的參數量最多？",
+    "options": {
+      "A": "卷積層(Conv2d)",
+      "B": "全連接層(Linear)",
+      "C": "ReLU 激活函數",
+      "D": "池化層(MaxPool2d, AdaptiveAvgPool2d)"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】題目問的是 parameter count 最多，不是 FLOPs 最多。VGG16 經典架構在卷積特徵後把 512×7×7 的張量攤平，第一個全連接層連到 4096 個神經元，單層權重就超過一億；因此三個全連接層合計占全模型約一億三千八百萬參數中的絕大部分。\n【這題在考什麼】考參數儲存量與計算量不能混為一談。卷積層利用權重共享，一個小卷積核會在整張特徵圖重複滑動，所以參數數目由 kernel 高、寬、輸入通道及輸出通道決定，不直接乘輸出空間位置；全連接層則讓每個輸入單元連到每個輸出單元，參數為 in_features×out_features 加偏差。ReLU 和一般 MaxPool 沒有可學習權重，AdaptiveAvgPool 也依規則聚合，不增加訓練參數。\n【正解怎麼想】正確答案是 B：全連接層(Linear)。以標準輸入與原始 VGG16 classifier 為例，第一個線性層約有 25088×4096 加 4096 個參數，約一億零二百七十六萬；第二個約一千六百七十八萬，最後 4096 到 1000 約四百一十萬。三者合計遠高於十三個卷積層約一千四百七十萬。這也解釋早期 CNN 壓縮常優先處理 classifier 權重；若改用全域平均池化及小分類頭，參數分布會改變，但題目指定經典 VGG16。\n【錯項陷阱】A：卷積層數量多且承擔大量運算，但權重共享讓每個核不因空間位置複製參數；其總參數少於原始 VGG16 的全連接分類器。B：攤平後的高維輸入與 4096 個輸出形成稠密笛卡兒連接，是參數爆量的來源。C：ReLU 對每個元素套用 max(0,x)，沒有可訓練權重或偏差，參數量為零。D：MaxPool 與 AdaptiveAvgPool 依窗口或目標尺寸聚合數值，通常沒有可學習參數；雖會執行比較或加總，不能因此算成模型參數。\n【下次怎麼秒判斷】口訣是「VGG 記憶體大戶在 FC，算力大戶在 Conv」。問參數就寫 Linear 的輸入乘輸出；問運算量就還要乘卷積輸出高寬。看到 ReLU、Pool，先分清它們有運算但沒有訓練權重。\n【必要名詞】參數量：需要學習並儲存的權重與偏差總數。權重共享：同一卷積核在不同空間位置重複使用。全連接層：每個輸入特徵與每個輸出神經元均有獨立權重。攤平：把通道與空間維度重排為一維向量。分類器：把抽取後特徵映射到類別分數的網路尾端。",
+    "topic": "VGG16 參數量分布",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_43",
+    "source": "official_114_2_subject3",
+    "question": "在神經網路中，了解各層的運算量分佈，有助於模型壓縮與硬體加速的策 略設計。請問在 VGG16 中，下列何者運算量(FLOPs)最多？",
+    "options": {
+      "A": "卷積層(Conv2d)",
+      "B": "全連接層(Linear)",
+      "C": "ReLU 激活函數",
+      "D": "池化層(MaxPool2d, AdaptiveAvgPool2d)"
+    },
+    "answer": "A",
+    "explanation": "【先抓題目關鍵字】這一題刻意把前題的「參數量」換成「運算量 FLOPs」。VGG16 的卷積核參數雖共享，但每個權重會在許多輸出空間位置反覆參與乘加；高寬仍大的前中段特徵圖，使十三層卷積累積的乘加遠超全連接層。\n【這題在考什麼】考各類神經網路層的運算量公式。卷積輸出每一元素約需 kernel 高×kernel 寬×輸入通道次乘加，再乘輸出高×輸出寬×輸出通道；因此空間尺寸是關鍵乘數。Linear 的乘加約是輸入維度×輸出維度，參數多但只對每筆輸入執行一次稠密映射。ReLU 約每元素一次比較，池化約每窗口若干比較或加總，通常比多通道 3×3 卷積便宜。FLOPs 的精確數字會因一次乘加算一個還是兩個操作而不同，但排名不受影響。\n【正解怎麼想】正確答案是 A：卷積層(Conv2d)。VGG16 在多個區塊維持相當大的特徵圖，並逐步增加通道；每個輸出像素都要把 3×3×Cin 的局部值與卷積核相乘累加，且對 Cout 個核重複。即使池化逐段縮小高寬，十三層卷積的總工作仍是主要 FLOPs 來源。這也是硬體加速常對卷積採用張量核心、im2col/GEMM、Winograd、通道剪枝或低精度運算，而不只盯著參數檔案大小。\n【錯項陷阱】A：卷積的權重會跨所有空間位置重用，「參數少」反而不表示「使用次數少」；其累計乘加最多。B：原始 VGG16 的 Linear 擁有最多參數與權重記憶體，但每層沒有二維滑動位置這個乘數，整體 FLOPs 低於卷積堆疊。C：ReLU 只是逐元素門檻比較，不含高維點積；元素雖多，單元素成本很小。D：MaxPool 每個窗口做比較，AdaptiveAvgPool 做區域加總與除法，均無跨大量輸入輸出通道的 3×3 點積，因此不是主導項。\n【下次怎麼秒判斷】專屬口訣是「FC 權重一次存，Conv 小核滿圖跑；問 FLOPs 選滿圖跑的」。計算卷積時把 Hout、Wout、Cout、Cin、Kh、Kw 全部列出；若只算 Kh×Kw×Cin×Cout，就漏了每個空間位置的重複運算。\n【必要名詞】FLOPs：一次前向運算的浮點操作數估計。MAC：一次乘法加一次累加；不同報告可能算一或兩個 FLOPs。算術強度：每搬運一單位資料可完成多少運算。通道剪枝：移除整個輸入或輸出通道以同步減少參數與卷積計算。Winograd：以額外轉換降低小卷積乘法次數的演算法。",
+    "topic": "VGG16 卷積層 FLOPs 分布",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_44",
+    "source": "official_114_2_subject3",
+    "question": "VGG16 層數深且結構規則，由多層卷積、池化及全連接層組成。了解各層 的輸入/輸出維度、參數量及記憶體需求，有助於掌握 CNN 模型的組成邏輯 與實作技巧。根據 VGG16 的模型架構，下列敘述何者正確？",
+    "options": {
+      "A": "AdaptiveAvgPool2d 的輸出會被攤平後傳入第一個全連接層；由於前一 層池化輸出空間為 4×4，所以第一個線性層的輸入維度是 512×4×4 = 8192",
+      "B": "Linear-33（第一個全連接層）報出的 102,764,544 參數只包含權重， 偏差（bias）沒有算在內",
+      "C": "根據列出的「Estimated Total Size (MB) = 624.98」，表示訓練此模 型只需大約 625MB 的 GPU 記憶體（包含所有 optimizer state 與梯度），所 以一張 1 GB 的 GPU 就足夠訓練",
+      "D": "VGG16 包含 13 層卷積層（conv）與 3 層全連接層（FC），總參數數目 約為 138,357,544（約 138.36M）"
+    },
+    "answer": "D",
+    "explanation": "【先抓題目關鍵字】題目要綜合判讀 VGG16 的層數、攤平尺寸、參數是否含 bias，以及模型摘要中的 Estimated Total Size。標準 VGG16 名稱中的十六個有參數層由十三個卷積層與三個全連接層構成，總參數約 138.36M，這正是選項 D。\n【這題在考什麼】考模型摘要數字如何由架構推回。標準 torchvision VGG16 對一般 224×224 影像，卷積與池化後由 AdaptiveAvgPool2d 固定成 7×7，攤平維度為 512×7×7=25088。第一個 Linear 的參數公式為 25088×4096+4096，最後加項就是 bias，因此摘要列出的 102,764,544 已含偏差。模型摘要估算的大小通常只涵蓋輸入、輸出、參數及前反向中某些張量，不等於完整訓練峰值顯存；優化器狀態、梯度、混合精度副本與框架工作區都可能額外占用。\n【正解怎麼想】正確答案是 D：VGG16 包含 13 層卷積層（conv）與 3 層全連接層（FC），總參數數目約為 138,357,544（約 138.36M）。VGG 的十六指的是具有可學習權重的十三個 convolution 與三個 fully connected，不把 ReLU 或 pooling 算進命名層數。標準 ImageNet 千類分類版本的參數總數與 D 相符。這個數字也串起前兩題：classifier 的權重占比最大，而實際浮點運算仍主要發生在卷積層。\n【錯項陷阱】A：標準架構的 adaptive average pooling 目標是 7×7，不是 4×4；因此第一個線性層輸入是 25088，而非 8192。B：102,764,544 可由 25088×4096 的權重 102,760,448 再加 4096 個 bias 得到，所以偏差已包含。C：Estimated Total Size 約 625MB 不是「所有訓練需求」保證值；例如每個可訓練參數還需梯度，Adam 常另存一階、二階動量，激活與 CUDA 工作區也占顯存，一GB 顯然不能由摘要直接判定足夠。D：層數組成及標準參數總數均正確。\n【下次怎麼秒判斷】口訣是「VGG 十六等於十三卷積加三 FC；池化到七乘七；Linear 參數乘完別忘加輸出數」。看到模型摘要的 MB，只把它當特定估算法，不可直接等同訓練峰值 GPU 記憶體。\n【必要名詞】有參數層：含可訓練權重或偏差的層。AdaptiveAvgPool2d：不論輸入空間尺寸，依指定目標輸出格數做平均池化。訓練峰值顯存：參數、梯度、優化器狀態、激活及工作區同時存在時的最大占用。Activation：前向傳播產生並常為反向傳播保存的中間張量。ImageNet classifier：標準千類輸出的 VGG 分類頭。",
+    "topic": "VGG16 架構與模型摘要判讀",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_46",
+    "source": "official_114_2_subject3",
+    "question": "假設研究人員已將含有雜訊的手寫數字影像存放在變數 noisy 中：\n\nimport numpy as np\nnoisy = np.random.normal(digits.data, 4)\n\n部分資料經視覺化後的外觀如下圖所示。他們嘗試使用 PCA 進行降噪，並希望能保留影像的主要特徵，同時去除影像中的雜訊：\n\n# 程式碼A\nfrom sklearn.decomposition import PCA\n# 程式碼B\npca = PCA()\n# 程式碼C\npca.fit(noisy)\n# 程式碼D\ncomponents = pca.transform(noisy)\n# 程式碼E\nfiltered = pca.inverse_transform(components)\n\n然而，當程式執行後，觀察到影像仍然含有明顯的雜訊。研究人員懷疑是程式中某個步驟的設定不正確，導致 PCA 沒有發揮降噪的作用，需要修改程式碼才能讓降噪有效。請問哪一段程式碼需要修改，才能讓 PCA 對 noisy 影像有效去噪？",
+    "options": {
+      "A": "程式碼 A",
+      "B": "程式碼 B",
+      "C": "程式碼 C",
+      "D": "程式碼 D"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】題幹關鍵詞是「PCA 降噪」「保留主要特徵」「仍然含有明顯的雜訊」「哪一段程式碼需要修改」。程式碼分成五段（程式碼A～E），但選項只給 A～D 四個可選，逐段檢查每個步驟是否會讓 PCA 喪失降噪能力。\n【這題在考什麼】PCA 之所以能降噪，是因為它把資料投影到變異量最大的前幾個主成分方向（這些方向通常對應數字筆畫的主結構），再用這少數幾個成分做 inverse_transform 重建——被捨棄的低變異方向通常正是雜訊所在。如果 n_components 沒有被限制，PCA 會保留跟原始維度一樣多的成分（等於沒有做任何降維），transform 再 inverse_transform 幾乎是恆等變換，雜訊會被完整保留、原封不動地重建回來。\n【正解怎麼想】正確答案是 B：pca = PCA()。這一行建立 PCA 物件時沒有指定 n_components，sklearn 的預設行為是保留 min(樣本數, 特徵數) 個成分，也就是全秩（full rank）分解，等於沒有做低秩截斷。後面 fit(noisy)、transform(noisy)、inverse_transform(components) 這幾步的呼叫方式本身都沒有錯，問題出在一開始這個物件就沒有被要求「只保留主要的幾個方向」，所以不管後面怎麼跑，都不會有真正的降噪效果。修正方式是把這行改成例如 PCA(n_components=30) 這種明確限制成分數（或用保留變異比例如 n_components=0.9）的寫法，才能形成有效的低秩重建、把雜訊集中的低變異方向濾掉。\n【錯項陷阱】A：from sklearn.decomposition import PCA 只是單純的模組匯入，語法跟功能都沒有問題，跟降噪成效無關。C：pca.fit(noisy) 是用 noisy 資料本身去計算主成分基底，這是題目描述情境下預期的正常呼叫方式，呼叫本身沒有錯誤，真正的問題出在上一行建立物件時沒有限制成分數。D：components = pca.transform(noisy) 只是把資料投影到「當下已經設定好」的主成分空間，如果 B 那行有正確限制 n_components，這一步就會自然形成降維，這一行本身的呼叫方式沒有問題。（程式碼E的 inverse_transform 是必要的重建步驟，也不在題目給的 A～D 選項討論範圍內，本身同樣沒有問題。）\n【下次怎麼秒判斷】口訣「PCA 降噪看 n_components，沒設定就是沒降維、沒降維就是沒去噪」。看到 PCA() 括號裡是空的、或後面用 fit/transform 卻沒先限制過成分數，就要立刻懷疑降噪無效的根源在建立物件那一行。\n【必要名詞】n_components：PCA 保留的主成分數量（或保留變異比例），決定降維/降噪的力道。全秩分解：n_components 未限制時，保留跟原始維度一樣多的成分，等同沒有資訊損失也沒有濾波效果。explained variance（解釋變異量）：每個主成分承載的變異比例，數字影像的主要筆畫結構通常集中在前幾個高變異方向。transform：把原始資料投影到主成分座標。inverse_transform：把主成分座標投影回原始像素空間，若成分數不足，重建結果會遺失部分細節但也會濾掉隨機雜訊；若成分數等於原始維度，重建幾乎完全還原（含雜訊）。",
+    "topic": "PCA 主成分降噪與低維重建",
+    "explanation_style": "teacher_walkthrough_v3",
+    "image": "images/q46_noisy_digits.png"
+  },
+  {
+    "id": "official_114_2_subject3_47",
+    "source": "official_114_2_subject3",
+    "question": "研究人員在對 digits 資料集進行分類時，決定使用 KNN 並搭配交叉驗證來評估模型準確率。他們撰寫了四組不同的程式碼來進行 KNN 訓練與交叉驗證，但不確定哪幾組程式碼能正確執行並輸出準確率。每組程式碼在資料切割、模型訓練、交叉驗證函數的使用上略有差異，研究人員希望找出可以正確完成任務的程式碼組合，以確保模型評估的可靠性。\n\n# 程式碼A：\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = digits.data, digits.target\nmodel = KNeighborsClassifier(n_neighbors=3)\ncv = StratifiedKFold(n_splits=5, shuffle=True)\nscores = cross_val_score(model, X, y, cv=cv, scoring=\"accuracy\")\nprint(scores.mean())\n\n# 程式碼B：\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = digits.data, digits.target\nmodel = KNeighborsClassifier(n_neighbors=3)\ncv = StratifiedKFold(n_splits=5, shuffle=True)\nscores = cross_val_score(model, X, y, cv=cv, scoring=\"f1\")\nprint(scores.mean())\n\n# 程式碼C：\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = digits.data, digits.target\nmodel = KNeighborsClassifier(n_neighbors=3)\nscores = cross_val_score(model, X, y, cv=5, scoring=\"accuracy\")\nprint(scores.mean())\n\n# 程式碼D：\nfrom sklearn.model_selection import StratifiedKFold, cross_val_score\nfrom sklearn.neighbors import KNeighborsClassifier\n\nX, y = digits.data, digits.target\nmodel = KNeighborsClassifier(n_neighbors=3)\nscores = cross_val_score(model, X, y, cv=5, scoring=\"f1\")\nprint(scores.mean())\n\n請問哪幾組程式碼能正確使用 KNN 搭配交叉驗證，對 digits 資料集進行訓練並輸出準確率？",
+    "options": {
+      "A": "程式碼 A、程式碼 B、程式碼 C、程式碼 D",
+      "B": "程式碼 A、程式碼 C",
+      "C": "程式碼 A、程式碼 B",
+      "D": "程式碼 C、程式碼 D"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】四組程式碼共同點是都用 KNeighborsClassifier(n_neighbors=3) 訓練 digits 資料集（10 個類別：手寫數字0-9），差異只在兩處：cv 參數是傳 StratifiedKFold 物件（A、B）還是直接傳整數 5（C、D）；scoring 參數是 \"accuracy\"（A、C）還是 \"f1\"（B、D）。\n\n【這題在考什麼】考的是 sklearn 的 f1 評分器預設只支援二元分類。scoring=\"f1\" 若不額外指定 average 參數（如 average='macro' 或 'weighted'），預設 average='binary'，只適用兩個類別的問題；digits 資料集是10類別的多元分類，直接用 scoring=\"f1\" 會丟出 ValueError（Target is multiclass but average='binary'），程式會直接報錯中止，不是算出一個「比較差」的數字。\n\n【正解怎麼想】正確答案是B：程式碼A、程式碼C。這兩組都用 scoring=\"accuracy\"，accuracy 在多元分類下沒有二元限制，可以正常執行並印出準確率；cv 傳 StratifiedKFold物件（A）或直接傳整數5（C）都合法，cross_val_score 在分類器搭配整數cv時預設就會用分層抽樣，效果上兩者接近，都能正確跑完。\n\n【錯項陷阱】\nA：程式碼A、B、C、D皆可行。錯，B和D用了scoring=\"f1\"，對10類別的digits資料集會直接報錯，不算「正確執行」。\nB：程式碼A、程式碼C。正確，兩組都用accuracy評分，能正常完成KNN訓練與交叉驗證並輸出準確率。\nC：程式碼A、程式碼B。錯，B會因scoring=\"f1\"在多類別資料上報錯，不能算是正確執行的組合。\nD：程式碼C、程式碼D。錯，D同樣會因scoring=\"f1\"報錯，即使C正確也不能跟會出錯的D湊成一組。\n\n【下次怎麼秒判斷】看到cross_val_score的scoring參數寫死\"f1\"、\"precision\"、\"recall\"這種預設二元版本的字串，先確認目標變數是不是只有兩類；如果是像digits這種多類別問題，沒有額外指定average參數（例如\"f1_macro\"）就會直接報錯，這組程式碼不算「能正確執行」。cv參數傳物件或傳整數本身不是這題的區分關鍵，別被這個表面差異誤導。\n\n【必要名詞】KNN（K-Nearest Neighbors）是依最近鄰樣本多數決做分類的方法；StratifiedKFold是保持各折類別比例的交叉驗證切割器；cross_val_score會對每一折自動重新訓練並評分；scoring=\"f1\"預設只適用二元分類，多元分類需指定average參數（如'macro'、'micro'、'weighted'）才能正常運作。",
+    "topic": "KNN 與交叉驗證 API 的正確使用",
+    "explanation_style": "teacher_walkthrough_v3"
+  }
+]

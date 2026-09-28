@@ -1,0 +1,118 @@
+[
+  {
+    "id": "official_115_1_subject3_48",
+    "source": "official_115_1_subject3",
+    "question": "參考下圖繪圖結果，當 Epochs=6 時，訓練曲線值(0.81)明顯大於驗證曲線值(0.72)， 下列何者為最可能的原因？",
+    "options": {
+      "A": "學習率（Learning Rate）太低",
+      "B": "批次大小（Batch Size）設定太大",
+      "C": "模型低度擬合（Underfitting）",
+      "D": "模型過擬合（Overfitting）"
+    },
+    "answer": "D",
+    "explanation": "【先抓題目關鍵字】Epoch 6 時訓練曲線 0.81、驗證曲線 0.72，題目說訓練值「明顯大於」驗證值。雖未明寫縱軸名稱，但選項均在診斷擬合狀態，數值型態也像 accuracy；可依「訓練表現優於未見資料」形成泛化落差判斷。原圖未提供，所以不能進一步聲稱曲線此前是否持續分岔，只能就題幹給的差距作答。\n【這題在考什麼】模型若持續降低訓練誤差、提高訓練準確率，卻無法在驗證集取得同等改善，表示它開始記住訓練資料的偶然細節或噪聲。訓練與驗證指標的差距稱 generalization gap。過擬合不是「訓練得不好」，恰恰常是訓練集太好、驗證集相對差；低度擬合則通常連訓練集都表現不足，兩邊都低。\n【正解怎麼想】正確答案是 D：模型過擬合（Overfitting）。在同一評估尺度下，訓練 0.81 明顯高於驗證 0.72，顯示模型對訓練資料的適配未完全轉移到未參與權重更新的資料。若圖上後續 epoch 差距擴大，證據會更強；就現有文字，D 是能直接描述此泛化落差的選項。實務上單一 epoch 的 0.09 差距仍要搭配多次切分、信賴區間及曲線趨勢判斷，但考題要求「最可能原因」，不需把有限證據誇成確診。\n【錯項陷阱】\nA：學習率太低通常表現為收斂緩慢，訓練與驗證指標都可能尚未達佳值。它本身不必然造成訓練顯著高於驗證，也無法從 0.81 與 0.72 的單一對比直接推出。\nB：大 batch 會改變梯度噪聲、吞吐與有時的泛化特性，但僅憑兩條曲線的落差不能定位 batch size。它可能是影響因素，卻不是此典型圖形最直接的診斷名稱。\nC：低度擬合代表模型容量不足、訓練不夠或特徵不佳，以致訓練資料也學不好，常見訓練與驗證表現都低且彼此接近。題目反而強調訓練高於驗證，方向不符。\nD：過擬合正以「訓練表現持續較佳、驗證落後」為典型訊號；模型學到訓練集專屬模式，泛化能力不足，故為最合理答案。\n【下次怎麼秒判斷】先確認縱軸是越高越好的 accuracy 還是越低越好的 loss。Accuracy 題中 train≫validation，或 loss 題中 train≪validation，都指向過擬合；若 train、validation 都差，才想 underfitting。選項若列學習率或 batch，除非曲線有震盪、停滯等專屬線索，不要越級猜超參數根因。\n【必要名詞】Overfitting：模型對訓練資料適配過度，未見資料表現落後。Underfitting：連訓練資料規律都未充分捕捉。Validation set：不用於梯度更新、用來估計泛化的資料。Generalization gap：訓練與驗證表現之差。",
+    "topic": "訓練與驗證曲線的過擬合診斷",
+    "image": "images/exam_pages/q46_48_fig.png",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_115_1_subject3_50",
+    "source": "official_115_1_subject3",
+    "question": "為了修復訓練過程中 Loss 突然變成 NaN 的問題，工程師考慮在 PyTorch 訓練迴圈 中加入梯度裁剪（Gradient Clipping）機制，例如 torch.nn.utils.clip_grad_norm_。若 要正確加入梯度裁剪，最適合插入於哪個位置？其主要作用為何？",
+    "options": {
+      "A": "插入於位置 3 與位置 4 之間；用以限制 Loss 數值大小，避免梯度消失",
+      "B": "插入於位置 4 與位置 5 之間；用以限制梯度範數過大，避免更新步幅失控導致 數值不穩",
+      "C": "插入於位置 5 之後；用以將更新後的權重強制壓縮回正常範圍",
+      "D": "插入於位置 1 與位置 2 之間；用以對輸入影像進行批次標準化"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼要抓三個字：「Loss 變 NaN」、「PyTorch 訓練迴圈」、「Gradient Clipping」。看到這三個線索，方向就不是資料前處理，也不是限制 loss 本身，而是訓練時梯度太大，導致參數更新失控。\n\n【這題在考什麼】\n它在考梯度裁剪要放在訓練流程的哪一步，以及它真正裁剪的是什麼。重點是：clip_grad_norm_ 裁的是 gradient，不是 loss，也不是已經更新完的權重。\n\n【正解怎麼想】\n典型 PyTorch 訓練流程可以先用白話排一次：\n1. optimizer.zero_grad()：先清掉上一輪梯度。\n2. forward：讓模型算出預測。\n3. loss：算這次預測錯多少。\n4. loss.backward()：根據 loss 反向傳播，真正算出每個參數的梯度。\n5. optimizer.step()：用梯度去更新參數。\n\n梯度裁剪要有「梯度」可以裁，所以一定要在 backward 之後；但如果已經 step，權重已經被過大的梯度更新完了，這時才裁就太晚。因此正確位置是 loss.backward() 之後、optimizer.step() 之前，也就是位置 4 與位置 5 之間，答案選 B。\n\n【錯項陷阱】\nA：錯在把 loss 和 gradient 混在一起。Loss 是損失數值，gradient 是拿來更新參數的方向與大小；clip_grad_norm_ 限制的是梯度範數，不是直接把 loss 壓小。它主要處理梯度爆炸，不是梯度消失。\nB：正確。backward 後梯度已經算好，step 前權重還沒更新，這時裁剪梯度最合理。\nC：錯在時機太晚。optimizer.step() 後參數已經更新，如果梯度太大造成更新失控，傷害已經發生了。\nD：錯在完全跑題。批次標準化是資料/模型層的穩定化方法，不是梯度裁剪，也不會插在輸入與 forward 之間用 clip_grad_norm_ 處理。\n\n【下次怎麼秒判斷】\n看到「NaN、梯度爆炸、更新步幅失控、clip_grad_norm_」，直接想：backward 後、step 前。口訣是：先算梯度 backward，再裁梯度 clip，最後才更新 step。\n\n【必要名詞】\nGradient Clipping：限制梯度大小，避免梯度爆炸。\nloss.backward()：反向傳播，計算梯度。\noptimizer.step()：依照梯度更新權重。\nExploding Gradient：梯度過大，可能讓參數更新爆掉，loss 變成 NaN。",
+    "topic": "深度學習與卷積神經網路",
+    "explanation_style": "teacher_walkthrough_v1"
+  },
+  {
+    "id": "S1_01",
+    "subject": 1,
+    "topic": "自然語言處理應用",
+    "q": "BERT 和 GPT 最主要的差異是？",
+    "options": {
+      "A": "BERT 是生成模型，GPT 是理解模型",
+      "B": "BERT 是雙向預訓練，GPT 是單向生成",
+      "C": "BERT 只能處理圖像，GPT 只能處理文字",
+      "D": "兩者架構完全相同，只有參數量不同"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】\n題目問「BERT 和 GPT 最主要的差異」，關鍵是比較兩者的預訓練方向與模型用途。看到 BERT，要想到 Bidirectional Encoder、遮罩語言模型、理解任務；看到 GPT，要想到 Generative Pretrained Transformer、因果式單向預測、生成任務。\n\n【這題在考什麼】\n考點是 Transformer 家族中 encoder-style 與 decoder-style 語言模型的差異。BERT 透過 Masked Language Modeling 同時利用左右文理解被遮住的詞，因此偏理解；GPT 用 Causal Language Modeling 只能看前文預測下一個 token，因此偏生成。\n\n【正解怎麼想】\n正確答案是 B：BERT 是雙向預訓練，GPT 是單向生成。\n\n白話說，BERT 像閱讀理解老師：它看一句話左右兩邊的上下文，判斷中間某個詞是什麼，適合分類、抽取、語意判斷。GPT 像接龍寫作者：它從左到右看已出現的文字，預測下一個字或 token，適合續寫、對話、生成內容。兩者都來自 Transformer，但注意力方向和訓練目標不同。\n\n【錯項陷阱】\nA：錯。這句把兩者角色反過來了。BERT 主要偏理解，GPT 主要偏生成。\nB：正確。雙向預訓練 vs 單向生成，是最核心差異。\nC：錯。兩者都主要處理文字，不是 BERT 處理圖像、GPT 處理文字。雖然後來有多模態模型，但這不是 BERT/GPT 原始主要差異。\nD：錯。兩者都用 Transformer 概念，但架構取向、注意力遮罩與預訓練目標不同，不只是參數量不同。\n\n【下次怎麼秒判斷】\nBERT = 看左右文、補空格、理解；GPT = 看前文、猜下一字、生成。考試若問「主要差異」，優先選雙向/單向或 encoder/decoder，不要選模糊的「參數量」或「都一樣」。\n\n【必要名詞】\n- Masked Language Modeling：遮住部分詞，讓模型用左右文預測。\n- Causal Language Modeling：只看前文預測下一 token。\n- Encoder：偏理解與表徵抽取。\n- Decoder：偏生成與序列輸出。",
+    "source": "generated",
+    "question": "BERT 和 GPT 最主要的差異是？",
+    "explanation_style": "teacher_walkthrough_v2"
+  },
+  {
+    "id": "S1_02",
+    "subject": 1,
+    "topic": "自然語言處理應用",
+    "q": "下列哪個技術最適合用於「即時物件偵測」？",
+    "options": {
+      "A": "BERT",
+      "B": "LSTM",
+      "C": "YOLO",
+      "D": "PCA"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼先抓題幹裡的限制條件與關鍵詞。題目核心線索是「自然語言處理應用」，再回頭看題幹描述：下列哪個技術最適合用於「即時物件偵測」？。先看題目到底問「主要目的、最可能原因、正確定義、流程位置」哪一種，再回頭排除只沾到邊但沒有正面回答的選項。\n\n【這題在考什麼】\n即時物件偵測模型選擇。題目問最適合即時物件偵測的技術，YOLO 是經典 one-stage detector，速度快，適合即時場景。\n\n【正解怎麼想】\nC。YOLO。\n\nYOLO 是 You Only Look Once，能在一次前向傳播中同時預測物件位置與類別，因此常用於即時影像偵測，例如監控、車載視覺、產線瑕疵偵測。相較兩階段偵測器，YOLO 更重視速度與即時性。\n\n【錯項陷阱】\n先不要只看哪個選項「好像也對」，要看它有沒有偷換題幹限制、把相近名詞混在一起，或把可能原因說成最主要原因。\n\nA：錯。BERT 是自然語言處理模型，不是物件偵測模型。\nB：錯。LSTM 適合序列/時間資料，不是影像中物件定位。\nC：對。YOLO 專為快速物件偵測設計。\nD：錯。PCA 是降維方法，不會直接做物件偵測。\n\n【下次怎麼秒判斷】\n模型選擇口訣：**「即時物件偵測找 YOLO」**。文字理解看 BERT，時間序列看 LSTM，降維看 PCA。\n\n補充：YOLO 的優勢是速度快、端到端偵測；如果題目強調即時性、監控影像、車載影像，通常都會優先想到 YOLO。\nBERT、LSTM、PCA 都不會直接輸出物件框與類別。\n因此這題不是問影像分類，而是要能框出物件位置的偵測模型。\nYOLO 常用在即時監控、車道物件、工廠瑕疵或人流偵測，因為它能同時輸出類別與位置。\n考試看到「即時」兩字尤其要排除速度較慢或非偵測用途的模型。\n重點是同時辨識類別與位置。。\n\n【必要名詞】\n- YOLO：單階段即時物件偵測模型。\n- Object Detection：找出影像中物件位置與類別。\n- Bounding Box：包住物件位置的矩形框。\n- BERT：NLP 語意理解模型。\n- PCA：主成分分析，用於降維。",
+    "source": "generated",
+    "question": "下列哪個技術最適合用於「即時物件偵測」？",
+    "explanation_style": "teacher_walkthrough_v1"
+  },
+  {
+    "id": "S1_03",
+    "subject": 1,
+    "topic": "自然語言處理應用",
+    "q": "在 NLP 前處理中，「詞形還原（Lemmatization）」的目的是？",
+    "options": {
+      "A": "去除停用詞",
+      "B": "將單詞還原為字典原形，保留語意",
+      "C": "計算詞頻權重",
+      "D": "將文字轉為數字向量"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼先抓題幹裡的限制條件與關鍵詞。題目核心線索是「自然語言處理應用」，再回頭看題幹描述：在 NLP 前處理中，「詞形還原（Lemmatization）」的目的是？。先看題目到底問「主要目的、最可能原因、正確定義、流程位置」哪一種，再回頭排除只沾到邊但沒有正面回答的選項。\n\n【這題在考什麼】\nNLP 前處理中的詞形還原（Lemmatization）。Lemmatization 會把單詞還原成字典原形，並盡量保留語意與詞性資訊。\n\n【正解怎麼想】\nB。將單詞還原為字典原形，保留語意。\n\n英文中同一詞可能有不同變化，例如 running、ran、runs 可還原為 run；better 可能還原為 good。Lemmatization 通常會參考詞性與字典，因此比 stemming 更精準，能保留較自然的語意形式。它常用於搜尋、文字分類與傳統 NLP 前處理。\n\n【錯項陷阱】\n先不要只看哪個選項「好像也對」，要看它有沒有偷換題幹限制、把相近名詞混在一起，或把可能原因說成最主要原因。\n\nA：錯。去除停用詞是 stopword removal，不是 lemmatization。\nB：對。詞形還原就是還原成字典原形。\nC：錯。計算詞頻權重是 TF、TF-IDF 等方法。\nD：錯。將文字轉為數字向量是 vectorization 或 embedding。\n\n【下次怎麼秒判斷】\n詞形還原口訣：**「變化詞回字典原形」**。running → run，目的不是算權重，也不是轉向量。\n\n補充：Lemmatization 比 stemming 更重視語言學正確性，通常結果比較像真正單字。\n例如 studies、studying 可能還原成 study；但 stemming 可能只粗略切成詞幹。\n中文任務不一定有詞形變化，但英文與多數印歐語言常需要 lemmatization。\n\n【必要名詞】\n- Lemmatization：詞形還原，將詞還原為 lemma。\n- Lemma：字典原形。\n- Stemming：詞幹提取，通常較粗略。\n- Stopword Removal：移除常見功能詞。\n- Vectorization：將文字轉成數值特徵。",
+    "source": "generated",
+    "question": "在 NLP 前處理中，「詞形還原（Lemmatization）」的目的是？",
+    "explanation_style": "teacher_walkthrough_v1"
+  },
+  {
+    "id": "S1_06",
+    "subject": 1,
+    "topic": "靜態與上下文化詞嵌入",
+    "q": "下列哪個模型是「靜態詞嵌入」，即同一個詞在任何語境下向量都相同？",
+    "options": {
+      "A": "BERT",
+      "B": "ELMo",
+      "C": "Word2Vec",
+      "D": "GPT"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】最重要的定義已寫在題幹：「同一個詞在任何語境下向量都相同」。這就是 type-level 的靜態詞嵌入。四個選項中，Word2Vec 為詞彙表中的每個詞學一個固定向量；BERT、ELMo、GPT 都會讓表示受到上下文 token 影響。不要把「預訓練」誤當「靜態」，因為兩類都可以預訓練。\n【這題在考什麼】靜態嵌入把詞型映射到固定查表向量，例如「蘋果」不論出現在水果或公司語境，都先取得同一向量，語義歧義只能由周邊模型後續處理。上下文化嵌入則以整段序列計算 token 表示，同一字詞在不同句子中的隱藏狀態不同。判別模型時要看向量是否依當前上下文動態產生，而不是只看它用哪種訓練目標或是否含 Transformer。\n【正解怎麼想】正確答案是 C：Word2Vec。Word2Vec 的 CBOW 或 Skip-gram 透過局部共現學習詞向量矩陣；訓練完成後，查詢某個詞彙索引會取出固定的一列，因此同一詞在每個句子中的基礎向量相同。它能讓分布相似的詞在向量空間靠近，但標準 Word2Vec 不會針對當下句子重新產生多義詞表示。若詞不在詞彙表，原始方法也面臨 OOV 問題；這些正是其與現代上下文化模型的差異。\n【錯項陷阱】\nA：BERT 使用雙向 Transformer self-attention，某 token 的最終隱藏向量會聚合左右上下文。同一個「bank」出現在河岸與銀行句子時表示不同，因此屬上下文化表示；雖然輸入嵌入查表部分固定，題目問的是模型產生的詞表示，不應只截取最底層。\nB：ELMo 以雙向語言模型的內部狀態生成表示，明確設計目的就是讓詞向量依整句語境改變。它比 BERT 早，但「較早」不等於靜態，也不能因架構是 LSTM 就選它。\nC：標準 Word2Vec 為每個詞型學單一固定向量，推論時依詞彙索引查表，不讀取該次句子的上下文來改變向量，完全符合定義，故正確。\nD：GPT 以因果 self-attention 根據左側上下文產生每個位置的隱藏表示。雖然它看不到未來 token，但已見前文不同就會得到不同表示，所以仍是上下文化模型，而非靜態嵌入。\n【下次怎麼秒判斷】看到 Word2Vec、GloVe、FastText，通常先歸入靜態詞嵌入；看到 ELMo、BERT、GPT，則歸入上下文化表示。秒判口訣不是背年代，而是問「輸出向量是否要把整句送進模型才算得出來」：只查詞表是靜態，依序列隱藏狀態生成是上下文化。\n【必要名詞】Word2Vec：以 CBOW 或 Skip-gram 學習固定詞向量的方法。CBOW：由周邊詞預測中心詞。Skip-gram：由中心詞預測周邊詞。Contextual embedding：依句子上下文動態產生的 token 表示。OOV：詞彙表外詞，原始固定詞表模型無法直接查得向量。",
+    "source": "generated",
+    "question": "下列哪個模型是「靜態詞嵌入」，即同一個詞在任何語境下向量都相同？",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "S1_07",
+    "subject": 1,
+    "topic": "深度學習與卷積神經網路",
+    "q": "電腦視覺中，CNN 的「池化層（Pooling Layer）」主要功能是？",
+    "options": {
+      "A": "增加特徵圖解析度",
+      "B": "降低特徵圖維度、減少計算量並提取主要特徵",
+      "C": "將圖像轉換為文字",
+      "D": "計算損失函數"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼先抓題幹裡的限制條件與關鍵詞。題目核心線索是「深度學習與卷積神經網路」，再回頭看題幹描述：電腦視覺中，CNN 的「池化層（Pooling Layer）」主要功能是？。先看題目到底問「主要目的、最可能原因、正確定義、流程位置」哪一種，再回頭排除只沾到邊但沒有正面回答的選項。\n\n【這題在考什麼】\nCNN 池化層（Pooling Layer）的功能。池化層主要用來降低特徵圖空間尺寸、減少計算量，並保留局部區域的重要特徵摘要。\n\n【正解怎麼想】\nB。降低特徵圖維度、減少計算量並提取主要特徵。\n\nPooling 常見形式有 Max Pooling 與 Average Pooling。它會在局部區域取最大值或平均值，使特徵圖寬高縮小，降低後續層的輸入量與運算成本。Max Pooling 也能保留最強反應特徵，讓模型對小幅位置偏移更具魯棒性。\n\n【錯項陷阱】\n先不要只看哪個選項「好像也對」，要看它有沒有偷換題幹限制、把相近名詞混在一起，或把可能原因說成最主要原因。\n\nA：錯。Pooling 通常降低解析度，不是增加解析度。\nB：對。這正是池化層最主要功能。\nC：錯。將圖像轉換為文字屬於影像字幕或 OCR 之類任務，不是 pooling。\nD：錯。計算損失函數是訓練目標的一部分，不是 CNN pooling 層工作。\n\n【下次怎麼秒判斷】\nPooling 口訣：**「縮圖、降算量、留重點」**。看到降低特徵圖維度與計算量，就選 pooling。\n\n補充：Pooling 通常不會學習參數，因此和卷積層不同；它偏向固定規則的下採樣操作。現代 CNN 有時也用 global average pooling 取代大型全連接層。\n若題目說「增加解析度」通常是上採樣或轉置卷積，不是 pooling。\n考試看到 Max Pooling / Average Pooling，就抓「取局部摘要並下採樣」這個核心。\n\n【必要名詞】\n- Pooling Layer：縮小特徵圖尺寸的層。\n- Max Pooling：取局部區域最大值。\n- Average Pooling：取局部區域平均值。\n- Feature Map：卷積層輸出的特徵圖。\n- Robustness：模型對小變化仍能維持穩定判斷的能力。",
+    "source": "generated",
+    "question": "電腦視覺中，CNN 的「池化層（Pooling Layer）」主要功能是？",
+    "explanation_style": "teacher_walkthrough_v1"
+  }
+]

@@ -1,0 +1,124 @@
+[
+  {
+    "id": "official_114_2_subject3_48",
+    "source": "official_114_2_subject3",
+    "question": "參考下方程式碼，下列何者正確？\n\nX_train -= X_train.mean(axis=0)\nX_train /= X_train.std(axis=0)\nX_test -= X_test.mean(axis=0)\nX_test /= X_test.std(axis=0)\n\nA：X_train -= X_train.mean(axis=0) 將每個訓練集特徵的平均值調整為 0\nB：X_train /= X_train.std(axis=0) 將每個訓練集特徵的標準差調整為 0\nC：X_train 處理結果會將資料壓縮到 0 和 1 之間\nD：標準化結果防止梯度爆炸或消失\nE：標準化是屬於特徵選擇(Feature Selection)方法\nF：X_train 程式碼應修正為 X_train = X_train.std(axis=0), X_test 程式碼應修正為 X_test = X_test.std(axis=0)",
+    "options": {
+      "A": "A、B、C、D",
+      "B": "A、E",
+      "C": "A、D",
+      "D": "A、C、F"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】題目把六個敘述組合成答案，必須先逐一判斷。`X_train -= X_train.mean(axis=0)` 是逐特徵減去訓練均值；`X_train /= X_train.std(axis=0)` 是逐特徵除以訓練標準差。關鍵區分包括平均值歸零、標準差變成一、是否壓到 0～1、標準化對梯度尺度的影響，以及特徵轉換是否等於特徵選擇。\n【這題在考什麼】Z-score 標準化的式子是 z=(x−μ_train)/σ_train。減均值後，各欄在訓練集上的平均約為 0；再除以非零標準差後，各欄標準差約為 1，不是 0。測試集必須使用訓練集算出的 μ_train 與 σ_train，不能用測試集自己的統計量。標準化不保證數值落在 0 與 1 之間，那是 min-max scaling 的典型性質；它也不刪除欄位，故屬特徵縮放而非特徵選擇。\n【正解怎麼想】正確答案是 C：A、D。敘述 A 正確，因 axis=0 對每一個特徵欄計算跨樣本平均，再以原地減法移除該欄中心位置。敘述 D 在一般神經網路訓練脈絡下成立：不同特徵若尺度差距很大，梯度在各方向的曲率與更新幅度可能極不均衡；標準化可改善條件數，使最佳化較穩定，降低飽和與數值尺度引發梯度爆炸或消失的風險。它不是保證永不發生梯度問題，因深層網路仍受初始化、活化函數與網路深度影響，但題目說「防止」應理解為抑制風險。\n【錯項陷阱】A：A、B、C、D。A、D 對，但 B 把標準差為 1 說成 0；C 又把 z-score 混成 min-max，因此整組錯。B：A、E。A 對，E 錯；標準化保留所有特徵，只改變尺度，沒有依重要性挑欄位。C：A、D。這是正解，精確對應中心化與改善梯度數值條件。D：A、C、F。A 對，但 C 錯；F 把整個資料矩陣指定成一列標準差，既丟失每筆樣本，也沒有執行除法標準化，且測試集不應獨立估計縮放統計量。另就六項個別機制而言，B 的正確結果應是標準差 1；C 描述的是最小最大縮放；E 把 feature scaling 與 feature selection 混淆。\n【下次怎麼秒判斷】專屬口訣是「減均值歸零，除標差歸一；測試沿用訓練尺」。看到 axis=0 就想成每欄特徵；看到 0～1 先找 min 與 max；看到 selection 則要有刪欄、選子集或權重門檻。若某欄標準差為 0，實務上還要用 scaler 的保護機制，避免直接除以零。\n【必要名詞】中心化是減去均值；標準化通常指 z-score；單位變異表示標準差為 1、變異數為 1；min-max scaling 依欄位極值映射至指定區間；資料洩漏是測試資訊影響訓練轉換；條件數反映最佳化問題沿不同方向的尺度差異；特徵選擇會保留部分原欄位，與改變全部欄位尺度的特徵縮放不同。",
+    "topic": "特徵標準化與訓練測試一致轉換",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_49",
+    "source": "official_114_2_subject3",
+    "question": "參考下圖執行結果：\n\nmodel = Sequential()\nmodel.add(Input(shape=(X_train.shape[1],)))\nmodel.add(Dense(10, activation=\"relu\"))\nmodel.add(Dense(10, activation=\"relu\"))\nmodel.add(Dense(1, activation=\"sigmoid\"))\nmodel.summary()\nmodel.compile(loss=\"binary_crossentropy\", optimizer=\"adam\", metrics=[\"accuracy\"])\n\nModel: \"sequential\"\nLayer (type)      Output Shape    Param #\ndense (Dense)      (None, 10)     空格1\ndense_1 (Dense)    (None, 10)     空格2\ndense_2 (Dense)    (None, 1)      11\n\n下列何者正確？",
+    "options": {
+      "A": "activation=\"relu\"其數學式為",
+      "B": "空格 1 值為 110，空格 2 值為 100；",
+      "C": "空格 1 值為 100，空格 2 值為 110",
+      "D": "activation=\"sigmoid\"一般用於多類別分類預測模型"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】程式明示輸入維度是 `X_train.shape[1]`，第一層 Dense 有 10 個單元，第二層也有 10 個單元，最後一層有 1 個 sigmoid 單元；摘要又給最後一層參數量 11。Dense 參數公式是「輸入數×輸出單元數＋輸出單元數個 bias」。選項 A 的 ReLU 數學式在來源中缺失，不能自行補成它原先顯示的圖或公式。\n【這題在考什麼】要由層與層之間的張量寬度計算可訓練參數，並理解 activation 不增加一般 Dense 層參數。第一層若有 d 個輸入特徵，參數為 d×10+10；第二層接收前層 10 維，參數為 10×10+10=110；輸出層為 10×1+1=11，與摘要吻合。選項 C 說第一層 100、第二層 110，等價於 d×10+10=100，所以可反推 d=9。\n【正解怎麼想】正確答案是 C：空格 1 值為 100，空格 2 值為 110。第二層的計算不依賴原始特徵數：10 個輸入連到 10 個神經元，共 100 個權重，每個輸出神經元各有一個 bias，再加 10 得 110。第一層由官方選項可知輸入特徵數為 9，因此 9×10 個權重加 10 個偏置，共 100。最後一層 10 個輸入權重加 1 個偏置為 11，與 model.summary 已知值互相驗證。sigmoid 將單一 logit 映射到 0～1，可解讀為二元正類機率，並與 binary_crossentropy 配對。\n【錯項陷阱】A：activation=\"relu\"其數學式為。原題所附公式或圖片在資料中遺失，無法核對該公式是否真為 max(0,x)，故不能捏造其內容；依官方答案它不是正確選項。B：空格 1 值為 110，空格 2 值為 100。這把兩層參數量對調；第二層明確需要 100 權重加 10 bias，不可能只有 100，除非錯誤漏算 bias。C：空格 1 值為 100，空格 2 值為 110。正解，兩者皆符合 Dense 公式。D：activation=\"sigmoid\"一般用於多類別分類預測模型。單一 sigmoid 通常用於二元或多標籤分類；互斥多類別一般使用多個輸出單元搭配 softmax，因此此敘述錯。\n【下次怎麼秒判斷】專屬口訣是「Dense 參數＝每條連線加每顆 bias」。先寫 `(in+1)×out`，不要把 batch 維度 None 算進去，也不要為 ReLU 或 sigmoid 額外加參數。二元互斥分類看到 `Dense(1, sigmoid)`；K 類互斥分類通常看到 `Dense(K, softmax)`；多標籤則可用 K 個 sigmoid。\n【必要名詞】權重是相鄰層神經元間的連線係數；偏置是每個輸出單元一個可訓練常數；logit 是進入機率活化前的實數分數；ReLU 為 max(0,x)；sigmoid 為 1/(1+e^(−x))；softmax 將多個 logit 正規化為總和一的類別機率；binary cross-entropy 衡量二元標籤與預測機率差異。可訓練參數會接受反向傳播更新，Output Shape 則只描述每筆資料流經該層後的張量寬度；兩者不可混算。摘要中的 None 代表批次大小可變，不是一個需要配置權重的神經元。若 Dense 關閉 use_bias，公式才會少掉輸出單元數那一項；本題使用預設設定，所以三層都必須計入偏置。",
+    "topic": "Dense 層參數量與二元分類輸出層",
+    "image": "images/exam_pages/q46_114s3_49_fig.png",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_114_2_subject3_50",
+    "source": "official_114_2_subject3",
+    "question": "參考下列程式碼與執行結果，下列何者正確？\n\nhistory = model.fit(X_train, y_train, validation_split=0.2, epochs=100, batch_size=10)\nloss, accuracy = model.evaluate(X_train, y_train, verbose=0)\n\nimport matplotlib.pyplot as plt\nloss = history.history[\"loss\"]\nepochs = range(1, len(loss)+1)\nval_loss = history.history[\"val_loss\"]\nplt.plot(epochs, loss, 空格1, label=\"Training Loss\")\nplt.plot(epochs, val_loss, 空格2, label=\"Validation Loss\")\nplt.title(\"Training and Validation Loss\")\nplt.xlabel(\"Epochs\")\nplt.ylabel(\"Loss\")\nplt.legend()\nplt.show()\n\n（下圖為執行後產生的圖表，藍色實線為 Training Loss、紅色虛線為 Validation Loss）\n\nA：空格 1 須填入 \"b-\"\nB：空格 2 須填入 \"b--\"\nC：空格 1 須填入 \"r-\"\nD：空格 2 須填入 \"r--\"\nE：驗證損失明顯較訓練損失減少更明顯",
+    "options": {
+      "A": "B、C",
+      "B": "A、C、D",
+      "C": "A、D",
+      "D": "C、D、E"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】題目列出空格 1、空格 2 的 Matplotlib 格式字串候選：b-、b--、r-、r--，並加入「驗證損失明顯較訓練損失減少更明顯」的曲線判讀。格式字串第一個字母是顏色，b 為 blue（藍）、r 為 red（紅）；後面的線型符號 - 是實線（solid），-- 是虛線（dashed）。圖例（legend）明確標示藍色實線是 Training Loss、紅色虛線是 Validation Loss。\n【這題在考什麼】一部分考 pyplot 的格式字串簡寫，一部分考訓練史曲線的正確解讀。history.history['loss'] 是訓練損失，history.history['val_loss'] 是驗證損失；圖表顯示訓練損失（藍色實線）從約 0.66 持續下降到約 0.40，驗證損失（紅色虛線）先快速降到約 0.45~0.46 後就在該區間上下震盪、幾乎不再下降。兩條線沒有出現「驗證損失比訓練損失還低」或後期反轉上升的情形，屬於正常訓練但驗證集提升有限，跟過擬合的典型訊號（驗證損失後期回升）也不同。\n【正解怎麼想】正確答案是 C：A、D。空格 1（畫 Training Loss 那一條）對應圖中的藍色實線，所以要填 \"b-\"（A 成立）；空格 2（畫 Validation Loss 那一條）對應圖中的紅色虛線，所以要填 \"r--\"（D 成立）。A 與 D 分別描述兩個不同空格，彼此不衝突，可以同時成立。敘述 E 不成立：從圖上看，訓練損失（藍線）從 0.66 一路降到 0.40，下降幅度遠大於驗證損失（紅線只從 0.62 降到 0.45 附近就趨於平緩），是訓練損失下降更明顯，不是驗證損失下降更明顯，E 描述的方向剛好相反。\n【錯項陷阱】A：B、C。主張空格 2 為 b--、空格 1 為 r-，兩處顏色都跟圖表實際配色相反（圖中 Training 是藍不是紅、Validation 是紅不是藍）。B：A、C、D。同一個空格 1 不可能同時填 b- 與 r-；A 與 C 彼此互斥，只要空格 1 已經確定是 b-（A），C 主張的 r- 就必然錯，這個組合在邏輯上已經自相矛盾，不需要看 D 對不對就能排除。D：C、D、E。D 的空格 2 正確，但 C 把空格 1 誤植成紅色、E 又把下降幅度的方向講反，兩個錯誤讓整組不成立。個別來看 B 的 b-- 本身是合法的 Matplotlib 格式寫法，只是不是這張圖空格 2 真正需要的顏色與線型。\n【下次怎麼秒判斷】口訣「b 藍 r 紅，一槓實、兩槓虛」。看到組合題先找互斥敘述：A 與 C 都在講空格 1，不可能同時為真；B 與 D 都在講空格 2，也不能同時成立，可以直接先排除同時包含互斥選項的組合。判讀 loss 曲線時，永遠先看 legend 對應哪個資料鍵、線條顏色/線型是什麼，再比較兩條線最終收斂的位置高低，不要單憑「哪條看起來降得比較快」就下結論，要看整體下降的絕對幅度。\n【必要名詞】format string：Matplotlib 把顏色、標記與線型濃縮在一個字串的簡寫語法。solid line 對應 -，dashed line 對應 --。training loss：模型在訓練資料上的目標函數值，會隨參數更新持續下降。validation loss：未參與權重更新的驗證資料損失，用來偵測是否過擬合。過擬合的典型訊號是訓練損失持續下降、但驗證損失後期停滯甚至回升，兩者差距持續擴大；本題圖表兩條線後期都大致平穩，屬於正常收斂而非明顯過擬合的圖形特徵。",
+    "topic": "訓練與驗證損失曲線的 Matplotlib 樣式",
+    "image": "images/exam_pages/q50_training_validation_loss_chart.png",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_115_1_subject1_1",
+    "source": "official_115_1_subject1",
+    "question": "某 工 程 師 正 在 建 置 一 套 法 律 文 件 解 析 系 統 ， 在 進 行 資 訊 擷 取 （ Information Extraction）前，需要對文本進行詞性標註（Part-of-Speech Tagging, POS Tagging） 。 請問此步驟的主要目的為何？",
+    "options": {
+      "A": "將文本翻譯為其他語言以利跨語言分析",
+      "B": "將文本切分為基本詞彙單位，以便後續處理",
+      "C": "判斷文本中各詞彙的情感傾向",
+      "D": "為每個詞彙標記其語法類別，如名詞、動詞與形容詞"
+    },
+    "answer": "D",
+    "explanation": "【先抓題目關鍵字】情境是法律文件解析，在資訊擷取之前做 Part-of-Speech Tagging。題目問的是這一步「主要目的」，因此要把 POS 的輸出單位與其他 NLP 任務分開：它針對每個 token 指派名詞、動詞、形容詞、介系詞等語法類別，不是翻譯、斷詞本身，也不是情感極性判斷。\n【這題在考什麼】詞性標註是一種序列標記。模型不只看單一字面，還利用前後文決定同一詞在特定句子中的語法角色。法律資訊擷取常需辨認「當事人提出請求」、「法院駁回上訴」等結構；POS 可協助後續句法分析、名詞片語擷取、關係抽取與規則比對。例如名詞或專有名詞序列可能構成機構名稱，動詞則常提示法律行為，但 POS 本身不直接等於實體辨識。\n【正解怎麼想】正確答案是 D：為每個詞彙標記其語法類別，如名詞、動詞與形容詞。這精確描述 POS tagging 的輸入輸出：輸入是已形成 token 序列的句子，輸出是與 token 對齊的標籤序列。中文可能使用如 Na、VA 等更細標籤，英文則常見 NN、VB、JJ；無論標籤集如何設計，核心都是語法類別。這些標籤讓資訊擷取系統能利用句法線索縮小候選範圍，例如從名詞片語找契約主體、由動詞及其論元找事件關係。\n【錯項陷阱】A：將文本翻譯為其他語言以利跨語言分析。這是機器翻譯，輸出是另一語言的文本；POS 不改變語言，也不以跨語對齊為主要目標。B：將文本切分為基本詞彙單位，以便後續處理。這是 tokenization 或中文斷詞；它決定詞彙邊界，而 POS 是在邊界確定後標註語法角色，雖然中文系統有時聯合執行，概念仍不同。C：判斷文本中各詞彙的情感傾向。這是情感分析或情緒詞典標註，標籤可能是正向、負向、中性，並非名詞或動詞。D：為每個詞彙標記其語法類別，如名詞、動詞與形容詞。正解，輸出內容與 POS 定義完全相符。\n【下次怎麼秒判斷】專屬口訣是「斷詞切邊界，詞性貼語法牌」。題幹看到 POS，就尋找「每個 token＋語法類別」；看到翻成另一語言找 machine translation；看到正負情緒找 sentiment；看到人名、法條、機關等實體類型則找 NER。不要把前處理順序相鄰的任務當成同一任務。\n【必要名詞】Token 是模型處理的基本文字單位；tokenization 將字串切成 token；POS tag 是語法類別標籤；sequence labeling 對序列中每個位置輸出標籤；詞形歧義指同一表面詞依上下文可能扮演不同詞性；句法分析建立詞與詞的結構關係；命名實體辨識標出人名、組織、地點或法律專名，與詞性標註層級不同。",
+    "topic": "詞性標註在資訊擷取前處理中的角色",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_115_1_subject1_2",
+    "source": "official_115_1_subject1",
+    "question": "一家新創公司希望對 Llama3 70B 模型進行領域微調（Domain Fine-Tuning）以建 立企業專用助理，但 GPU 記憶體有限，無法支撐完整模型的反向傳播梯度計算。 工程師希望凍結（freeze）原模型權重、僅訓練少量額外參數的前提下，評估採用 LoRA（Low-Rank Adaptation）方案。請問 LoRA 在此場景下的主要優勢為何？",
+    "options": {
+      "A": "透過知識蒸餾（Knowledge Distillation）將 70B 模型壓縮為較小的學生模型",
+      "B": "對原始模型各層權重進行剪枝（Pruning），移除低重要性參數後再進行微調",
+      "C": "凍結原始預訓練權重，僅在各層加入低秩分解的可訓練矩陣，大幅降低可訓練 參數量與 GPU 記憶體需求",
+      "D": "將模型中的注意力機制改為稀疏注意力（Sparse Attention），以降低長序列計 算成本"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】\n這題第一眼先抓題幹裡的限制條件與關鍵詞。題目核心線索是「Transformer 與注意力機制」，再回頭看題幹描述：一家新創公司希望對 Llama3 70B 模型進行領域微調（Domain Fine-Tuning）以建 立企業專用助理，但 GPU 記憶體有限，無法支撐完整模型的反向傳播梯度計算。 工程師希望凍結（freeze）原模型權重、僅訓練少量額外參數的前提下，評估採用 LoRA（Low-Rank Adaptation）方案。請問 LoRA 在此場景下的主要優勢為何？。先看題目到底問「主要目的、最可能原因、正確定義、流程位置」哪一種，再回頭排除只沾到邊但沒有正面回答的選項。\n\n【這題在考什麼】\nLoRA（Low-Rank Adaptation）的參數高效微調。LoRA 會凍結原始大模型權重，只訓練少量低秩矩陣，降低可訓練參數量與 GPU 記憶體需求。\n\n【正解怎麼想】\nC。凍結原始預訓練權重，僅在各層加入低秩分解的可訓練矩陣，大幅降低可訓練參數量與 GPU 記憶體需求。\n\n完整微調 70B 模型需要保存大量梯度、optimizer state 與 activation，GPU 記憶體成本極高。LoRA 假設權重更新可用低秩矩陣近似，把訓練集中在少量 adapter 參數上，原模型大多凍結。因此能在有限資源下做領域微調，並保留原模型能力。\n\n【錯項陷阱】\n先不要只看哪個選項「好像也對」，要看它有沒有偷換題幹限制、把相近名詞混在一起，或把可能原因說成最主要原因。\n\nA：錯。知識蒸餾是訓練小模型模仿大模型，不是 LoRA。\nB：錯。剪枝移除權重參數，和 LoRA 加低秩可訓練矩陣不同。\nC：對。這正是 LoRA 的核心優勢。\nD：錯。稀疏注意力降低長序列計算成本，不是 LoRA 的主要概念。\n\n【下次怎麼秒判斷】\nLoRA 口訣：**「大模型不動，只訓練小低秩矩陣」**。\n\n補充：LoRA 產生的 adapter 權重也較小，方便儲存、切換不同領域任務，部署上比完整模型副本省空間。\n這也是大型語言模型領域微調常用 LoRA、QLoRA 等 PEFT 方法的原因。\n凍結原權重也降低災難性遺忘風險，因為大部分預訓練能力仍保留。\n\n【必要名詞】\n- LoRA：低秩適應，參數高效微調方法。\n- Fine-tuning：在特定資料上微調模型。\n- Freeze：凍結原模型權重，不更新。\n- Low-rank Matrix：低秩矩陣，用較少參數近似更新。\n- Adapter：插入模型中的小型可訓練模組。",
+    "topic": "Transformer 與注意力機制",
+    "explanation_style": "teacher_walkthrough_v1"
+  },
+  {
+    "id": "official_115_1_subject1_3",
+    "source": "official_115_1_subject1",
+    "question": "某工程師在建構搜尋引擎的詞向量模型時，語料庫規模達數十億 token，且包含 大量長尾詞彙（Long-tail Terms）。他在 Word2Vec 的 CBOW 與 Skip-gram 兩種訓 練策略之間進行選擇，需考量訓練效率與低頻詞表示品質之差異。下列何者最能 準確地反映兩者在此情境下的取捨？",
+    "options": {
+      "A": "CBOW 對長尾詞表現更好，因為它透過多個上下文詞的平均來強化稀疏詞的 訓練訊號",
+      "B": "CBOW 訓練速度較快、整體語意平滑，但對低頻詞的向量品質較差；Skip-gram 以中心詞預測周圍詞，對長尾詞累積更多訓練樣本，向量品質較優",
+      "C": "Skip-gram 訓練速度更快，因為每次只需預測單一目標詞，計算量低於 CBOW",
+      "D": "兩者對低頻詞的表現完全相同，差異僅在於訓練時的 Batch 組織方式"
+    },
+    "answer": "B",
+    "explanation": "【先抓題目關鍵字】語料達數十億 token，且有大量 long-tail terms；要求同時考量「訓練效率」與「低頻詞表示品質」。因此答案必須同時說對 CBOW 與 Skip-gram 的預測方向及實務取捨。CBOW 用周圍上下文聚合表示來預測中心詞；Skip-gram 反過來，以中心詞逐一預測窗口內的上下文詞。\n【這題在考什麼】CBOW 將多個上下文詞的向量加總或平均後形成一次預測訊號，計算可較集中，對高頻模式產生平滑且穩定的表示，通常訓練較快。Skip-gram 對一個中心詞產生多個 center-context 訓練配對，計算量通常較大，但低頻中心詞每次出現都能與多個周邊詞形成更新，因此在經典 Word2Vec 經驗上較擅長稀有詞。negative sampling 或 hierarchical softmax 可降低完整 softmax 的成本，但不改變兩種架構的預測方向。\n【正解怎麼想】正確答案是 B：CBOW 訓練速度較快、整體語意平滑，但對低頻詞的向量品質較差；Skip-gram 以中心詞預測周圍詞，對長尾詞累積更多訓練樣本，向量品質較優。它完整回答規模與長尾兩個條件。CBOW 的上下文聚合會稀釋個別稀有詞對預測的貢獻，換來吞吐量；Skip-gram 將一次中心詞出現展開成窗口中的多個配對，使罕見詞也能獲得數次梯度更新。這是傾向而非數學保證，成果仍受語料量、窗口、subsampling、負採樣與 min_count 影響。\n【錯項陷阱】A：CBOW 對長尾詞表現更好，因為它透過多個上下文詞的平均來強化稀疏詞的訓練訊號。平均主要平滑上下文，稀有上下文詞的個別訊號反而可能被常見詞沖淡，不能據此主張長尾更好。B：正解，效率與低頻品質的方向、Skip-gram 的預測任務都正確。C：Skip-gram 訓練速度更快，因為每次只需預測單一目標詞，計算量低於 CBOW。它說反預測方向；Skip-gram 通常由一個中心詞預測多個上下文目標，配對數更多。D：兩者對低頻詞的表現完全相同，差異僅在 Batch 組織方式。差異源於訓練目標與訊號形成方式，不只是 batch 排列，低頻詞表現也並非完全一致。\n【下次怎麼秒判斷】專屬口訣是「CBOW：周圍猜中間，快而平；Skip-gram：中間猜周圍，慢但顧稀有」。看到超大語料重吞吐，CBOW 是效率線索；看到長尾、罕見詞品質，Skip-gram 是品質線索。若選項宣稱「完全相同」或把 Skip-gram 說成只做一次單一預測，立刻檢查預測箭頭。\n【必要名詞】中心詞是窗口中央的 token；上下文詞是窗口內鄰近 token；長尾詞是頻率低但種類多的詞；分散式表示用稠密向量編碼語意關係；negative sampling 將多類 softmax 近似成正負樣本二元目標；subsampling 降低超高頻詞出現比例；min_count 會移除低於門檻的詞，若設太高，長尾詞甚至不會進詞彙表。",
+    "topic": "CBOW 與 Skip-gram 的效率及長尾詞取捨",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_115_1_subject1_4",
+    "source": "official_115_1_subject1",
+    "question": "某金融科技公司的工程師正在準備內部客服對話與交易紀錄文本，進行 BERT 模 型的預訓練，以提升模型對金融語境的理解能力，並採用遮蔽語言建模（Masked Language Model, MLM）作為訓練任務。請問 MLM 的核心訓練目標為何？",
+    "options": {
+      "A": "讓模型自左至右逐 token 生成句子，學習自迴歸語言模型（Autoregressive LM） 能力",
+      "B": "透過對抗訓練（Adversarial Training）縮小真實句與生成句之間的語意差異",
+      "C": "隨機遮蔽輸入序列中部分 token，訓練模型根據雙向上下文預測被遮蔽的原始 內容",
+      "D": "透過遮蔽低頻詞來減少詞彙表大小，降低 Embedding 的記憶體使用"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】題目指定 BERT 預訓練與 Masked Language Model，要求「核心訓練目標」。要辨認三個要素：輸入中部分 token 被選為預測目標、模型利用左右兩側的雙向上下文、損失集中於要還原的原始 token。這和自左向右生成、GAN 對抗目標、縮減詞彙表都不同。\n【這題在考什麼】BERT 的 encoder 在 self-attention 中可同時接收目標位置左右兩側資訊。MLM 先對序列中部分位置施加遮蔽或替換策略，再要求模型在這些位置輸出原詞彙的機率分布，以交叉熵學習上下文表示。原始 BERT 實作中，被選位置通常有一部分換成 `[MASK]`、一部分換成隨機 token、另一部分保持原樣，用來減少預訓練與下游微調間 `[MASK]` 不出現的落差；但核心仍是預測被選位置的原始內容。\n【正解怎麼想】正確答案是 C：隨機遮蔽輸入序列中部分 token，訓練模型根據雙向上下文預測被遮蔽的原始內容。這句同時命中資料處理、資訊方向與學習目標。金融領域再預訓練時，模型可藉此從「本筆交易遭到 [MASK]」兩側推測如拒絕、撤銷等詞，進而調整 token embedding 與各層參數，使語境相近的用法得到可供下游任務利用的表示。MLM 學的是條件分布，不要求按照從左到右順序逐詞產生整句。\n【錯項陷阱】A：讓模型自左至右逐 token 生成句子，學習自迴歸語言模型能力。這描述 causal/autoregressive LM；未來位置需被 attention mask 擋住，與 BERT MLM 可看雙向上下文不同。B：透過對抗訓練縮小真實句與生成句之間的語意差異。這是 GAN 類生成器—判別器目標的概念，標準 MLM 沒有以真假句對抗作核心。C：正解，隨機選位並由雙向上下文復原原 token。D：透過遮蔽低頻詞來減少詞彙表大小，降低 Embedding 記憶體使用。MLM 並非只遮低頻詞，遮蔽不會刪除詞彙表項目，embedding 矩陣大小也不因此縮小。\n【下次怎麼秒判斷】專屬口訣是「MLM 挖空格，左右一起補原詞」。選項若出現「自左至右」就偏向 GPT 式 causal LM；若提真假對抗就不是標準 BERT MLM；若說遮蔽是為了壓縮 vocabulary，更是混淆訓練 corruption 與 tokenizer 建表。注意「遮蔽」是製造學習題目，不是永久刪除資訊。\n【必要名詞】`[MASK]` 是特殊遮蔽 token；bidirectional context 是同時利用左右文；cross-entropy 對正確原 token 的負對數機率計算損失；encoder 是將整段輸入轉成上下文表示的 Transformer 模組；causal mask 阻止看到未來 token；domain-adaptive pretraining 是用特定領域語料延續預訓練；微調則利用標註下游資料更新模型。",
+    "topic": "BERT 遮蔽語言建模目標",
+    "explanation_style": "teacher_walkthrough_v3"
+  },
+  {
+    "id": "official_115_1_subject1_5",
+    "source": "official_115_1_subject1",
+    "question": "某電商平台的工程師在開發商品評論情感分析系統時，發現使用 One-Hot 編碼無 法表達詞語之間的語意關係，且隨著詞彙表擴大，向量維度與記憶體需求快速增 加。工程師因此改用 Word2Vec 進行詞語表示。請問 Word2Vec 從根本上解決了 上述問題的哪項限制？",
+    "options": {
+      "A": "建立詞語之間的序列依賴關係，以捕捉長距離上下文語意",
+      "B": "根據詞語在語料中的出現頻率調整其重要性，使模型更重視高頻詞",
+      "C": "降低詞彙表示的維度，同時保留語意結構，避免高維稀疏表示所帶來的限制",
+      "D": "透過監督式學習利用標註語料，提升詞語分類的準確性"
+    },
+    "answer": "C",
+    "explanation": "【先抓題目關鍵字】題幹明列 One-Hot 的兩個問題：「無法表達詞語語意關係」與「詞彙表擴大造成維度、記憶體增加」。因此正解必須同時涵蓋低維稠密表示與可由共現學得的語意結構。不能只談序列模型、詞頻權重或監督標註。\n【這題在考什麼】詞彙表大小為 V 時，One-Hot 每個詞是 V 維，只有一格為 1，其餘為 0。不同詞向量彼此正交，單看向量距離無法表示「手機」和「平板」比「手機」和「退款」更相近。Word2Vec 透過 CBOW 或 Skip-gram 預測任務學得 d 維 embedding，通常 d 遠小於 V；出現在相似上下文的詞會因梯度更新形成相近方向，能用 cosine similarity 衡量語意鄰近。\n【正解怎麼想】正確答案是 C：降低詞彙表示的維度，同時保留語意結構，避免高維稀疏表示所帶來的限制。Word2Vec 不再把每個詞當作互不相關的座標軸，而是把詞映射到共享的連續向量空間。雖然模型仍需維護與詞彙表相關的 embedding 參數矩陣，單一詞的表示與後續模型輸入維度變成固定 d，且向量中的多個實數共同承載分布式語意。這正面解決 One-Hot 的高維、稀疏與缺少相似性結構三項限制。\n【錯項陷阱】A：建立詞語之間的序列依賴關係，以捕捉長距離上下文語意。基本 Word2Vec 使用固定窗口的局部共現，輸出靜態詞向量；它不是 RNN 或 Transformer，不會依句中位置維持長距離狀態。B：根據詞語在語料中的出現頻率調整其重要性，使模型更重視高頻詞。這較像 TF、TF-IDF 或詞頻加權；Word2Vec 甚至常 subsample 高頻詞，目的並非單純讓高頻詞更重要。C：正解，以低維稠密向量承載語意結構。D：透過監督式學習利用標註語料，提升詞語分類準確性。Word2Vec 的原始訓練訊號來自語料中的鄰近詞配對，是自監督式學習，不要求人工分類標籤。\n【下次怎麼秒判斷】專屬口訣是「One-Hot 一詞一軸又疏；Word2Vec 多詞共享低維語意座標」。看到維度等於 vocabulary、向量正交就想到 One-Hot；看到上下文預測、稠密 embedding、相似詞靠近就想到 Word2Vec。若題目強調同一詞在不同句子有不同表示，則還要考慮 BERT 類 contextual embedding，不能過度延伸靜態 Word2Vec。\n【必要名詞】稀疏向量多數元素為零；稠密向量多數維度有實數值；embedding 是離散符號到連續空間的映射；分布假說主張出現在相似上下文的詞具有相近意義；cosine similarity 衡量向量方向相似度；靜態詞向量讓同一詞在所有語境共用表示；上下文化表示則會依句子改變同一 token 的向量。",
+    "topic": "Word2Vec 相對 One-Hot 的稠密語意表示",
+    "explanation_style": "teacher_walkthrough_v3"
+  }
+]
