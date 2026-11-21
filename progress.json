@@ -947,6 +947,7 @@
     }
   },
   "current_queue": [
+    "official_115_1_subject1_28",
     "official_115_1_subject1_30",
     "official_115_1_subject1_32",
     "official_115_1_subject1_39",
@@ -984,10 +985,9 @@
     "S3_21",
     "S3_24",
     "S3_25",
-    "official_114_2_subject3_45",
-    "official_115_1_subject1_28"
+    "official_114_2_subject3_45"
   ],
-  "current_question": "official_115_1_subject1_30",
+  "current_question": "official_115_1_subject1_28",
   "stats": {
     "total_answered": 352,
     "total_correct": 224,
